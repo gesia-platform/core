@@ -10,9 +10,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../price/IPrice.sol";
-import "../operator/IMintOperator.sol";
+import "./IMintOperator.sol";
 import "../operator/IOperator.sol";
 import "../fee/IFeeManager.sol";
+import "../../../aaWallet/interfaces/ISignAuthorizer.sol";
 
 contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Ownable {
     using Strings for string;
@@ -33,7 +34,7 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
 
     mapping(uint256 => uint256) private carbonMapPrice;
 
-    uint256 public minUSDTPrice = 10000; // 0.01 USDT
+    uint256 public minUSDTPrice = 1000000; // 1 USDT
     // token id counter incrementing by 1
     Counters.Counter private _tokenIdTracker;
 
@@ -59,13 +60,13 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
     }
 
 
-    function mintBySignature(address _receiver, uint256 _amount, uint256 _tokenId, uint256 _nonce, string memory _metadata, bytes memory signature, uint256 _carbonPrice) external onlyOwner {
+    function mintBySignature(address _from, address _to, uint256 _amount, uint256 _tokenId, uint256 _nonce, string memory _metadata, bytes memory signature, uint256 _carbonPrice) external onlyOwner {
         require(_carbonPrice >= minUSDTPrice, "price must be higher than min");
         require(_carbonPrice > carbonMapPrice[_tokenId], "price must be higher than old");
-        bytes32 hashMessage = keccak256(abi.encodePacked(_receiver, _tokenId, _amount, _nonce, address(this)));
+        bytes32 hashMessage = keccak256(abi.encodePacked(_to, _tokenId, _amount, _nonce, address(this)));
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
         address signer = recoverSigner(hash, signature);
-        require(signer == _receiver, "Signature does not match the sender");
+        require(ISignAuthorizer(_from).isAuthorizedSigner(signer), "Signature does not match the sender");
         require(!transactionHashes[hashMessage], "Transaction already processed");
         transactionHashes[hashMessage] = true;
 
@@ -75,7 +76,7 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
 
         tokenURIs[_tokenId] = _metadata;
         tokenSupply[_tokenId] = tokenSupply[_tokenId].add(_amount);
-        _mint(_receiver, _tokenId, remainAmount, "");
+        _mint(_to, _tokenId, remainAmount, "");
         _mint(IFeeManager(feeManager).feeAddress(), _tokenId, calculatedAmount, "");
         carbonMapPrice[_tokenId] = _carbonPrice;
     }
@@ -92,7 +93,7 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
         address signer = recoverSigner(hash, signature);
-        require(signer == from, "Signature does not match the sender");
+        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
         require(!transactionHashes[hashMessage], "Transaction already processed");
         transactionHashes[hashMessage] = true;
 

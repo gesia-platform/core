@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../operator/IOperator.sol";
 import "../fee/IFeeManager.sol";
 import "../price/IPrice.sol";
+import "../../../aaWallet/interfaces/ISignAuthorizer.sol";
 
 contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
     using Strings for string;
@@ -34,7 +35,7 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
     address public operatorManager;
     address public feeManager;
     uint256 public feeAmount = 100; // 1%
-    uint256 public minUSDTPrice = 10000; // 0.01 USDT
+    uint256 public minUSDTPrice = 1000000; // 1 USDT
 
     // token id counter incrementing by 1
     Counters.Counter private _tokenIdTracker;
@@ -79,7 +80,7 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         bytes32 hashMessage = keccak256(abi.encodePacked(_from, _carbonAmount, _nonce, address(this)));
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
         address signer = recoverSigner(hash, _signature);
-        require(signer == _from, "Signature does not match the sender");
+        require(ISignAuthorizer(_from).isAuthorizedSigner(signer), "Signature does not match the sender");
         require(!transactionHashes[hashMessage], "Transaction already processed");
         transactionHashes[hashMessage] = true;
 
@@ -111,7 +112,7 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
         address signer = recoverSigner(hash, signature);
-        require(signer == from, "Signature does not match the sender");
+        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
         require(!transactionHashes[hashMessage], "Transaction already processed");
         transactionHashes[hashMessage] = true;
 
@@ -136,7 +137,7 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
         address signer = recoverSigner(hash, signature);
-        require(signer == from, "Signature does not match the sender");
+        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
         require(!transactionHashes[hashMessage], "Transaction already processed");
         transactionHashes[hashMessage] = true;
         _safeTransferFrom(from, to, tokenId, amount, "");

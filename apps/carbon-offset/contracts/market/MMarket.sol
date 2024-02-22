@@ -132,20 +132,13 @@ contract MMarket is ERC1155Holder {
         emit TokenUnPlaced(marketItem.voucherNftContract, marketItem.tokenId, _marketId, _amount, marketItem.amount, marketItem.seller, marketItem.price);
     }
 
-    function transferByOperator(uint256 _marketId, uint256 _amount, address _receiver, uint256 _nonce, bytes memory signature) external operatorsOnly {
+    function transferByOperator(uint256 _marketId, uint256 _amount, address _receiver) external operatorsOnly {
         // check amount must be higher than 0
         require(_amount > 0, "Must be higher than zero");
         // get marketItem
         MarketItem storage marketItem = _marketItemMap[_marketId];
         // check amount from market amount
         require(marketItem.amount >= _amount, "Not Enough amount");
-        // check signature
-        bytes32 hashMessage = keccak256(abi.encodePacked(_receiver, _marketId, _amount, _nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
-        address signer = recoverSigner(hash, signature);
-        require(signer == _receiver, "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
-        transactionHashes[hashMessage] = true;
         // divide totalPrice to decimal
         uint256 totalPrice = marketItem.price.mul(_amount).div(10 ** 18);
         // check contract balance
@@ -163,23 +156,4 @@ contract MMarket is ERC1155Holder {
         emit TokenSold(marketItem.voucherNftContract, marketItem.tokenId, _marketId, _amount, _receiver, marketItem.seller, marketItem.price, totalPrice);
     }
 
-    function recoverSigner(
-        bytes32 _ethSignedMessageHash,
-        bytes memory _signature
-    ) internal pure returns (address) {
-        (bytes32 r, bytes32 s, uint8 v) = splitSignature(_signature);
-
-        return ecrecover(_ethSignedMessageHash, v, r, s);
-    }
-
-    function splitSignature(
-        bytes memory sig
-    ) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
-        require(sig.length == 65, "invalid signature length");
-        assembly {
-            r := mload(add(sig, 32))
-            s := mload(add(sig, 64))
-            v := byte(0, mload(add(sig, 96)))
-        }
-    }
 }
