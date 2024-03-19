@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/gesia-platform/core/apps/notary/config"
+	"github.com/gesia-platform/core/apps/notary-account/config"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
