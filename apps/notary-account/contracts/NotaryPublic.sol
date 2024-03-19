@@ -22,14 +22,14 @@ contract NotaryPublic {
     }
 
     function notarizeRPC(
-        address notaryAccount,
+        address notaryAccountAddress,
         bytes memory signature,
         string memory url,
         bytes32[] calldata merkleProof
     ) external {
-        notaryAccount = NotaryAccount(notaryAccount);
+        NotaryAccount notaryAccount = NotaryAccount(notaryAccountAddress);
 
-        chain = notaryAccount.getChain();
+        string memory chain = notaryAccount.getChain();
 
         require(
             MerkleProof.verify(
