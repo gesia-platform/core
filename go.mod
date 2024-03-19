@@ -1,4 +1,4 @@
-module github.com/gesia-platform/core/apps/notary
+module github.com/gesia-platform/core
 
 go 1.21.6
 

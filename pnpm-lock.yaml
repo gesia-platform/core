@@ -37,7 +37,7 @@ importers:
         specifier: 4.7.3
         version: 4.7.3
 
-  apps/notary:
+  apps/notary-account:
     dependencies:
       '@openzeppelin/contracts':
         specifier: 4.7.3
