@@ -21,7 +21,11 @@ importers:
         specifier: latest
         version: 1.12.4
 
-  apps/carbon-emission: {}
+  apps/carbon-emission:
+    dependencies:
+      '@openzeppelin/contracts':
+        specifier: 4.7.3
+        version: 4.7.3
 
   apps/carbon-neutral: {}
 
