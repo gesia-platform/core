@@ -18,9 +18,9 @@ func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 	var response RPCResponse
 	var domain string
 
-	signer := common.HexToAddress(app.config.Address)
+	signer := common.HexToAddress(app.config.SignerAddress)
 
-	if err := app.hostClient.Client().Call(
+	if err := app.client.Client().Call(
 		&response,
 		"account_signData",
 		accounts.MimetypeTextPlain,
@@ -40,8 +40,8 @@ func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 func (app *NotaryApplication) notarizeMissedAccounts() {
 	app.logger.Info(fmt.Sprintf("start notarizing for missed accounts."))
 
-	notaryPublicAddress := common.HexToAddress(app.config.Chain.Master.NotaryPublicAddress)
-	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountCreated(string,string,address)"))
+	notaryPublicAddress := common.HexToAddress(app.config.NotaryPublicAddress)
+	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountUpdated(string,address,address)"))
 	notarizedEventSignature := crypto.Keccak256Hash([]byte("RPCNotarized(address,string)"))
 
 	notaryPublicAbi, err := abi.JSON(strings.NewReader(NotaryPublicABI))
@@ -54,7 +54,7 @@ func (app *NotaryApplication) notarizeMissedAccounts() {
 		panic(fmt.Sprintf("failed to read notary account abi json. %d", err))
 	}
 
-	publicLogs, err := app.masterClient.FilterLogs(context.TODO(), ethereum.FilterQuery{
+	publicLogs, err := app.client.FilterLogs(context.TODO(), ethereum.FilterQuery{
 		Addresses: []common.Address{notaryPublicAddress},
 		Topics:    [][]common.Hash{{createdEventSignature}},
 	})
@@ -66,36 +66,36 @@ func (app *NotaryApplication) notarizeMissedAccounts() {
 	var chainAddresses []common.Address
 
 	for _, log := range publicLogs {
-		var event EventNotaryAccountCreated
+		var event EventNotaryAccountUpdated
 
-		err := notaryPublicAbi.UnpackIntoInterface(&event, "NotaryAccountCreated", log.Data)
+		err := notaryPublicAbi.UnpackIntoInterface(&event, "NotaryAccountUpdated", log.Data)
 		if err != nil {
 			panic(fmt.Sprintf("failed to unpack notary public event. %d", err))
-		}
-
-		if !strings.EqualFold(event.Chain, app.config.Chain.Master.NotaryPublicChainPrefix) {
-			continue
 		}
 
 		chainAddresses = append(chainAddresses, event.NotaryAccount)
 	}
 
-	accountLogs, err := app.masterClient.FilterLogs(context.TODO(), ethereum.FilterQuery{
+	accountLogs, err := app.client.FilterLogs(context.TODO(), ethereum.FilterQuery{
 		Addresses: chainAddresses,
 		Topics:    [][]common.Hash{{notarizedEventSignature}},
 	})
 
+	if err != nil {
+		panic(fmt.Sprintf("failed to missed notary account filter. %d", err))
+	}
+
 	var pendingAccounts []common.Address
 
 	for _, log := range accountLogs {
-		var event EventRPCNotarized
+		var event EventNotarized
 
-		err := notaryAccountAbi.UnpackIntoInterface(&event, "RPCNotarized", log.Data)
+		err := notaryAccountAbi.UnpackIntoInterface(&event, "Notarized", log.Data)
 		if err != nil {
 			panic(fmt.Sprintf("failed to unpack notary account event. %d", err))
 		}
 
-		if !strings.EqualFold(event.Notary.Hex(), app.config.Address) {
+		if !strings.EqualFold(event.Notary.Hex(), app.config.SignerAddress) {
 			pendingAccounts = append(pendingAccounts, event.Notary)
 		}
 	}
@@ -112,8 +112,8 @@ func (app *NotaryApplication) notarizeMissedAccounts() {
 func (app *NotaryApplication) subscribeNotarize() {
 	app.logger.Info(fmt.Sprintf("start subscribing notarize."))
 
-	notaryPublicAddress := common.HexToAddress(app.config.Chain.Master.NotaryPublicAddress)
-	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountCreated(string,string,address)"))
+	notaryPublicAddress := common.HexToAddress(app.config.NotaryPublicAddress)
+	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountUpdated(string,string,address)"))
 
 	notaryPublicAbi, err := abi.JSON(strings.NewReader(NotaryPublicABI))
 	if err != nil {
@@ -122,7 +122,7 @@ func (app *NotaryApplication) subscribeNotarize() {
 
 	publicLogs := make(chan coretypes.Log)
 
-	sub, err := app.masterClient.SubscribeFilterLogs(context.Background(), ethereum.FilterQuery{
+	sub, err := app.client.SubscribeFilterLogs(context.Background(), ethereum.FilterQuery{
 		Addresses: []common.Address{notaryPublicAddress},
 		Topics:    [][]common.Hash{{createdEventSignature}},
 	}, publicLogs)
@@ -135,14 +135,12 @@ func (app *NotaryApplication) subscribeNotarize() {
 		case err := <-sub.Err():
 			app.logger.Error(fmt.Sprintf("error from filter logs channel. %d", err))
 		case log := <-publicLogs:
-			var event EventNotaryAccountCreated
+			var event EventNotaryAccountUpdated
 
-			if err := notaryPublicAbi.UnpackIntoInterface(&event, "NotaryAccountCreated", log.Data); err != nil {
+			if err := notaryPublicAbi.UnpackIntoInterface(&event, "NotaryAccountUpdated", log.Data); err != nil {
 				app.logger.Error(fmt.Sprintf("failed to unpack notary public event. %d", err))
 			} else {
-				if strings.EqualFold(event.Chain, app.config.Chain.Master.NotaryPublicChainPrefix) {
-					app.notarize(event.NotaryAccount)
-				}
+				app.notarize(event.NotaryAccount)
 			}
 		}
 	}

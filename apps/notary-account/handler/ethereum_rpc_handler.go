@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func ETHRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
+func EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		err := next(c)
 

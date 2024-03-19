@@ -8,23 +8,16 @@ import (
 )
 
 type Config struct {
-	Port uint   `toml:"port"`
-	URL  string `toml:"url"`
+	Port uint `toml:"port"`
 
-	Address string `toml:"address"`
+	SignerAddress string `toml:"signer_address"`
 
-	Chain struct {
-		Local struct {
-			RPCURL       string `toml:"rpc_url"`
-			RPCProxyPath string `toml:"rpc_proxy_path"`
-		} `toml:"local"`
+	ExternalURL string `toml:"external_url"`
 
-		Master struct {
-			RPCURL                  string `toml:"rpc_url"`
-			NotaryPublicAddress     string `toml:"notary_public_address"`
-			NotaryPublicChainPrefix string `toml:"notary_public_chain_prefix"`
-		} `toml:"master"`
-	} `toml:"chain"`
+	RPCURL    string `toml:"rpc_url"`
+	ProxyPath string `toml:"proxy_path"`
+
+	NotaryPublicAddress string `toml:"notary_public_address"`
 }
 
 func NewConfig() *Config {
