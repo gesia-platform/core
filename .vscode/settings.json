@@ -3,5 +3,8 @@
     {
       "mode": "auto"
     }
-  ]
+  ],
+  "solidity.formatter": "prettier",
+  "solidity.compileUsingRemoteVersion": "v0.8.25+commit.b61c2a91",
+  
 }

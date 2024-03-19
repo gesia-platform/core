@@ -4,14 +4,13 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IOperator.sol";
 
-contract OperatorManager is Ownable,IOperator{
-
+contract OperatorManager is Ownable, IOperator {
     mapping(address => bool) public operatorMap;
 
     event AddOperator(address account);
     event RemoveOperator(address account);
 
-    constructor(){
+    constructor() {
         operatorMap[msg.sender] = true;
     }
 
@@ -25,7 +24,9 @@ contract OperatorManager is Ownable,IOperator{
         emit RemoveOperator(_account);
     }
 
-    function isOperator(address _account) external view override returns (bool) {
+    function isOperator(
+        address _account
+    ) external view override returns (bool) {
         return operatorMap[_account];
     }
 }

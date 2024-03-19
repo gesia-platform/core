@@ -13,7 +13,6 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-
 contract NftMarket is ERC1155Holder {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
@@ -23,7 +22,7 @@ contract NftMarket is ERC1155Holder {
         address contractAddress; // nft contract address
         uint256 tokenId; // nft tokenId
         uint256 amount; // nft amount
-        uint256 price;  // price (USDT (decimals 6) or BNB (decimals 18))
+        uint256 price; // price (USDT (decimals 6) or BNB (decimals 18))
         address seller; // seller wallet address
     }
 
@@ -36,16 +35,9 @@ contract NftMarket is ERC1155Holder {
     address public feeManager;
     bool public isWhitelistEnabled;
 
+    event MinPriceChange(uint256 price, bool isBnb);
 
-    event MinPriceChange(
-        uint256 price,
-        bool isBnb
-    );
-
-    event VerificationNftContract(
-        address indexed nftContract,
-        bool isVerified
-    );
+    event VerificationNftContract(address indexed nftContract, bool isVerified);
 
     event TokenPlaced(
         address indexed nftContract,
@@ -53,7 +45,8 @@ contract NftMarket is ERC1155Holder {
         uint256 indexed marketId,
         uint256 amount,
         address seller,
-        uint256 price);
+        uint256 price
+    );
 
     event TokenUnPlaced(
         address indexed nftContract,
@@ -62,7 +55,8 @@ contract NftMarket is ERC1155Holder {
         uint256 deductedAmount,
         uint256 remainAmount,
         address seller,
-        uint256 price);
+        uint256 price
+    );
 
     event TokenSold(
         address indexed nftContract,
@@ -74,24 +68,28 @@ contract NftMarket is ERC1155Holder {
         uint256 price,
         uint256 totalPrice,
         uint256 feeAmount, // fee amount to fee address
-        uint256 remainAmount);
+        uint256 remainAmount
+    );
 
     constructor(
         address _usdtContractAddress,
         address _whitelistManager,
         address _operatorManager,
-        address _feeManager){
+        address _feeManager
+    ) {
         usdtContractAddress = _usdtContractAddress;
         whitelistManager = _whitelistManager;
         operatorManager = _operatorManager;
         feeManager = _feeManager;
     }
 
-    receive() external payable {
-    }
+    receive() external payable {}
 
     modifier operatorsOnly() {
-        require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
+        require(
+            IOperator(operatorManager).isOperator(msg.sender),
+            "#operatorsOnly:"
+        );
         _;
     }
 
@@ -103,7 +101,6 @@ contract NftMarket is ERC1155Holder {
         nftContractMap[_nftContract] = true;
         emit VerificationNftContract(_nftContract, true);
     }
-
 
     function unVerifyNftContract(address _nftContract) external operatorsOnly {
         nftContractMap[_nftContract] = false;
@@ -124,15 +121,30 @@ contract NftMarket is ERC1155Holder {
     //  place();
     // }
     // setApprovalForAll (_nftMarketContract, true);
-    function place(uint256 _amount, address _nftContract, uint256 _tokenId, uint256 _perNftPrice) external {
+    function place(
+        uint256 _amount,
+        address _nftContract,
+        uint256 _tokenId,
+        uint256 _perNftPrice
+    ) external {
         // check nft contract verification
         require(nftContractMap[_nftContract], "Not Valid Nft Contract");
         // check amount must be higher than 0
         require(_amount > 0, "Must be higher than zero");
-        require(_perNftPrice >= IPrice(_nftContract).getCarbonPrice(_tokenId), "min carbon price issue");
+        require(
+            _perNftPrice >= IPrice(_nftContract).getCarbonPrice(_tokenId),
+            "min carbon price issue"
+        );
         // check for whitelist
         if (isWhitelistEnabled) {
-            require(IWhitelist(whitelistManager).isWhitelist(_nftContract, _tokenId, msg.sender), "not in whitelist");
+            require(
+                IWhitelist(whitelistManager).isWhitelist(
+                    _nftContract,
+                    _tokenId,
+                    msg.sender
+                ),
+                "not in whitelist"
+            );
         }
         // increment marketId
         _marketItemIds.increment();
@@ -146,9 +158,22 @@ contract NftMarket is ERC1155Holder {
             address(msg.sender)
         );
         // nft : transfer from seller wallet to contract
-        IERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), _tokenId, _amount, "");
+        IERC1155(_nftContract).safeTransferFrom(
+            msg.sender,
+            address(this),
+            _tokenId,
+            _amount,
+            ""
+        );
         // trigger event
-        emit TokenPlaced(_nftContract, _tokenId, marketId, _amount, address(msg.sender), _perNftPrice);
+        emit TokenPlaced(
+            _nftContract,
+            _tokenId,
+            marketId,
+            _amount,
+            address(msg.sender),
+            _perNftPrice
+        );
     }
 
     // unPlace : cancel nft token amount
@@ -160,15 +185,33 @@ contract NftMarket is ERC1155Holder {
         // get marketItem
         NFTMarketItem storage marketItem = _marketItemMap[_marketId];
         // check owner
-        require(marketItem.seller == address(msg.sender) || IOperator(operatorManager).isOperator(address(msg.sender)), "Not ownerOf or Operators");
+        require(
+            marketItem.seller == address(msg.sender) ||
+                IOperator(operatorManager).isOperator(address(msg.sender)),
+            "Not ownerOf or Operators"
+        );
         // check market amount to deduct
         require(marketItem.amount >= _amount, "Not Enough amount");
         // deduct amount from market amount
         marketItem.amount = marketItem.amount.sub(_amount);
         // send deducted amount to seller address
-        IERC1155(marketItem.contractAddress).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, _amount, "");
+        IERC1155(marketItem.contractAddress).safeTransferFrom(
+            address(this),
+            msg.sender,
+            marketItem.tokenId,
+            _amount,
+            ""
+        );
         // trigger event
-        emit TokenUnPlaced(marketItem.contractAddress, marketItem.tokenId, _marketId, _amount, marketItem.amount, marketItem.seller, marketItem.price);
+        emit TokenUnPlaced(
+            marketItem.contractAddress,
+            marketItem.tokenId,
+            _marketId,
+            _amount,
+            marketItem.amount,
+            marketItem.seller,
+            marketItem.price
+        );
     }
 
     // purchaseInUSDT : voucher token purchasable by USDT
@@ -190,7 +233,14 @@ contract NftMarket is ERC1155Holder {
         require(marketItem.amount >= _amount, "Not Enough amount");
         // check for whitelist
         if (isWhitelistEnabled) {
-            require(IWhitelist(whitelistManager).isWhitelist(marketItem.contractAddress, marketItem.tokenId, msg.sender), "not in whitelist");
+            require(
+                IWhitelist(whitelistManager).isWhitelist(
+                    marketItem.contractAddress,
+                    marketItem.tokenId,
+                    msg.sender
+                ),
+                "not in whitelist"
+            );
         }
         // divide totalPrice to decimal
         uint256 totalPrice = marketItem.price.mul(_amount);
@@ -199,15 +249,43 @@ contract NftMarket is ERC1155Holder {
         // remain amount
         uint256 remainAmount = totalPrice.sub(feeAmount);
         // check usdt amount in balance
-        require(ERC20(usdtContractAddress).balanceOf(msg.sender) >= totalPrice, "Lack Of USDT");
+        require(
+            ERC20(usdtContractAddress).balanceOf(msg.sender) >= totalPrice,
+            "Lack Of USDT"
+        );
         marketItem.amount = marketItem.amount.sub(_amount);
         // transfer remainAmount to seller
-        ERC20(usdtContractAddress).safeTransferFrom(msg.sender, marketItem.seller, remainAmount);
+        ERC20(usdtContractAddress).safeTransferFrom(
+            msg.sender,
+            marketItem.seller,
+            remainAmount
+        );
         // transfer feeAmount to feeAddress
-        ERC20(usdtContractAddress).safeTransferFrom(msg.sender, IFeeManager(feeManager).feeAddress(), feeAmount);
+        ERC20(usdtContractAddress).safeTransferFrom(
+            msg.sender,
+            IFeeManager(feeManager).feeAddress(),
+            feeAmount
+        );
         // transfer voucher token to buyer
-        IERC1155(marketItem.contractAddress).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, _amount, "");
+        IERC1155(marketItem.contractAddress).safeTransferFrom(
+            address(this),
+            msg.sender,
+            marketItem.tokenId,
+            _amount,
+            ""
+        );
         // trigger event
-        emit TokenSold(marketItem.contractAddress, marketItem.tokenId, _marketId, _amount, address(msg.sender), marketItem.seller, marketItem.price, totalPrice, feeAmount, remainAmount);
+        emit TokenSold(
+            marketItem.contractAddress,
+            marketItem.tokenId,
+            _marketId,
+            _amount,
+            address(msg.sender),
+            marketItem.seller,
+            marketItem.price,
+            totalPrice,
+            feeAmount,
+            remainAmount
+        );
     }
 }

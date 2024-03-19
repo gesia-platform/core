@@ -8,7 +8,7 @@ contract USDT is ERC20 {
         super._mint(_msgSender(), 30000000000 ether);
     }
 
-    function decimals() public view virtual override returns (uint8){
+    function decimals() public view virtual override returns (uint8) {
         return 6;
     }
 }

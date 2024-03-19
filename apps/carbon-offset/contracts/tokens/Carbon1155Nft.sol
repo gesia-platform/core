@@ -61,7 +61,10 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
     }
 
     modifier operatorsOnly() {
-        require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
+        require(
+            IOperator(operatorManager).isOperator(msg.sender),
+            "#operatorsOnly:"
+        );
         _;
     }
 
@@ -75,21 +78,46 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
     ) external operatorsOnly {
         require(_carbonAmount > 0, "must be higher than zero");
         require(_carbonPrice >= minUSDTPrice, "price must be higher than min");
-        require(_carbonPrice > carbonMapPrice[_tokenIdTracker.current()], "price must be higher than old");
+        require(
+            _carbonPrice > carbonMapPrice[_tokenIdTracker.current()],
+            "price must be higher than old"
+        );
 
-        bytes32 hashMessage = keccak256(abi.encodePacked(_from, _carbonAmount, _nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(_from, _carbonAmount, _nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, _signature);
-        require(ISignAuthorizer(_from).isAuthorizedSigner(signer), "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            ISignAuthorizer(_from).isAuthorizedSigner(signer),
+            "Signature does not match the sender"
+        );
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
 
-        require(IERC1155(voucherAddress).balanceOf(_from, voucherTokenId) >= _carbonAmount, "lack of carbon balance");
+        require(
+            IERC1155(voucherAddress).balanceOf(_from, voucherTokenId) >=
+                _carbonAmount,
+            "lack of carbon balance"
+        );
         // company fee amount
-        uint256 calculatedAmount = IFeeManager(feeManager).feeAmount(_carbonAmount);
+        uint256 calculatedAmount = IFeeManager(feeManager).feeAmount(
+            _carbonAmount
+        );
         uint256 remainAmount = _carbonAmount.sub(calculatedAmount);
         // transfer fee to company owner
-        IERC1155(voucherAddress).safeTransferFrom(_from, IFeeManager(feeManager).feeAddress(), voucherTokenId, calculatedAmount, "");
+        IERC1155(voucherAddress).safeTransferFrom(
+            _from,
+            IFeeManager(feeManager).feeAddress(),
+            voucherTokenId,
+            calculatedAmount,
+            ""
+        );
 
         creators[_tokenIdTracker.current()] = _from;
         tokenURIs[_tokenIdTracker.current()] = _metadata;
@@ -109,19 +137,38 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         bytes memory signature
     ) external nonReentrant operatorsOnly {
         require(msg.sender == to, "Only receiver call");
-        bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(from, to, tokenId, amount, nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, signature);
-        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            ISignAuthorizer(from).isAuthorizedSigner(signer),
+            "Signature does not match the sender"
+        );
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
 
-        require(IERC1155(voucherAddress).balanceOf(from, voucherTokenId) >= amount, "lack of carbon balance");
+        require(
+            IERC1155(voucherAddress).balanceOf(from, voucherTokenId) >= amount,
+            "lack of carbon balance"
+        );
         // company fee amount
         uint256 calculatedAmount = IFeeManager(feeManager).feeAmount(amount);
         uint256 remainAmount = amount.sub(calculatedAmount);
         // transfer fee to company owner
-        IERC1155(voucherAddress).safeTransferFrom(from, IFeeManager(feeManager).feeAddress(), voucherTokenId, calculatedAmount, "");
+        IERC1155(voucherAddress).safeTransferFrom(
+            from,
+            IFeeManager(feeManager).feeAddress(),
+            voucherTokenId,
+            calculatedAmount,
+            ""
+        );
         _safeTransferFrom(from, to, tokenId, remainAmount, "");
     }
 
@@ -134,31 +181,39 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         bytes memory signature
     ) external nonReentrant {
         require(msg.sender == to, "Only receiver call");
-        bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(from, to, tokenId, amount, nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, signature);
-        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            ISignAuthorizer(from).isAuthorizedSigner(signer),
+            "Signature does not match the sender"
+        );
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
         _safeTransferFrom(from, to, tokenId, amount, "");
     }
 
-    function uri(
-        uint256 _id
-    ) override public view returns (string memory) {
+    function uri(uint256 _id) public view override returns (string memory) {
         require(_exists(_id), "MultiCollection#uri: NONEXISTENT_TOKEN");
         return tokenURIs[_id];
     }
 
-    function _exists(
-        uint256 _id
-    ) internal view returns (bool) {
+    function _exists(uint256 _id) internal view returns (bool) {
         return creators[_id] != address(0);
     }
 
-
     function tokenWeight(uint256 tokenId) public view returns (uint256) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
         return _tokenWeight[tokenId];
     }
 
@@ -182,8 +237,9 @@ contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
         }
     }
 
-    function getCarbonPrice(uint256 tokenId) external view override returns (uint256) {
+    function getCarbonPrice(
+        uint256 tokenId
+    ) external view override returns (uint256) {
         return carbonMapPrice[tokenId];
     }
-
 }

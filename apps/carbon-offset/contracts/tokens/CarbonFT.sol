@@ -15,7 +15,13 @@ import "../operator/IOperator.sol";
 import "../fee/IFeeManager.sol";
 import "../../../aaWallet/interfaces/ISignAuthorizer.sol";
 
-contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Ownable {
+contract Voucher1155Nft is
+    ERC1155,
+    IMintOperator,
+    ReentrancyGuard,
+    IPrice,
+    Ownable
+{
     using Strings for string;
     using SafeMath for uint256;
     using Counters for Counters.Counter;
@@ -38,7 +44,6 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
     // token id counter incrementing by 1
     Counters.Counter private _tokenIdTracker;
 
-
     constructor(
         string memory _name,
         string memory _symbol,
@@ -51,23 +56,48 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         _tokenIdTracker.increment();
     }
 
-
     // for chainlink
-    function mintByOperator(address _receiver, uint256 _amount, uint256 _tokenId, string memory _metadata) external override onlyOwner {
+    function mintByOperator(
+        address _receiver,
+        uint256 _amount,
+        uint256 _tokenId,
+        string memory _metadata
+    ) external override onlyOwner {
         tokenURIs[_tokenId] = _metadata;
         tokenSupply[_tokenId] = tokenSupply[_tokenId].add(_amount);
         _mint(_receiver, _tokenId, _amount, "");
     }
 
-
-    function mintBySignature(address _from, address _to, uint256 _amount, uint256 _tokenId, uint256 _nonce, string memory _metadata, bytes memory signature, uint256 _carbonPrice) external onlyOwner {
+    function mintBySignature(
+        address _from,
+        address _to,
+        uint256 _amount,
+        uint256 _tokenId,
+        uint256 _nonce,
+        string memory _metadata,
+        bytes memory signature,
+        uint256 _carbonPrice
+    ) external onlyOwner {
         require(_carbonPrice >= minUSDTPrice, "price must be higher than min");
-        require(_carbonPrice > carbonMapPrice[_tokenId], "price must be higher than old");
-        bytes32 hashMessage = keccak256(abi.encodePacked(_to, _tokenId, _amount, _nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        require(
+            _carbonPrice > carbonMapPrice[_tokenId],
+            "price must be higher than old"
+        );
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(_to, _tokenId, _amount, _nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, signature);
-        require(ISignAuthorizer(_from).isAuthorizedSigner(signer), "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            ISignAuthorizer(_from).isAuthorizedSigner(signer),
+            "Signature does not match the sender"
+        );
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
 
         // company fee amount
@@ -77,10 +107,14 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         tokenURIs[_tokenId] = _metadata;
         tokenSupply[_tokenId] = tokenSupply[_tokenId].add(_amount);
         _mint(_to, _tokenId, remainAmount, "");
-        _mint(IFeeManager(feeManager).feeAddress(), _tokenId, calculatedAmount, "");
+        _mint(
+            IFeeManager(feeManager).feeAddress(),
+            _tokenId,
+            calculatedAmount,
+            ""
+        );
         carbonMapPrice[_tokenId] = _carbonPrice;
     }
-
 
     function transferBySignature(
         address from,
@@ -90,11 +124,21 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         uint256 nonce,
         bytes memory signature
     ) external nonReentrant onlyOwner {
-        bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(from, to, tokenId, amount, nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, signature);
-        require(ISignAuthorizer(from).isAuthorizedSigner(signer), "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            ISignAuthorizer(from).isAuthorizedSigner(signer),
+            "Signature does not match the sender"
+        );
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
 
         // company fee amount
@@ -102,23 +146,23 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         uint256 remainAmount = amount.sub(calculatedAmount);
 
         _safeTransferFrom(from, to, tokenId, remainAmount, "");
-        _safeTransferFrom(from, IFeeManager(feeManager).feeAddress(), tokenId, calculatedAmount, "");
+        _safeTransferFrom(
+            from,
+            IFeeManager(feeManager).feeAddress(),
+            tokenId,
+            calculatedAmount,
+            ""
+        );
     }
 
-
-    function uri(
-        uint256 _id
-    ) override public view returns (string memory) {
+    function uri(uint256 _id) public view override returns (string memory) {
         require(_exists(_id), "MultiCollection#uri: NONEXISTENT_TOKEN");
         return tokenURIs[_id];
     }
 
-    function _exists(
-        uint256 _id
-    ) internal view returns (bool) {
+    function _exists(uint256 _id) internal view returns (bool) {
         return creators[_id] != address(0);
     }
-
 
     function recoverSigner(
         bytes32 _ethSignedMessageHash,
@@ -140,7 +184,9 @@ contract Voucher1155Nft is ERC1155, IMintOperator, ReentrancyGuard, IPrice, Owna
         }
     }
 
-    function getCarbonPrice(uint256 tokenId) external view override returns (uint256) {
+    function getCarbonPrice(
+        uint256 tokenId
+    ) external view override returns (uint256) {
         return carbonMapPrice[tokenId];
     }
 }

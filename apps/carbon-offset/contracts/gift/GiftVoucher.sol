@@ -10,7 +10,7 @@ import "@openzeppelin/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/security/ReentrancyGuard.sol";
 
-contract CarbonNFT is ERC1155,  ReentrancyGuard, Ownable {
+contract CarbonNFT is ERC1155, ReentrancyGuard, Ownable {
     using Strings for string;
     using SafeMath for uint256;
     using Counters for Counters.Counter;
@@ -18,7 +18,7 @@ contract CarbonNFT is ERC1155,  ReentrancyGuard, Ownable {
     Counters.Counter private _tokenIdTracker;
     mapping(uint256 => uint256) public tokenSupply;
     mapping(bytes32 => bool) private transactionHashes;
-    mapping (uint256 => mapping(address => uint256)) internal balances;
+    mapping(uint256 => mapping(address => uint256)) internal balances;
 
     mapping(uint256 => address) public creators;
 
@@ -47,8 +47,14 @@ contract CarbonNFT is ERC1155,  ReentrancyGuard, Ownable {
         string memory _metadata // url
     ) external onlyOwner {
         require(_carbonAmount > 0, "must be higher than zero");
-        require(IERC20(nvmToken).balanceOf(msg.sender) >= _carbonAmount, "lack of carbon balance");
-        require(!_exists(_tokenIdTracker.current()), "token _id already exists");
+        require(
+            IERC20(nvmToken).balanceOf(msg.sender) >= _carbonAmount,
+            "lack of carbon balance"
+        );
+        require(
+            !_exists(_tokenIdTracker.current()),
+            "token _id already exists"
+        );
         IERC20(nvmToken).transferFrom(msg.sender, address(this), _carbonAmount);
         creators[_tokenIdTracker.current()] = _to;
         tokenURIs[_tokenIdTracker.current()] = _metadata;
@@ -67,32 +73,36 @@ contract CarbonNFT is ERC1155,  ReentrancyGuard, Ownable {
         bytes memory signature
     ) external nonReentrant {
         require(msg.sender == to, "Only receiver call");
-        bytes32 hashMessage = keccak256(abi.encodePacked(from, to, tokenId, amount, nonce, address(this)));
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage));
+        bytes32 hashMessage = keccak256(
+            abi.encodePacked(from, to, tokenId, amount, nonce, address(this))
+        );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashMessage)
+        );
         address signer = recoverSigner(hash, signature);
         require(signer == from, "Signature does not match the sender");
-        require(!transactionHashes[hashMessage], "Transaction already processed");
+        require(
+            !transactionHashes[hashMessage],
+            "Transaction already processed"
+        );
         transactionHashes[hashMessage] = true;
         _safeTransferFrom(from, to, tokenId, amount, "");
     }
 
-
-    function uri(
-        uint256 _id
-    ) override public view returns (string memory) {
+    function uri(uint256 _id) public view override returns (string memory) {
         require(_exists(_id), "MultiCollection#uri: NONEXISTENT_TOKEN");
         return tokenURIs[_id];
     }
 
-    function _exists(
-        uint256 _id
-    ) internal view returns (bool) {
+    function _exists(uint256 _id) internal view returns (bool) {
         return creators[_id] != address(0);
     }
 
-
     function tokenWeight(uint256 tokenId) public view returns (uint256) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
         return _tokenWeight[tokenId];
     }
 

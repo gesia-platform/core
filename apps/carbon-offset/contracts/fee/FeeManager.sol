@@ -16,11 +16,18 @@ contract FeeManager is IFeeManager {
     event ChangeFeePercentage(uint256 _feePercentage);
 
     modifier operatorsOnly() {
-        require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
+        require(
+            IOperator(operatorManager).isOperator(msg.sender),
+            "#operatorsOnly:"
+        );
         _;
     }
 
-    constructor(address _operatorManager, address _feeAddress, uint256 _feePercentage){
+    constructor(
+        address _operatorManager,
+        address _feeAddress,
+        uint256 _feePercentage
+    ) {
         operatorManager = _operatorManager;
         feeWalletAddress = _feeAddress;
         feePercentage = _feePercentage;
@@ -31,17 +38,20 @@ contract FeeManager is IFeeManager {
         emit ChangeFeeAddress(_feeAddress);
     }
 
-    function changeFeePercentage(uint256 _feePercentage) external operatorsOnly {
+    function changeFeePercentage(
+        uint256 _feePercentage
+    ) external operatorsOnly {
         feePercentage = _feePercentage;
         emit ChangeFeePercentage(_feePercentage);
     }
 
-    function feeAmount(uint256 _feeAmount) external view override returns (uint256) {
+    function feeAmount(
+        uint256 _feeAmount
+    ) external view override returns (uint256) {
         return _feeAmount.mul(feePercentage).div(1000);
     }
 
     function feeAddress() external view override returns (address) {
         return feeWalletAddress;
     }
-
 }

@@ -34,11 +34,13 @@ contract MMarket is ERC1155Holder {
     address public feeManager;
     mapping(bytes32 => bool) private transactionHashes;
 
-    receive() external payable {
-    }
+    receive() external payable {}
 
     modifier operatorsOnly() {
-        require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
+        require(
+            IOperator(operatorManager).isOperator(msg.sender),
+            "#operatorsOnly:"
+        );
         _;
     }
 
@@ -53,7 +55,8 @@ contract MMarket is ERC1155Holder {
         uint256 indexed marketId,
         uint256 amount,
         address seller,
-        uint256 price);
+        uint256 price
+    );
 
     event TokenUnPlaced(
         address indexed voucherNftContract,
@@ -62,7 +65,8 @@ contract MMarket is ERC1155Holder {
         uint256 deductedAmount,
         uint256 remainAmount,
         address seller,
-        uint256 price);
+        uint256 price
+    );
 
     event TokenSold(
         address indexed voucherNftContract,
@@ -72,14 +76,19 @@ contract MMarket is ERC1155Holder {
         address buyer,
         address seller,
         uint256 price,
-        uint256 totalPrice);
+        uint256 totalPrice
+    );
 
-    function verifyVoucherNftContract(address _voucherNftContract) external operatorsOnly {
+    function verifyVoucherNftContract(
+        address _voucherNftContract
+    ) external operatorsOnly {
         voucherNftContractMap[_voucherNftContract] = true;
         emit VerificationVoucherNftContract(_voucherNftContract, true);
     }
 
-    function unVerifyVoucherNftContract(address _voucherNftContract) external operatorsOnly {
+    function unVerifyVoucherNftContract(
+        address _voucherNftContract
+    ) external operatorsOnly {
         voucherNftContractMap[_voucherNftContract] = false;
         emit VerificationVoucherNftContract(_voucherNftContract, false);
     }
@@ -87,15 +96,24 @@ contract MMarket is ERC1155Holder {
     constructor(
         address _whitelistManager,
         address _operatorManager,
-        address _feeManager){
+        address _feeManager
+    ) {
         whitelistManager = _whitelistManager;
         operatorManager = _operatorManager;
         feeManager = _feeManager;
     }
 
-    function place(uint256 _amount, uint256 _tokenId, address _voucherNftContract, uint256 _perTokenPrice) external {
+    function place(
+        uint256 _amount,
+        uint256 _tokenId,
+        address _voucherNftContract,
+        uint256 _perTokenPrice
+    ) external {
         // check voucher contract verification
-        require(voucherNftContractMap[_voucherNftContract], "Not Valid Voucher Contract");
+        require(
+            voucherNftContractMap[_voucherNftContract],
+            "Not Valid Voucher Contract"
+        );
         // increment marketId
         _marketItemIds.increment();
         uint256 marketId = _marketItemIds.current();
@@ -108,9 +126,22 @@ contract MMarket is ERC1155Holder {
             address(msg.sender)
         );
         // nft : transfer from seller wallet to contract
-        IERC1155(_voucherNftContract).safeTransferFrom(msg.sender, address(this), _tokenId, _amount, "");
+        IERC1155(_voucherNftContract).safeTransferFrom(
+            msg.sender,
+            address(this),
+            _tokenId,
+            _amount,
+            ""
+        );
         // trigger event
-        emit TokenPlaced(_voucherNftContract, _tokenId, marketId, _amount, address(msg.sender), _perTokenPrice);
+        emit TokenPlaced(
+            _voucherNftContract,
+            _tokenId,
+            marketId,
+            _amount,
+            address(msg.sender),
+            _perTokenPrice
+        );
     }
 
     // unPlance : cancel voucher token amount
@@ -121,18 +152,40 @@ contract MMarket is ERC1155Holder {
         require(_amount > 0, "Must be higher than zero");
         MarketItem storage marketItem = _marketItemMap[_marketId];
         // check owner
-        require(marketItem.seller == address(msg.sender) || IOperator(operatorManager).isOperator(address(msg.sender)), "Not ownerOf or Operators");
+        require(
+            marketItem.seller == address(msg.sender) ||
+                IOperator(operatorManager).isOperator(address(msg.sender)),
+            "Not ownerOf or Operators"
+        );
         // check market amount to deduct
         require(marketItem.amount >= _amount, "Not Enough amount");
         // deduct amount from market amount
         marketItem.amount = marketItem.amount.sub(_amount);
         // send deducted amount to seller address
-        IERC1155(marketItem.voucherNftContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, _amount, "");
+        IERC1155(marketItem.voucherNftContract).safeTransferFrom(
+            address(this),
+            msg.sender,
+            marketItem.tokenId,
+            _amount,
+            ""
+        );
         // trigger event
-        emit TokenUnPlaced(marketItem.voucherNftContract, marketItem.tokenId, _marketId, _amount, marketItem.amount, marketItem.seller, marketItem.price);
+        emit TokenUnPlaced(
+            marketItem.voucherNftContract,
+            marketItem.tokenId,
+            _marketId,
+            _amount,
+            marketItem.amount,
+            marketItem.seller,
+            marketItem.price
+        );
     }
 
-    function transferByOperator(uint256 _marketId, uint256 _amount, address _receiver) external operatorsOnly {
+    function transferByOperator(
+        uint256 _marketId,
+        uint256 _amount,
+        address _receiver
+    ) external operatorsOnly {
         // check amount must be higher than 0
         require(_amount > 0, "Must be higher than zero");
         // get marketItem
@@ -142,18 +195,44 @@ contract MMarket is ERC1155Holder {
         // divide totalPrice to decimal
         uint256 totalPrice = marketItem.price.mul(_amount).div(10 ** 18);
         // check contract balance
-        require(IERC1155(marketItem.voucherNftContract).balanceOf(address(this), marketItem.tokenId) >= _amount, "Insufficient tokens in contract");
+        require(
+            IERC1155(marketItem.voucherNftContract).balanceOf(
+                address(this),
+                marketItem.tokenId
+            ) >= _amount,
+            "Insufficient tokens in contract"
+        );
         // deduct amount
         marketItem.amount = marketItem.amount.sub(_amount);
         // company fee amount
         uint256 calculatedAmount = IFeeManager(feeManager).feeAmount(_amount);
         uint256 remainAmount = _amount.sub(calculatedAmount);
         // transfer voucher token to buyer
-        IERC1155(marketItem.voucherNftContract).safeTransferFrom(address(this), _receiver, marketItem.tokenId, remainAmount, "");
+        IERC1155(marketItem.voucherNftContract).safeTransferFrom(
+            address(this),
+            _receiver,
+            marketItem.tokenId,
+            remainAmount,
+            ""
+        );
         // transfer voucher token to company
-        IERC1155(marketItem.voucherNftContract).safeTransferFrom(address(this), IFeeManager(feeManager).feeAddress(), marketItem.tokenId, calculatedAmount, "");
+        IERC1155(marketItem.voucherNftContract).safeTransferFrom(
+            address(this),
+            IFeeManager(feeManager).feeAddress(),
+            marketItem.tokenId,
+            calculatedAmount,
+            ""
+        );
         // trigger event
-        emit TokenSold(marketItem.voucherNftContract, marketItem.tokenId, _marketId, _amount, _receiver, marketItem.seller, marketItem.price, totalPrice);
+        emit TokenSold(
+            marketItem.voucherNftContract,
+            marketItem.tokenId,
+            _marketId,
+            _amount,
+            _receiver,
+            marketItem.seller,
+            marketItem.price,
+            totalPrice
+        );
     }
-
 }

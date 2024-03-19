@@ -1,0 +1,12 @@
+port='80'
+url='http://localhost:80'
+
+address='0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
+
+master-rpc-url='http://127.0.0.1:8545'
+master-ws-url='http://127.0.0.1:8545'
+master-notary-public-address='0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
+master-notary-public-chain-prefix='0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
+
+rpc-url='http://127.0.0.1:8545'
+rpc-proxy-path='/'
