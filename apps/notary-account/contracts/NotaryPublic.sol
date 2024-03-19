@@ -7,76 +7,66 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 contract NotaryPublic {
     address public owner;
 
-    mapping(string => mapping(string => address)) public notaryAccounts; // chain > domain > account
+    mapping(string => address) public notaryAccounts;
 
-    mapping(string => bytes32) public chainMerkleRoots; // chain > root
+    bytes32 public merkleRoot;
 
-    event NotaryAccountCreated(
-        string chain,
+    event NotaryAccountUpdated(
         string domain,
+        address caller,
         address notaryAccount
     );
+
+    modifier onlyMerkleProof(bytes32[] calldata merkleProof) {
+        require(
+            MerkleProof.verify(
+                merkleProof,
+                merkleRoot,
+                keccak256(abi.encodePacked(msg.sender))
+            ) == true,
+            "invalid merkle proof."
+        );
+        _;
+    }
 
     constructor() {
         owner = msg.sender;
     }
 
-    function notarizeRPC(
-        address notaryAccountAddress,
+    function notarizeAccount(
+        address notaryAccount,
         bytes memory signature,
         string memory url,
         bytes32[] calldata merkleProof
-    ) external {
-        NotaryAccount notaryAccount = NotaryAccount(notaryAccountAddress);
-
-        string memory chain = notaryAccount.getChain();
-
-        require(
-            MerkleProof.verify(
-                merkleProof,
-                chainMerkleRoots[chain],
-                keccak256(abi.encodePacked(msg.sender))
-            ) == true,
-            "invalid merkle proof within chain."
-        );
-
-        notaryAccount.notarizeRPC(signature, url);
+    ) external onlyMerkleProof(merkleProof) {
+        NotaryAccount(notaryAccount).notarize(signature, url);
     }
 
-    function createNotaryAccount(
-        string memory chain,
+    function createAccount(
         string memory domain,
-        uint verificationBlockHeight,
+        address caller,
         bytes32[] calldata merkleProof
-    ) external returns (address notaryAccount) {
+    ) external onlyMerkleProof(merkleProof) {
         require(
-            MerkleProof.verify(
-                merkleProof,
-                chainMerkleRoots[chain],
-                keccak256(abi.encodePacked(msg.sender))
-            ) == true,
-            "invalid merkle proof within chain."
+            notaryAccounts[domain] == address(0),
+            "already created domain."
         );
 
-        require(
-            notaryAccounts[chain][domain] == address(0),
-            "already registered domain within the chain."
+        address notaryAccount = address(
+            new NotaryAccount(address(this), domain, caller)
         );
 
-        notaryAccount = address(
-            new NotaryAccount(
-                address(this),
-                verificationBlockHeight,
-                chain,
-                domain
-            )
-        );
+        notaryAccounts[domain] = notaryAccount;
 
-        notaryAccounts[chain][domain] = notaryAccount;
+        emit NotaryAccountUpdated(domain, caller, notaryAccount);
+    }
 
-        emit NotaryAccountCreated(chain, domain, notaryAccount);
-
-        return notaryAccount;
+    function setAccountCaller(
+        address notaryAccount,
+        address caller,
+        bytes32[] calldata merkleProof
+    ) external onlyMerkleProof(merkleProof) {
+        NotaryAccount(notaryAccount).setCaller(caller);
     }
 
     function setOwner(address _owner) external {
@@ -84,18 +74,22 @@ contract NotaryPublic {
         owner = _owner;
     }
 
-    function setChainMerkleRoot(
-        string memory chain,
-        bytes32 merkleRoot
-    ) external {
+    function setMerkleRoot(bytes32 _merkleRoot) external {
         require(msg.sender == owner);
-        chainMerkleRoots[chain] = merkleRoot;
+        merkleRoot = _merkleRoot;
+    }
+
+    function getMerkleRoot() external view returns (bytes32) {
+        return merkleRoot;
+    }
+
+    function getOwner() external view returns (address) {
+        return owner;
     }
 
     function getNotaryAccount(
-        string memory chain,
         string memory domain
     ) external view returns (address notaryAccount) {
-        return notaryAccounts[chain][domain];
+        return notaryAccounts[domain];
     }
 }

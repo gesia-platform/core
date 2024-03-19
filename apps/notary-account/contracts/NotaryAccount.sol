@@ -6,71 +6,67 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract NotaryAccount {
     using ECDSA for bytes32;
 
-    string public chain;
-    string public domain;
-
-    uint public verificationBlockHeight;
+    string public domain; // notarized domain
+    address public caller; // notarized caller
 
     address public immutable notaryPublic;
 
-    mapping(address => string) public notarizedUrls;
+    mapping(address => string) public notaryURLs;
 
-    event RPCNotarized(address notary, string url);
+    event Notarized(address notary);
 
-    event RPCCanceled(address notary);
+    event Canceled(address notary);
 
-    constructor(
-        address _notaryPublic,
-        uint _verificationBlockHeight,
-        string memory _chain,
-        string memory _domain
-    ) {
-        notaryPublic = _notaryPublic;
-        verificationBlockHeight = _verificationBlockHeight;
-        chain = _chain;
-        domain = _domain;
-    }
-
-    function cancelRPC(bytes memory signature) external {
-        address notary = keccak256(abi.encodePacked(domain))
-            .toEthSignedMessageHash()
-            .recover(signature);
-
-        delete notarizedUrls[notary];
-
-        emit RPCCanceled(notary);
-    }
-
-    function notarizeRPC(bytes memory signature, string memory url) external {
+    modifier onlyNotaryPublic() {
         require(
             notaryPublic == msg.sender,
             "can only be called by notary public."
         );
+        _;
+    }
 
-        address notary = keccak256(abi.encodePacked(domain))
+    constructor(address _notaryPublic, string memory _domain, address _caller) {
+        notaryPublic = _notaryPublic;
+        domain = _domain;
+        caller = _caller;
+    }
+
+    function notarize(
+        bytes memory signature,
+        string memory url
+    ) external onlyNotaryPublic {
+        address notary = keccak256(abi.encodePacked(domain, caller))
             .toEthSignedMessageHash()
             .recover(signature);
 
-        notarizedUrls[notary] = url;
+        notaryURLs[notary] = url;
 
-        emit RPCNotarized(notary, url);
+        emit Notarized(notary);
     }
 
-    function getNotarizedUrl(
-        address notary
-    ) public view returns (string memory) {
-        return notarizedUrls[notary];
+    function setCaller(address _caller) external onlyNotaryPublic {
+        caller = _caller;
+    }
+
+    function cancel(bytes memory signature) external {
+        address notary = keccak256(abi.encodePacked(domain, caller))
+            .toEthSignedMessageHash()
+            .recover(signature);
+
+        delete notaryURLs[notary];
+
+        emit Canceled(notary);
+    }
+
+    function getNotaryURL(address notary) public view returns (string memory) {
+        return notaryURLs[notary];
     }
 
     function getDomain() public view returns (string memory) {
         return domain;
     }
 
-    function getChain() public view returns (string memory) {
-        return chain;
-    }
-
-    function getVerificationBlockHeight() public view returns (uint) {
-        return verificationBlockHeight;
+    function getCaller() public view returns (address) {
+        return caller;
     }
 }
