@@ -18,12 +18,6 @@ type NotaryApplication struct {
 	hostClient   *ethclient.Client
 }
 
-func (app *NotaryApplication) Run() {
-	app.notarizeMissedAccounts()
-
-	app.subscribeNotarize()
-}
-
 func NewNotaryApplication(configPath string) *NotaryApplication {
 	app := &NotaryApplication{
 		echo:   echo.New(),
@@ -42,4 +36,10 @@ func NewNotaryApplication(configPath string) *NotaryApplication {
 	app.setupMasterChain()
 
 	return app
+}
+
+func (app *NotaryApplication) Run() {
+	app.notarizeMissedAccounts()
+
+	app.subscribeNotarize()
 }

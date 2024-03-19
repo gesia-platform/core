@@ -14,32 +14,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-const (
-	NotaryPublicABI  = `[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"chain","type":"string"},{"indexed":false,"internalType":"string","name":"domain","type":"string"},{"indexed":false,"internalType":"address","name":"notaryAccount","type":"address"}],"name":"NotaryAccountCreated","type":"event"},{"inputs":[{"internalType":"string","name":"chain","type":"string"},{"internalType":"string","name":"domain","type":"string"}],"name":"createNotaryAccount","outputs":[{"internalType":"address","name":"notaryAccount","type":"address"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"chain","type":"string"},{"internalType":"string","name":"domain","type":"string"}],"name":"getNotaryAccount","outputs":[{"internalType":"address","name":"notaryAccount","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"name":"notaryAccounts","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"setOwner","outputs":[],"stateMutability":"nonpayable","type":"function"}]`
-	NotaryAccountABI = `[{"inputs":[{"internalType":"address","name":"_notaryPublic","type":"address"},{"internalType":"string","name":"_chain","type":"string"},{"internalType":"string","name":"_domain","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"notary","type":"address"},{"indexed":false,"internalType":"string","name":"url","type":"string"}],"name":"RPCNotarized","type":"event"},{"inputs":[],"name":"chain","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"domain","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"notary","type":"address"}],"name":"getNotarizedUrl","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"_v","type":"uint8"},{"internalType":"bytes32","name":"_r","type":"bytes32"},{"internalType":"bytes32","name":"_s","type":"bytes32"},{"internalType":"string","name":"url","type":"string"}],"name":"notarizeRPC","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"notarizedUrls","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"notaryPublic","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]`
-)
-
-type (
-	EventNotaryAccountCreated struct {
-		Chain         string
-		Domain        string
-		NotaryAccount common.Address
-	}
-
-	EventRPCNotarized struct {
-		Notary common.Address
-		Url    string
-	}
-
-	RPCRequest struct {
-		Result string
-	}
-
-	RPCResponse struct {
-		Result string
-	}
-)
-
 func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 	var response RPCResponse
 	var domain string
