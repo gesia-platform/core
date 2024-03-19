@@ -1,11 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "../access/IAppIdAccessManager.sol";
 import "../core/CarbonEmissions.sol";
 import "./CarbonEmissionsCalculatorBase.sol";
 
 contract CarbonPlasticCalculator is CarbonEmissionsCalculatorBase {
     uint256 public plasticCo2Emission = 68650; // PET 병 1kg 탄소배출계수(kgCO2/kg)
+
+    address public appIdAccessManager;
+
+    constructor(address _appIdAccessManager) {
+        appIdAccessManager = _appIdAccessManager;
+    }
+
+    modifier onlyAuthorized(uint256 appId) {
+        require(IAppIdAccessManager(appIdAccessManager).isAuthorized(appId, msg.sender), "AppIdAccessManager : caller is not authorized");
+        _;
+    }
+
 
     // calculate CO2 emission by plastic in (18 decimals)
     function calculateCO2ByPlastic(
@@ -13,7 +26,7 @@ contract CarbonPlasticCalculator is CarbonEmissionsCalculatorBase {
         uint256 applicationId,
         address carbonEmissions,
         string memory sourceChannel
-    ) external returns (uint256) {
+    ) external onlyAuthorized(applicationId) returns (uint256) {
         // 플라스틱(PET) 무게(kg) x PET 병 1kg 탄소배출계수(kgCO2/kg) = 배출량(kgCO2)
         // weight scaled up by 10000
         uint256 result =  ((weight * plasticCo2Emission) / 1e18) * 1e8;

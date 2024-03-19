@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../operator/IOperator.sol";
+import "../access/IAppIdAccessManager.sol";
 import "../core/CarbonEmissions.sol";
 import "./CarbonEmissionsCalculatorBase.sol";
 
@@ -14,14 +15,22 @@ contract CarbonPaperCalculator is CarbonEmissionsCalculatorBase {
     mapping(string => uint256) private paperSizes;
 
     address public operatorManager;
+    address public appIdAccessManager;
 
     modifier operatorsOnly() {
         require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
         _;
     }
 
-    constructor(address _operatorManager){
+    modifier onlyAuthorized(uint256 appId) {
+        require(IAppIdAccessManager(appIdAccessManager).isAuthorized(appId, msg.sender), "AppIdAccessManager : caller is not authorized");
+        _;
+    }
+
+
+    constructor(address _operatorManager, address _appIdAccessManager){
         operatorManager = _operatorManager;
+        appIdAccessManager = _appIdAccessManager;
     }
 
     function addPaperSize(string memory paperType, uint256 width, uint256 height) external operatorsOnly {
@@ -46,7 +55,7 @@ contract CarbonPaperCalculator is CarbonEmissionsCalculatorBase {
         uint256 applicationId,
         address carbonEmissions,
         string memory sourceChannel
-    ) private returns (uint256) {
+    ) private onlyAuthorized(applicationId) returns (uint256) {
         // CO2_PER_KG -> scaled by 10 000
         // weightGramsScaled -> scaled by 10 000
         // weightGramsScaled (g->kg) -> 1000
@@ -107,7 +116,7 @@ contract CarbonPaperCalculator is CarbonEmissionsCalculatorBase {
         uint256 applicationId,
         address carbonEmissions,
         string memory sourceChannel
-    ) external returns (uint256) {
+    ) external onlyAuthorized(applicationId) returns (uint256) {
         uint256 weightInSize = getPaperSize(paperType);
         return calculateCO2BySize(weightInSize, count, applicationId, carbonEmissions, sourceChannel);
     }
@@ -119,7 +128,7 @@ contract CarbonPaperCalculator is CarbonEmissionsCalculatorBase {
         uint256 applicationId,
         address carbonEmissions,
         string memory sourceChannel
-    ) external returns (uint256) {
+    ) external onlyAuthorized(applicationId) returns (uint256) {
         uint256 weightPaper = getPaperWeight(paperType);
         return calculateCO2ByWeight(weightPaper, count, applicationId, carbonEmissions, sourceChannel);
     }

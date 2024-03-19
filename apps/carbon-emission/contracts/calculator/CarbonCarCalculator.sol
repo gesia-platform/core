@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../operator/IOperator.sol";
+import "../access/IAppIdAccessManager.sol";
 import "../core/CarbonEmissions.sol";
 import "./CarbonEmissionsCalculatorBase.sol";
 
@@ -9,14 +10,22 @@ contract CarbonCarCalculator is CarbonEmissionsCalculatorBase {
     mapping(string => uint256) private fuelEmissions;
 
     address public operatorManager;
+    address public appIdAccessManager;
 
     modifier operatorsOnly() {
         require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
         _;
     }
 
-    constructor(address _operatorManager){
+    modifier onlyAuthorized(uint256 appId) {
+        require(IAppIdAccessManager(appIdAccessManager).isAuthorized(appId, msg.sender), "AppIdAccessManager : caller is not authorized");
+        _;
+    }
+
+
+    constructor(address _operatorManager, address _appIdAccessManager){
         operatorManager = _operatorManager;
+        appIdAccessManager = _appIdAccessManager;
     }
 
     function addFuelVolumes(string memory fuelType, uint256 emission) external operatorsOnly {
@@ -38,7 +47,7 @@ contract CarbonCarCalculator is CarbonEmissionsCalculatorBase {
         uint256 applicationId,
         address carbonEmissions,
         string memory sourceChannel
-    ) external returns (uint256) {
+    ) external onlyAuthorized(applicationId) returns (uint256) {
         //주행 거리(km) / 연비(km/L) x 연료별 탄소 배출 계수(kgCO2/L) = 배출량(kgCO2)
         uint256 emission = getFuelEmission(fuelType);
         uint256 fuelUsed = (distance / efficiency);
