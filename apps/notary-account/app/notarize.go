@@ -56,7 +56,7 @@ func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 	}
 
 	// 1. signature
-	app.logger.Info("Successfully signed to account. %d", response)
+	// app.logger.Info("Successfully signed to account. %d", response)
 
 	// 2. submit to account
 
@@ -66,7 +66,7 @@ func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 func (app *NotaryApplication) notarizeMissedAccounts() {
 	app.logger.Info(fmt.Sprintf("start notarizing for missed accounts."))
 
-	notaryPublicAddress := common.HexToAddress(app.config.MasterNotaryPublicAddress)
+	notaryPublicAddress := common.HexToAddress(app.config.Chain.Master.NotaryPublicAddress)
 	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountCreated(string,string,address)"))
 	notarizedEventSignature := crypto.Keccak256Hash([]byte("RPCNotarized(address,string)"))
 
@@ -99,7 +99,7 @@ func (app *NotaryApplication) notarizeMissedAccounts() {
 			panic(fmt.Sprintf("failed to unpack notary public event. %d", err))
 		}
 
-		if !strings.EqualFold(event.Chain, app.config.MasterNotaryPublicChainPrefix) {
+		if !strings.EqualFold(event.Chain, app.config.Chain.Master.NotaryPublicChainPrefix) {
 			continue
 		}
 
@@ -138,7 +138,7 @@ func (app *NotaryApplication) notarizeMissedAccounts() {
 func (app *NotaryApplication) subscribeNotarize() {
 	app.logger.Info(fmt.Sprintf("start subscribing notarize."))
 
-	notaryPublicAddress := common.HexToAddress(app.config.MasterNotaryPublicAddress)
+	notaryPublicAddress := common.HexToAddress(app.config.Chain.Master.NotaryPublicAddress)
 	createdEventSignature := crypto.Keccak256Hash([]byte("NotaryAccountCreated(string,string,address)"))
 
 	notaryPublicAbi, err := abi.JSON(strings.NewReader(NotaryPublicABI))
@@ -166,7 +166,7 @@ func (app *NotaryApplication) subscribeNotarize() {
 			if err := notaryPublicAbi.UnpackIntoInterface(&event, "NotaryAccountCreated", log.Data); err != nil {
 				app.logger.Error(fmt.Sprintf("failed to unpack notary public event. %d", err))
 			} else {
-				if strings.EqualFold(event.Chain, app.config.MasterNotaryPublicChainPrefix) {
+				if strings.EqualFold(event.Chain, app.config.Chain.Master.NotaryPublicChainPrefix) {
 					app.notarize(event.NotaryAccount)
 				}
 			}

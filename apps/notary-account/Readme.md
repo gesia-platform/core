@@ -7,10 +7,8 @@ address = '0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
 
 [chain.master]
 rpc_url = 'http://127.0.0.1:8545'
-
-[chain.master.notary.public]
-address = '0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
-chain_prefix = 'local'
+notary_public_address = '0xB2D18b9A185660EaF080Bf4c3cE13Bf9Eac14540'
+notary_public_chain_prefix = 'local'
 
 [chain.local]
 rpc_url = 'http://127.0.0.1:8545'

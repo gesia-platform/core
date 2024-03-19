@@ -18,21 +18,28 @@ type NotaryApplication struct {
 	hostClient   *ethclient.Client
 }
 
-func NewNotaryApplication(configPath string) *NotaryApplication {
-	echo := echo.New()
-	echo.Use(middleware.Logger())
+func (app *NotaryApplication) Run() {
+	app.notarizeMissedAccounts()
 
-	logger := logrus.New()
-	logger.Formatter = &logrus.JSONFormatter{}
-	logger.Out = os.Stdout
-
-	config := config.NewConfig()
-	config.Read(configPath)
-
-	return &NotaryApplication{echo: echo, logger: logger, config: config}
+	app.subscribeNotarize()
 }
 
-func (app *NotaryApplication) Run() {
-	app.setupHostChain()
+func NewNotaryApplication(configPath string) *NotaryApplication {
+	app := &NotaryApplication{
+		echo:   echo.New(),
+		logger: logrus.New(),
+		config: config.NewConfig(),
+	}
+
+	app.echo.Use(middleware.Logger())
+
+	app.logger.Formatter = &logrus.JSONFormatter{}
+	app.logger.Out = os.Stdout
+
+	app.config.Read(configPath)
+
+	app.setupLocalChain()
 	app.setupMasterChain()
+
+	return app
 }
