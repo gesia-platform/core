@@ -10,7 +10,7 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
 
     event KeeperNotarized(address keeper, bytes signature);
 
-    event KeeperCanceled(address keeper, bytes signature);
+    event KeeperRevoked(address keeper, bytes signature);
 
     event KeeperGranted(address keeper, address grantee);
 
@@ -25,7 +25,9 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
             "keeper granter must be notary public."
         );
 
-        address notary = getNotary(abi.encodePacked(keeper), signature);
+        bytes memory message = abi.encodePacked("notarize_keeper", keeper);
+
+        address notary = getNotary(message, signature);
 
         require(notary == msg.sender, "notraize must it self.");
 
@@ -34,19 +36,21 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         emit KeeperNotarized(keeper, signature);
     }
 
-    function cancelKeeper(address keeper, bytes memory signature) external {
+    function revokeKeeper(address keeper, bytes memory signature) external {
         require(
             keeperNotarizations[keeper][msg.sender] == true,
             "sender has never notarized."
         );
 
-        address notary = getNotary(abi.encodePacked(keeper), signature);
+        bytes memory message = abi.encodePacked("revoke_keeper", keeper);
+
+        address notary = getNotary(message, signature);
 
         require(notary == msg.sender, "notraize must it self.");
 
         delete keeperNotarizations[keeper][notary];
 
-        emit KeeperCanceled(keeper, signature);
+        emit KeeperRevoked(keeper, signature);
     }
 
     function grantKeeper(address keeper, address grantee) external onlyMember {

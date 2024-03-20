@@ -16,7 +16,7 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
     event AccountNotarized(address account, bytes signature);
 
-    event AccountCanceled(address account, bytes signature);
+    event AccountRevoked(address account, bytes signature);
 
     /** Manage Accounts */
 
@@ -34,7 +34,9 @@ contract NotaryPublicAccount is NotaryPublicDAO {
             "this account not managed by notary public."
         );
 
-        address notary = getNotary(abi.encodePacked(domain), signature);
+        bytes memory message = abi.encodePacked("notarize_account", account);
+
+        address notary = getNotary(message, signature);
 
         require(notary == msg.sender, "notraize must it self.");
 
@@ -45,7 +47,7 @@ contract NotaryPublicAccount is NotaryPublicDAO {
         emit AccountNotarized(address(notaryAccount), signature);
     }
 
-    function cancelAccount(address account, bytes memory signature) external {
+    function revokeAccount(address account, bytes memory signature) external {
         require(
             accountNotarizations[account][msg.sender] == true,
             "sender has never notarized."
@@ -53,17 +55,17 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
         NotaryAccount notaryAccount = NotaryAccount(account);
 
-        string memory domain = notaryAccount.getDomain();
+        bytes memory message = abi.encodePacked("revoke_account", account);
 
-        address notary = getNotary(abi.encodePacked(domain), signature);
+        address notary = getNotary(message, signature);
 
         require(notary == msg.sender, "notraize must it self.");
 
         delete accountNotarizations[account][notary];
 
-        notaryAccount.cancel(notary);
+        notaryAccount.revoke(notary);
 
-        emit AccountCanceled(address(notaryAccount), signature);
+        emit AccountRevoked(address(notaryAccount), signature);
     }
 
     function createAccount(

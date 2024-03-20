@@ -30,7 +30,7 @@ contract NotaryAccount {
         notaryURLs[notary] = url;
     }
 
-    function cancel(address notary) external onlyNotaryPublic {
+    function revoke(address notary) external onlyNotaryPublic {
         delete notaryURLs[notary];
     }
 
