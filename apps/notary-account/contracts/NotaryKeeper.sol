@@ -5,33 +5,36 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./NotaryAccount.sol";
 
 abstract contract NotaryKeeper {
-    mapping(address => bool) public grantees;
+    mapping(address => bool) public authorizations;
 
-    address public immutable granter;
+    address public immutable notaryPublic;
 
-    modifier onlyGranter() {
-        require(msg.sender == granter, "can only be called by granter.");
+    modifier onlyNotaryPublic() {
+        require(msg.sender == notaryPublic, "sender is not notary public.");
         _;
     }
 
-    modifier onlyGrantee() {
-        require(grantees[msg.sender] == true, "can only be called by grantee.");
+    modifier onlyAuthorized() {
+        require(
+            authorizations[msg.sender] == true,
+            "sender is not authorized."
+        );
         _;
     }
 
-    constructor(address _granter) {
-        granter = _granter;
+    constructor(address _notaryPublic) {
+        notaryPublic = _notaryPublic;
     }
 
-    function grant(address grantee) external onlyGranter {
-        grantees[grantee] = true;
+    function authorize(address account) external onlyNotaryPublic {
+        authorizations[account] = true;
     }
 
-    function deny(address grantee) external onlyGranter {
-        delete grantees[grantee];
+    function revoke(address account) external onlyNotaryPublic {
+        delete authorizations[account];
     }
 
-    function getGranter() external view returns (address) {
-        return granter;
+    function getNotaryPublic() external view returns (address) {
+        return notaryPublic;
     }
 }
