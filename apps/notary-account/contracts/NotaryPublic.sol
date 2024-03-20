@@ -1,95 +1,94 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.23;
 
-import "./NotaryAccount.sol";
+import "./NotaryPublicAccount.sol";
+import "./NotaryKeeper.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-contract NotaryPublic {
-    address public owner;
+contract NotaryPublic is NotaryPublicAccount {
+    mapping(address keeper => mapping(address notary => bool notarized))
+        public keeperNotarizations;
 
-    mapping(string => address) public notaryAccounts;
+    event KeeperNotarized(address keeper, bytes signature);
 
-    bytes32 public merkleRoot;
+    event KeeperCanceled(address keeper, bytes signature);
 
-    event NotaryAccountUpdated(
-        string domain,
-        address caller,
-        address notaryAccount
-    );
+    event KeeperGranted(address keeper, address grantee);
 
-    modifier onlyMerkleProof(bytes32[] calldata merkleProof) {
-        require(
-            MerkleProof.verify(
-                merkleProof,
-                merkleRoot,
-                keccak256(abi.encodePacked(msg.sender))
-            ) == true,
-            "invalid merkle proof."
-        );
-        _;
-    }
+    event KeeperDenied(address keeper, address grantee);
 
-    constructor() {
-        owner = msg.sender;
-    }
-
-    function notarizeAccount(
-        address notaryAccount,
+    function notarizeKeeper(
+        address keeper,
         bytes memory signature,
-        string memory url,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
-        NotaryAccount(notaryAccount).notarize(signature, url);
-    }
-
-    function createAccount(
-        string memory domain,
-        address caller,
         bytes32[] calldata merkleProof
     ) external onlyMerkleProof(merkleProof) {
         require(
-            notaryAccounts[domain] == address(0),
-            "already created domain."
+            NotaryKeeper(keeper).getGranter() == address(this),
+            "keeper granter must be notary public."
         );
 
-        address notaryAccount = address(
-            new NotaryAccount(address(this), domain, caller)
-        );
+        address notary = getNotary(abi.encodePacked(keeper), signature);
 
-        notaryAccounts[domain] = notaryAccount;
+        require(notary == msg.sender, "notraize must it self.");
 
-        emit NotaryAccountUpdated(domain, caller, notaryAccount);
+        keeperNotarizations[keeper][notary] = true;
+
+        emit KeeperNotarized(keeper, signature);
     }
 
-    function setAccountCaller(
-        address notaryAccount,
-        address caller,
+    function cancelKeeper(address keeper, bytes memory signature) external {
+        require(
+            keeperNotarizations[keeper][msg.sender] == true,
+            "sender has never notarized."
+        );
+
+        address notary = getNotary(abi.encodePacked(keeper), signature);
+
+        require(notary == msg.sender, "notraize must it self.");
+
+        delete keeperNotarizations[keeper][notary];
+
+        emit KeeperCanceled(keeper, signature);
+    }
+
+    function grantKeeper(
+        address keeper,
+        address grantee,
         bytes32[] calldata merkleProof
     ) external onlyMerkleProof(merkleProof) {
-        NotaryAccount(notaryAccount).setCaller(caller);
+        require(
+            keeperNotarizations[keeper][msg.sender] == true,
+            "sender has never notarized."
+        );
+
+        NotaryKeeper notaryKeeper = NotaryKeeper(keeper);
+
+        notaryKeeper.grant(grantee);
+
+        emit KeeperGranted(address(notaryKeeper), grantee);
     }
 
-    function setOwner(address _owner) external {
-        require(msg.sender == owner);
-        owner = _owner;
+    function denyKeeper(
+        address keeper,
+        address grantee,
+        bytes32[] calldata merkleProof
+    ) external onlyMerkleProof(merkleProof) {
+        require(
+            keeperNotarizations[keeper][msg.sender] == true,
+            "sender has never notarized."
+        );
+
+        NotaryKeeper notaryKeeper = NotaryKeeper(keeper);
+
+        notaryKeeper.deny(grantee);
+
+        emit KeeperDenied(address(notaryKeeper), grantee);
     }
 
-    function setMerkleRoot(bytes32 _merkleRoot) external {
-        require(msg.sender == owner);
-        merkleRoot = _merkleRoot;
-    }
-
-    function getMerkleRoot() external view returns (bytes32) {
-        return merkleRoot;
-    }
-
-    function getOwner() external view returns (address) {
-        return owner;
-    }
-
-    function getNotaryAccount(
-        string memory domain
-    ) external view returns (address notaryAccount) {
-        return notaryAccounts[domain];
+    function getKeeperNotarized(
+        address keeper,
+        address notary
+    ) public view returns (bool) {
+        return keeperNotarizations[keeper][notary];
     }
 }
