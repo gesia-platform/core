@@ -8,13 +8,20 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
     mapping(address keeper => mapping(address notary => bool notarized))
         public keeperNotarizations;
 
+    mapping(address keeper => mapping(address caller => bool authorized))
+        public keeperAuthorizations;
+
     event KeeperNotarized(address keeper, bytes signature);
 
     event KeeperRevoked(address keeper, bytes signature);
 
     event KeeperGranted(address keeper, address grantee);
 
-    event KeeperDenied(address keeper, address grantee);
+    event KeeperCallerAuthorized(
+        address keeper,
+        address caller,
+        bool authorization
+    );
 
     function notarizeKeeper(
         address keeper,
@@ -53,11 +60,26 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         emit KeeperRevoked(keeper, signature);
     }
 
-    function keeperCallAuthorized(
+    function authorizeKeeperCaller(
+        address keeper,
+        address caller,
+        bool authorization
+    ) external {
+        require(
+            keeperNotarizations[keeper][msg.sender] == true,
+            "sender has never notarized."
+        );
+
+        keeperAuthorizations[keeper][caller] = authorization;
+
+        emit KeeperCallerAuthorized(keeper, caller, authorization);
+    }
+
+    function keeperCallerAuthorized(
         address keeper,
         address caller
-    ) external view returns (bool) {
-        return true;
+    ) public view returns (bool) {
+        return keeperAuthorizations[keeper][caller];
     }
 
     function getKeeperNotarized(

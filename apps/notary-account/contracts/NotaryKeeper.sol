@@ -8,7 +8,7 @@ contract NotaryKeeper {
 
     modifier onlyCallAuthorized() {
         require(
-            notaryPublic.keeperCallAuthorized(address(this), msg.sender) ==
+            notaryPublic.keeperCallerAuthorized(address(this), msg.sender) ==
                 true,
             "sender is not call authorized."
         );
