@@ -3,25 +3,41 @@ pragma solidity ^0.8.23;
 
 import "./NotaryPublicDAO.sol";
 import "./NotaryKeeper.sol";
+import "./NotaryAccount.sol";
 
 contract NotaryPublicKeeper is NotaryPublicDAO {
+    mapping(address keeper => address account) public keeperRequests;
+
     mapping(address keeper => mapping(address notary => bool notarized))
         public keeperNotarizations;
 
-    mapping(address keeper => mapping(address caller => bool authorized))
+    mapping(address keeper => mapping(address account => bool authorized))
         public keeperAuthorizations;
+
+    event KeeperNotarizationRequested(address keeper, address account);
 
     event KeeperNotarized(address keeper, bytes signature);
 
     event KeeperRevoked(address keeper, bytes signature);
 
-    event KeeperGranted(address keeper, address grantee);
-
-    event KeeperCallerAuthorized(
+    function requestKeeperNotarization(
         address keeper,
-        address caller,
-        bool authorization
-    );
+        address account
+    ) external {
+        require(
+            keeperRequests[keeper] == address(0),
+            "already requested keeper."
+        );
+
+        require(
+            NotaryAccount(account).getOwner() == msg.sender,
+            "sender is not the notary account owner."
+        );
+
+        keeperRequests[keeper] = account;
+
+        emit KeeperNotarizationRequested(keeper, account);
+    }
 
     function notarizeKeeper(
         address keeper,
@@ -60,9 +76,9 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         emit KeeperRevoked(keeper, signature);
     }
 
-    function authorizeKeeperCaller(
+    function authorizeKeeper(
         address keeper,
-        address caller,
+        address account,
         bool authorization
     ) external {
         require(
@@ -70,16 +86,17 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
             "sender has never notarized."
         );
 
-        keeperAuthorizations[keeper][caller] = authorization;
-
-        emit KeeperCallerAuthorized(keeper, caller, authorization);
+        keeperAuthorizations[keeper][account] = authorization;
     }
 
-    function keeperCallerAuthorized(
+    function keeperCallAuthorized(
         address keeper,
+        address account,
         address caller
     ) public view returns (bool) {
-        return keeperAuthorizations[keeper][caller];
+        return
+            keeperAuthorizations[keeper][account] &&
+            NotaryAccount(account).getOwner() == caller;
     }
 
     function getKeeperNotarized(
@@ -87,5 +104,12 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         address notary
     ) public view returns (bool) {
         return keeperNotarizations[keeper][notary];
+    }
+
+    function getKeeperAuthorized(
+        address keeper,
+        address account
+    ) public view returns (bool) {
+        return keeperAuthorizations[keeper][account];
     }
 }

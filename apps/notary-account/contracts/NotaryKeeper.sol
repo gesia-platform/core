@@ -6,10 +6,13 @@ import "./NotaryPublic.sol";
 contract NotaryKeeper {
     NotaryPublic immutable notaryPublic;
 
-    modifier onlyCallAuthorized() {
+    modifier onlyCallAuthorized(address account) {
         require(
-            notaryPublic.keeperCallerAuthorized(address(this), msg.sender) ==
-                true,
+            notaryPublic.keeperCallAuthorized(
+                address(this),
+                account,
+                msg.sender
+            ) == true,
             "sender is not call authorized."
         );
         _;
