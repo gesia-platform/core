@@ -85,4 +85,8 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
     ) public view returns (bool) {
         return keeperNotarizations[keeper][notary];
     }
+
+    function keeperCallAuthorized(address keeper) external view returns (bool) {
+        return true;
+    }
 }
