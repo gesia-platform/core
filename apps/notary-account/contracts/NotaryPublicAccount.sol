@@ -42,7 +42,7 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
         accountNotarizations[account][notary] = true;
 
-        notaryAccount.notarize(notary, url);
+        notaryAccount.setNotaryURL(notary, url);
 
         emit AccountNotarized(address(notaryAccount), signature);
     }
@@ -63,7 +63,7 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
         delete accountNotarizations[account][notary];
 
-        notaryAccount.revoke(notary);
+        notaryAccount.setNotaryURL(notary, "");
 
         emit AccountRevoked(address(notaryAccount), signature);
     }

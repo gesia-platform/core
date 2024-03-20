@@ -21,7 +21,7 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         bytes memory signature
     ) external onlyMember {
         require(
-            NotaryKeeper(keeper).getGranter() == address(this),
+            NotaryKeeper(keeper).getNotaryPublic() == address(this),
             "keeper granter must be notary public."
         );
 
@@ -53,30 +53,11 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         emit KeeperRevoked(keeper, signature);
     }
 
-    function grantKeeper(address keeper, address grantee) external onlyMember {
-        require(
-            keeperNotarizations[keeper][msg.sender] == true,
-            "sender has never notarized."
-        );
-
-        NotaryKeeper notaryKeeper = NotaryKeeper(keeper);
-
-        notaryKeeper.grant(grantee);
-
-        emit KeeperGranted(address(notaryKeeper), grantee);
-    }
-
-    function denyKeeper(address keeper, address grantee) external onlyMember {
-        require(
-            keeperNotarizations[keeper][msg.sender] == true,
-            "sender has never notarized."
-        );
-
-        NotaryKeeper notaryKeeper = NotaryKeeper(keeper);
-
-        notaryKeeper.deny(grantee);
-
-        emit KeeperDenied(address(notaryKeeper), grantee);
+    function keeperCallAuthorized(
+        address keeper,
+        address caller
+    ) external view returns (bool) {
+        return true;
     }
 
     function getKeeperNotarized(
@@ -84,9 +65,5 @@ contract NotaryPublicKeeper is NotaryPublicDAO {
         address notary
     ) public view returns (bool) {
         return keeperNotarizations[keeper][notary];
-    }
-
-    function keeperCallAuthorized(address keeper) external view returns (bool) {
-        return true;
     }
 }

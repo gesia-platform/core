@@ -2,8 +2,9 @@
 pragma solidity ^0.8.23;
 
 contract NotaryAccount {
-    string public domain; // notarized domain
-    address public owner; // account owner
+    string public domain;
+
+    address public owner;
 
     address public immutable notaryPublic;
 
@@ -23,15 +24,15 @@ contract NotaryAccount {
         owner = _owner;
     }
 
-    function notarize(
+    function setNotaryURL(
         address notary,
         string memory url
     ) external onlyNotaryPublic {
-        notaryURLs[notary] = url;
-    }
-
-    function revoke(address notary) external onlyNotaryPublic {
-        delete notaryURLs[notary];
+        if (bytes(url).length == 0) {
+            delete notaryURLs[notary];
+        } else {
+            notaryURLs[notary] = url;
+        }
     }
 
     function setOwner(address _owner) external onlyNotaryPublic {
