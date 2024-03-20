@@ -3,7 +3,6 @@ pragma solidity ^0.8.23;
 
 import "./NotaryAccount.sol";
 import "./NotaryPublicDAO.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract NotaryPublicAccount is NotaryPublicDAO {
     mapping(string domain => address account) public accounts;
@@ -24,9 +23,8 @@ contract NotaryPublicAccount is NotaryPublicDAO {
     function notarizeAccount(
         address account,
         bytes memory signature,
-        string memory url,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+        string memory url
+    ) external onlyMember {
         NotaryAccount notaryAccount = NotaryAccount(account);
 
         string memory domain = notaryAccount.getDomain();
@@ -70,9 +68,8 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
     function createAccount(
         string memory domain,
-        address _owner,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+        address _owner
+    ) external onlyMember {
         require(accounts[domain] == address(0), "already created domain.");
 
         address account = address(
@@ -86,9 +83,8 @@ contract NotaryPublicAccount is NotaryPublicDAO {
 
     function setAccountOwner(
         address account,
-        address newOwner,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+        address newOwner
+    ) external onlyMember {
         require(
             accountNotarizations[account][msg.sender] == true,
             "sender has never notarized."

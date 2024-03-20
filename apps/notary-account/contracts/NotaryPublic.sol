@@ -3,7 +3,6 @@ pragma solidity ^0.8.23;
 
 import "./NotaryPublicAccount.sol";
 import "./NotaryKeeper.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract NotaryPublic is NotaryPublicAccount {
     mapping(address keeper => mapping(address notary => bool notarized))
@@ -19,9 +18,8 @@ contract NotaryPublic is NotaryPublicAccount {
 
     function notarizeKeeper(
         address keeper,
-        bytes memory signature,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+        bytes memory signature
+    ) external onlyMember {
         require(
             NotaryKeeper(keeper).getGranter() == address(this),
             "keeper granter must be notary public."
@@ -51,11 +49,7 @@ contract NotaryPublic is NotaryPublicAccount {
         emit KeeperCanceled(keeper, signature);
     }
 
-    function grantKeeper(
-        address keeper,
-        address grantee,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+    function grantKeeper(address keeper, address grantee) external onlyMember {
         require(
             keeperNotarizations[keeper][msg.sender] == true,
             "sender has never notarized."
@@ -68,11 +62,7 @@ contract NotaryPublic is NotaryPublicAccount {
         emit KeeperGranted(address(notaryKeeper), grantee);
     }
 
-    function denyKeeper(
-        address keeper,
-        address grantee,
-        bytes32[] calldata merkleProof
-    ) external onlyMerkleProof(merkleProof) {
+    function denyKeeper(address keeper, address grantee) external onlyMember {
         require(
             keeperNotarizations[keeper][msg.sender] == true,
             "sender has never notarized."
