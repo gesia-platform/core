@@ -14,6 +14,7 @@ abstract contract NotaryPublicDAO is Ownable {
         require(memberships[msg.sender] == true, "invalid dao membership.");
         _;
     }
+
     function setMembership(address member, bool state) external onlyOwner {
         if (state) {
             memberships[member] = true;
