@@ -18,6 +18,15 @@ abstract contract NotaryModule {
         _;
     }
 
+    modifier onlyAuthorizedApplication(uint256 applicationID) {
+        /** Note: will be replaced logic. */
+        require(
+            notaryPublic.moduleCallAuthorized(address(this), msg.sender),
+            "sender is not authorized to module."
+        );
+        _;
+    }
+
     function notaryPublicAddress() public view returns (address) {
         return address(notaryPublic);
     }
