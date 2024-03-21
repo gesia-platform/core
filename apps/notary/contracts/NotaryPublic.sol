@@ -9,4 +9,11 @@ contract NotaryPublic is
     NotaryPublicAccount,
     NotaryPublicModule,
     NotaryPublicKeeper
-{}
+{
+    function moduleCallAuthorized(
+        address module,
+        address sender
+    ) public view returns (bool) {
+        return true;
+    }
+}

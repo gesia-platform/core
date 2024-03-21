@@ -5,82 +5,78 @@ import "./NotaryAccount.sol";
 import "./NotaryPublicDAO.sol";
 
 contract NotaryPublicAccount is NotaryPublicDAO {
+    uint256 private nextApplicationID = 1;
+
     mapping(string domain => address account) public accounts;
 
     mapping(address account => mapping(address notary => bool notarized))
         public accountNotarizations;
 
-    event AccountCreated(address account, string domain);
+    event AccountCreated(address account, string domain, uint256 applicationID);
 
-    event AccountOwnerUpdated(address account, address newOwner);
+    event AccountNotarized(address account, address notary, bytes signature);
 
-    event AccountNotarized(address account, bytes signature);
+    event AccountRevoked(address account, address notary, bytes signature);
 
-    event AccountRevoked(address account, bytes signature);
+    event AccountOwnerUpdated(
+        address account,
+        address notary,
+        address newOwner
+    );
 
-    /** Manage Accounts */
+    function createAccount(
+        string memory domain,
+        address owner
+    ) external onlyMember {
+        require(accounts[domain] == address(0), "domain already in use.");
+
+        NotaryAccount notaryAccount = new NotaryAccount(
+            address(this),
+            domain,
+            nextApplicationID,
+            owner
+        );
+
+        accounts[domain] = address(notaryAccount);
+
+        emit AccountCreated(address(notaryAccount), domain, nextApplicationID);
+
+        nextApplicationID++;
+    }
 
     function notarizeAccount(
         address account,
-        bytes memory signature,
-        string memory url
+        bytes memory signature
     ) external onlyMember {
         NotaryAccount notaryAccount = NotaryAccount(account);
 
         string memory domain = notaryAccount.getDomain();
-
-        require(
-            accounts[domain] == account,
-            "this account not managed by notary public."
-        );
+        require(accounts[domain] == account, "invalid account.");
 
         bytes memory message = abi.encodePacked("notarize_account", account);
-
         address notary = getNotary(message, signature);
-
-        require(notary == msg.sender, "notraize must it self.");
+        require(notary == msg.sender, "sender is not the notary.");
 
         accountNotarizations[account][notary] = true;
 
-        notaryAccount.setNotaryURL(notary, url);
-
-        emit AccountNotarized(address(notaryAccount), signature);
+        emit AccountNotarized(address(notaryAccount), notary, signature);
     }
 
     function revokeAccount(address account, bytes memory signature) external {
         require(
             accountNotarizations[account][msg.sender] == true,
-            "sender has never notarized."
+            "sender is not notary."
         );
 
         NotaryAccount notaryAccount = NotaryAccount(account);
 
         bytes memory message = abi.encodePacked("revoke_account", account);
-
         address notary = getNotary(message, signature);
-
-        require(notary == msg.sender, "notraize must it self.");
+        require(notary == msg.sender, "sender is not the notary.");
 
         delete accountNotarizations[account][notary];
 
-        notaryAccount.setNotaryURL(notary, "");
-
-        emit AccountRevoked(address(notaryAccount), signature);
-    }
-
-    function createAccount(
-        string memory domain,
-        address _owner
-    ) external onlyMember {
-        require(accounts[domain] == address(0), "already created domain.");
-
-        address account = address(
-            new NotaryAccount(address(this), domain, _owner)
-        );
-
-        accounts[domain] = account;
-
-        emit AccountCreated(account, domain);
+        emit AccountRevoked(address(notaryAccount), notary, signature);
     }
 
     function setAccountOwner(
@@ -89,14 +85,14 @@ contract NotaryPublicAccount is NotaryPublicDAO {
     ) external onlyMember {
         require(
             accountNotarizations[account][msg.sender] == true,
-            "sender has never notarized."
+            "sender is not notary."
         );
 
         NotaryAccount notaryAccount = NotaryAccount(account);
 
         notaryAccount.setOwner(newOwner);
 
-        emit AccountOwnerUpdated(address(notaryAccount), newOwner);
+        emit AccountOwnerUpdated(address(notaryAccount), msg.sender, newOwner);
     }
 
     function getAccount(

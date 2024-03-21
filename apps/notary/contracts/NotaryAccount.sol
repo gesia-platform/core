@@ -3,44 +3,30 @@ pragma solidity ^0.8.23;
 
 contract NotaryAccount {
     string public domain;
-
+    uint256 public applicationID;
     address public owner;
 
     address public immutable notaryPublic;
 
-    mapping(address => string) public notaryURLs;
-
     modifier onlyNotaryPublic() {
-        require(
-            notaryPublic == msg.sender,
-            "can only be called by notary public."
-        );
+        require(msg.sender == notaryPublic, "sender is not notary public.");
         _;
     }
 
-    constructor(address _notaryPublic, string memory _domain, address _owner) {
+    constructor(
+        address _notaryPublic,
+        string memory _domain,
+        uint256 _applicationID,
+        address _owner
+    ) {
         notaryPublic = _notaryPublic;
         domain = _domain;
+        applicationID = _applicationID;
         owner = _owner;
-    }
-
-    function setNotaryURL(
-        address notary,
-        string memory url
-    ) external onlyNotaryPublic {
-        if (bytes(url).length == 0) {
-            delete notaryURLs[notary];
-        } else {
-            notaryURLs[notary] = url;
-        }
     }
 
     function setOwner(address _owner) external onlyNotaryPublic {
         owner = _owner;
-    }
-
-    function getNotaryURL(address notary) public view returns (string memory) {
-        return notaryURLs[notary];
     }
 
     function getDomain() public view returns (string memory) {
@@ -53,5 +39,9 @@ contract NotaryAccount {
 
     function getNotaryPublic() public view returns (address) {
         return notaryPublic;
+    }
+
+    function getApplicationID() public view returns (uint256) {
+        return applicationID;
     }
 }
