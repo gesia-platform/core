@@ -13,18 +13,16 @@ abstract contract NotaryModule {
 
     modifier onlyAuthorized() {
         require(
-            notaryPublic.getKeeperAuthorized(msg.sender) == true,
-            "sender is not authorized keeper."
+            notaryPublic.authorizedToModule(msg.sender, address(this)) == true,
+            "sender is not authorized to module."
         );
         _;
     }
 
     modifier onlyAuthorizedApplication(uint256 applicationID) {
         require(
-            notaryPublic.getKeeperAuthorizedApplication(
-                msg.sender,
-                applicationID
-            ) == true,
+            notaryPublic.authorizedToApplication(msg.sender, applicationID) ==
+                true,
             "sender is not authorized to application."
         );
         _;

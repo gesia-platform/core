@@ -4,8 +4,7 @@ pragma solidity ^0.8.23;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-/** POA의 Node가 적은 관계로 merkle을 사용하지 않습니다. */
-abstract contract NotaryPublicDAO is Ownable {
+contract NotaryPublicDAO is Ownable {
     using ECDSA for bytes32;
 
     mapping(address => bool) public memberships;

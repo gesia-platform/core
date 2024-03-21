@@ -2,40 +2,15 @@
 pragma solidity ^0.8.23;
 
 import "./NotaryPublicAccount.sol";
-import "./NotaryPublicModule.sol";
-import "./NotaryKeeper.sol";
+import "./NotaryAccount.sol";
 
-contract NotaryPublic is NotaryPublicAccount, NotaryPublicModule {
-    mapping(address keeper => bool authorized) public keeperAuthorizations;
-
-    function authorizeKeeper(address keeper) external {
-        require(
-            keeperAuthorizations[keeper] == false,
-            "keeper is already authorized."
-        );
-
-        // 1. 심사된 모듈이여야 함.
-        require(
-            moduleAuditResults[NotaryKeeper(keeper).notaryModuleAddress()] ==
-                true,
-            "module is not audited"
-        );
-
-        keeperAuthorizations[keeper] = true;
-    }
-
-    function getKeeperAuthorized(address keeper) public view returns (bool) {
-        return keeperAuthorizations[keeper];
-    }
-
-    function getKeeperAuthorizedApplication(
-        address keeper,
+contract NotaryPublic is NotaryPublicAccount {
+    function authorizedToApplication(
+        address sender,
         uint256 applicationID
     ) public view returns (bool) {
-        NotaryAccount account = NotaryAccount(
-            NotaryKeeper(keeper).notaryAccountAddress()
-        );
-
-        return account.getApplicationID() == applicationID;
+        return
+            NotaryAccount(accountsByOwner[sender]).getApplicationID() ==
+            applicationID;
     }
 }

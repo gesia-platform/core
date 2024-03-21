@@ -7,20 +7,27 @@ import "./NotaryPublicDAO.sol";
 contract NotaryPublicAccount is NotaryPublicDAO {
     uint256 private nextApplicationID = 1;
 
-    mapping(string domain => address account) public accounts;
+    mapping(string domain => address account) public accountsByDomain;
+    mapping(address owner => address account) public accountsByOwner;
+    mapping(address account => address owner) public onwersByAccount;
 
     mapping(address account => mapping(address notary => bool notarized))
         public accountNotarizations;
 
-    event AccountCreated(address account, string domain, uint256 applicationID);
+    event AccountCreated(
+        address account,
+        string domain,
+        uint256 applicationID,
+        address owner
+    );
 
     event AccountNotarized(address account, address notary, bytes signature);
 
     event AccountRevoked(address account, address notary, bytes signature);
 
-    event AccountOwnerUpdated(
+    event AccountOwnershipTransferred(
         address account,
-        address notary,
+        address previousOwner,
         address newOwner
     );
 
@@ -28,18 +35,29 @@ contract NotaryPublicAccount is NotaryPublicDAO {
         string memory domain,
         address owner
     ) external onlyMember {
-        require(accounts[domain] == address(0), "domain already in use.");
+        require(
+            accountsByDomain[domain] == address(0),
+            "domain already in use."
+        );
 
         NotaryAccount notaryAccount = new NotaryAccount(
-            address(this),
+            domain,
+            nextApplicationID
+        );
+
+        address notaryAccountAddress = address(notaryAccount);
+
+        accountsByDomain[domain] = notaryAccountAddress;
+
+        accountsByOwner[owner] = notaryAccountAddress;
+        onwersByAccount[notaryAccountAddress] = owner;
+
+        emit AccountCreated(
+            notaryAccountAddress,
             domain,
             nextApplicationID,
             owner
         );
-
-        accounts[domain] = address(notaryAccount);
-
-        emit AccountCreated(address(notaryAccount), domain, nextApplicationID);
 
         nextApplicationID++;
     }
@@ -51,7 +69,7 @@ contract NotaryPublicAccount is NotaryPublicDAO {
         NotaryAccount notaryAccount = NotaryAccount(account);
 
         string memory domain = notaryAccount.getDomain();
-        require(accounts[domain] == account, "invalid account.");
+        require(accountsByDomain[domain] == account, "invalid account.");
 
         bytes memory message = abi.encodePacked("notarize_account", account);
         address notary = getNotary(message, signature);
@@ -79,26 +97,33 @@ contract NotaryPublicAccount is NotaryPublicDAO {
         emit AccountRevoked(address(notaryAccount), notary, signature);
     }
 
-    function setAccountOwner(
+    function transferAccountOwnership(
         address account,
         address newOwner
     ) external onlyMember {
-        require(
-            accountNotarizations[account][msg.sender] == true,
-            "sender is not notary."
-        );
+        bool isNotary = accountNotarizations[account][msg.sender] == true;
+        bool isOwner = accountsByOwner[msg.sender] == account;
 
-        NotaryAccount notaryAccount = NotaryAccount(account);
+        require(isNotary || isOwner, "unauthorized.");
 
-        notaryAccount.setOwner(newOwner);
+        address previousOwner = onwersByAccount[account];
 
-        emit AccountOwnerUpdated(address(notaryAccount), msg.sender, newOwner);
+        accountsByOwner[newOwner] = account;
+        onwersByAccount[account] = newOwner;
+
+        emit AccountOwnershipTransferred(account, previousOwner, newOwner);
     }
 
-    function getAccount(
+    function getAccountByDomain(
         string memory domain
     ) external view returns (address notaryAccount) {
-        return accounts[domain];
+        return accountsByDomain[domain];
+    }
+
+    function getAccountOwner(
+        address account
+    ) external view returns (address notaryAccount) {
+        return onwersByAccount[account];
     }
 
     function getAccountNotarized(
