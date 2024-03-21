@@ -2,6 +2,7 @@
 pragma solidity ^0.8.23;
 
 import "./NotaryPublic.sol";
+import "./NotaryKeeper.sol";
 
 abstract contract NotaryModule {
     NotaryPublic private immutable notaryPublic;
@@ -12,17 +13,19 @@ abstract contract NotaryModule {
 
     modifier onlyAuthorized() {
         require(
-            notaryPublic.moduleCallAuthorized(address(this), msg.sender),
-            "sender is not authorized to module."
+            notaryPublic.getKeeperAuthorized(msg.sender) == true,
+            "sender is not authorized keeper."
         );
         _;
     }
 
     modifier onlyAuthorizedApplication(uint256 applicationID) {
-        /** Note: will be replaced logic. */
         require(
-            notaryPublic.moduleCallAuthorized(address(this), msg.sender),
-            "sender is not authorized to module."
+            notaryPublic.getKeeperAuthorizedApplication(
+                msg.sender,
+                applicationID
+            ) == true,
+            "sender is not authorized to application."
         );
         _;
     }

@@ -6,18 +6,17 @@ import "./NotaryAccount.sol";
 import "./NotaryModule.sol";
 
 contract NotaryPublicModule is NotaryPublicDAO {
-    mapping(address module => address account) public moduleAuditRequesters;
+    mapping(address module => address auditor) public moduleAuditors;
 
-    mapping(address module => mapping(address member => bool))
-        public moduleAuditResults;
+    mapping(address module => bool passed) public moduleAuditResults;
 
-    event ModuleAuditRequested(address module, address account);
+    event ModuleAuditRequested(address module, address auditor);
 
-    event ModuleAudited(address module, address member, bool passed);
+    event ModuleAudited(address module);
 
-    function requestModuleAudit(address module, address account) external {
+    function requestModuleAudit(address module, address auditor) external {
         require(
-            moduleAuditRequesters[account] == address(0),
+            moduleAuditors[module] == address(0),
             "module has already been audit requested."
         );
 
@@ -26,24 +25,21 @@ contract NotaryPublicModule is NotaryPublicDAO {
             "invalid public address of module."
         );
 
-        require(
-            NotaryAccount(account).getOwner() == msg.sender,
-            "sender is not notary account owner."
-        );
+        require(getMembership(auditor) == true, "auditor is not DAO member.");
 
-        moduleAuditRequesters[module] = account;
+        moduleAuditors[module] = auditor;
 
-        emit ModuleAuditRequested(module, account);
+        emit ModuleAuditRequested(module, auditor);
     }
 
-    function auditModule(address module, bool passed) external onlyMember {
+    function auditModule(address module) external onlyMember {
         require(
-            moduleAuditRequesters[module] != address(0),
+            moduleAuditors[module] != msg.sender,
             "module is not auditable."
         );
 
-        moduleAuditResults[module][msg.sender] = passed;
+        moduleAuditResults[module] = true;
 
-        emit ModuleAudited(module, msg.sender, passed);
+        emit ModuleAudited(module);
     }
 }

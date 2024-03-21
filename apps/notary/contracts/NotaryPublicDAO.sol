@@ -23,7 +23,7 @@ abstract contract NotaryPublicDAO is Ownable {
         }
     }
 
-    function getMembership(address member) external view returns (bool) {
+    function getMembership(address member) public view returns (bool) {
         return memberships[member];
     }
 
