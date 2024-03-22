@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gesia-platform/core/apps/notary-account/app"
+	"github.com/gesia-platform/core/apps/notary/app"
 	"github.com/spf13/cobra"
 )
 
