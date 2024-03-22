@@ -4,7 +4,6 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "./CarbonNeutralApplication.sol";
 
-/** for each emissions category */
 contract CarbonEmissions is ERC1155 {
     address public immutable calculator;
     CarbonNeutralApplication public immutable carbonNeutralApplication;
