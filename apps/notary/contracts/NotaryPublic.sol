@@ -32,6 +32,12 @@ contract NotaryPublic is Ownable {
         address account
     );
 
+    event ApplicationOwnershipTransferred(
+        uint256 applicationID,
+        address previousOwner,
+        address newOwner
+    );
+
     event ApplicationNotarized(
         uint256 applicationID,
         string network,
@@ -108,6 +114,23 @@ contract NotaryPublic is Ownable {
         notarization.url = "";
 
         emit ApplicationNotarizationRevoked(applicationID, network, notary);
+    }
+
+    function transferApplicationOwnership(
+        uint256 applicationID,
+        address newOwner
+    ) external {
+        Application storage application = applications[applicationID];
+
+        require(msg.sender == application.account, "sender is not owner.");
+
+        application.account = newOwner;
+
+        emit ApplicationOwnershipTransferred(
+            applicationID,
+            msg.sender,
+            newOwner
+        );
     }
 
     function getApplicationDetails(
