@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	Port uint `toml:"port"`
+	Port  uint   `toml:"port"`
+	Chain string `toml:"chain"`
 
 	SignerAddress string `toml:"signer_address"`
 
@@ -17,6 +18,7 @@ type Config struct {
 	RPCURL    string `toml:"rpc_url"`
 	ProxyPath string `toml:"proxy_path"`
 
+	NotaryChainRPCURL   string `toml:"notary_chain_rpc_url"`
 	NotaryPublicAddress string `toml:"notary_public_address"`
 }
 

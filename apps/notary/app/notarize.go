@@ -1,18 +1,6 @@
 package app
 
-import (
-	"context"
-	"fmt"
-	"strings"
-
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	coretypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-)
+/*
 
 func (app *NotaryApplication) notarize(notaryAccount common.Address) error {
 	var response RPCResponse
@@ -145,3 +133,4 @@ func (app *NotaryApplication) subscribeNotarize() {
 		}
 	}
 }
+*/

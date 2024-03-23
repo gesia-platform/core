@@ -1,13 +1,13 @@
 package app
 
 import (
-	"fmt"
 	"net/url"
 	"os"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/gesia-platform/core/apps/notary-account/config"
-	"github.com/gesia-platform/core/apps/notary-account/handler"
+	"github.com/gesia-platform/core/apps/notary/chainclient"
+	"github.com/gesia-platform/core/apps/notary/config"
+	"github.com/gesia-platform/core/apps/notary/handler"
+	"github.com/gesia-platform/core/apps/notary/notarycontext"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
@@ -16,8 +16,8 @@ import (
 type NotaryApplication struct {
 	echo   *echo.Echo
 	logger *logrus.Logger
+
 	config *config.Config
-	client *ethclient.Client
 }
 
 func NewNotaryApplication(configPath string) *NotaryApplication {
@@ -29,24 +29,28 @@ func NewNotaryApplication(configPath string) *NotaryApplication {
 
 	app.echo.Use(middleware.Logger())
 
+	app.echo.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &notarycontext.NotaryContext{Context: c}
+			cc.SetConfig(app.config)
+			return next(cc)
+		}
+	})
+
 	app.logger.Formatter = &logrus.JSONFormatter{}
 	app.logger.Out = os.Stdout
 
 	app.config.Read(configPath)
 
-	app.setup()
-
 	return app
 }
 
-func (app *NotaryApplication) Run() {
-	app.notarizeMissedAccounts()
+func (app *NotaryApplication) Setup() {
+	client := chainclient.NewChainClient(app.config.RPCURL, app.config.NotaryChainRPCURL)
 
-	app.subscribeNotarize()
-}
+	handler := handler.NewHandler(client, app.logger)
 
-func (app *NotaryApplication) setup() {
-	ethereumRPCURL, err := url.Parse(app.config.RPCURL)
+	proxyURL, err := url.Parse(app.config.RPCURL)
 	if err != nil {
 		panic("failed to parse ethereum rpc url.")
 	}
@@ -54,18 +58,17 @@ func (app *NotaryApplication) setup() {
 	ethereum := app.echo.Group(app.config.ProxyPath)
 
 	ethereum.Use(handler.EthereumRPCHandler)
+
 	ethereum.Use(middleware.Proxy(middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
 		{
-			URL: ethereumRPCURL,
+			URL: proxyURL,
 		},
 	})))
 
-	app.logger.Info("Successfully initlized ethereum rpc proxy server.")
+}
 
-	client, err := ethclient.Dial(app.config.RPCURL)
-	if err != nil {
-		panic(fmt.Sprintf("failed to dial ethclient. %d", err))
-	}
+func (app *NotaryApplication) Run() {
+	// app.notarizeMissedAccounts()
 
-	app.client = client
+	// app.subscribeNotarize()
 }
