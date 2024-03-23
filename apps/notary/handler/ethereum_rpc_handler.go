@@ -3,7 +3,9 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"net"
 	"net/http"
@@ -25,9 +27,29 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 	return func(c echo.Context) error {
 		nc := c.(*notarycontext.NotaryContext)
 
-		applicationID, err := strconv.ParseInt(c.Response().Header().Get("x-application-id"), 10, 64)
+		applicationID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
 		if err != nil {
 			return err
+		}
+
+		// Instantiate notary public contract
+		instance, err := store.NewNotaryPublicStore(common.HexToAddress(nc.Config().NotaryPublicAddress), handler.chainClient.Notary)
+		if err != nil {
+			return err
+		}
+
+		// Get domain
+		domain, _, err := instance.GetApplicationDetails(
+			&bind.CallOpts{Pending: true},
+			big.NewInt(applicationID),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		if len([]byte(domain)) == 0 {
+			return fmt.Errorf("domain not registered by applicationID. %d", applicationID)
 		}
 
 		// Fetch Clique Signers
@@ -43,28 +65,10 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 			if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 				return err
 			}
+
 			for _, signer := range body.Result {
 				signers = append(signers, common.HexToAddress(signer))
 			}
-		}
-
-		// Instantiate notary public contract
-		instance, err := store.NewNotaryPublicStore(common.HexToAddress(nc.Config().NotaryPublicAddress), handler.chainClient.Notary)
-		if err != nil {
-			return err
-		}
-
-		// Get domain
-		domain, _, err := instance.GetApplicationDetails(
-			&bind.CallOpts{Pending: true},
-			big.NewInt(applicationID),
-		)
-		if err != nil {
-			return err
-		}
-
-		if len([]byte(domain)) == 0 {
-			return fmt.Errorf("domain not registered by applicationID. %d", applicationID)
 		}
 
 		// Check notrazied from signer
@@ -75,15 +79,18 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 				big.NewInt(applicationID),
 				nc.Config().Chain,
 				signer,
-			); err != nil || !notarized {
+			); err != nil {
 				return err
 			} else {
-				signatures++
+				if notarized {
+					signatures++
+				}
 			}
 		}
 
-		if len(signers)*2/3 > signatures {
-			return echo.ErrForbidden
+		quorum := int(math.Round(float64(len(signers)) * 2 / 3))
+		if quorum > signatures {
+			return errors.New("insufficient 2/3 required signature quorum")
 		}
 
 		// Check ip within domain

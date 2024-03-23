@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -26,6 +26,8 @@ contract NotaryPublic is Ownable {
     mapping(uint256 => mapping(string => mapping(address => ApplicationNotarization)))
         internal applicationNotarizations;
 
+    constructor() {}
+
     event ApplicationCreated(
         uint256 applicationID,
         string domain,
@@ -51,13 +53,14 @@ contract NotaryPublic is Ownable {
     );
 
     function createApplication(string memory domain, address account) external {
-        applications[nextApplicationID] = Application({
-            id: nextApplicationID,
-            domain: domain,
-            account: account
-        });
+        applications[nextApplicationID] = Application(
+            nextApplicationID,
+            domain,
+            account
+        );
 
         emit ApplicationCreated(nextApplicationID, domain, account);
+
         nextApplicationID++;
     }
 

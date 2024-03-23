@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 
@@ -17,7 +19,8 @@ type NotaryApplication struct {
 	echo   *echo.Echo
 	logger *logrus.Logger
 
-	config *config.Config
+	config      *config.Config
+	chainClient *chainclient.ChainClient
 }
 
 func NewNotaryApplication(configPath string) *NotaryApplication {
@@ -45,10 +48,10 @@ func NewNotaryApplication(configPath string) *NotaryApplication {
 	return app
 }
 
-func (app *NotaryApplication) Setup() {
-	client := chainclient.NewChainClient(app.config.RPCURL, app.config.NotaryChainRPCURL)
+func (app *NotaryApplication) Run() {
+	app.chainClient = chainclient.NewChainClient(app.config.RPCURL, app.config.NotaryChainRPCURL)
 
-	handler := handler.NewHandler(client, app.logger)
+	handler := handler.NewHandler(app.chainClient, app.logger)
 
 	proxyURL, err := url.Parse(app.config.RPCURL)
 	if err != nil {
@@ -65,10 +68,13 @@ func (app *NotaryApplication) Setup() {
 		},
 	})))
 
-}
+	s := http.Server{
+		Addr:    fmt.Sprintf(":%d", app.config.Port),
+		Handler: app.echo,
+	}
+	app.notarizePendingAccounts()
 
-func (app *NotaryApplication) Run() {
-	// app.notarizeMissedAccounts()
+	s.ListenAndServe()
 
 	// app.subscribeNotarize()
 }

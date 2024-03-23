@@ -11,7 +11,7 @@ import (
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "hugo",
+		Use:   "start",
 		Short: "Start notary application",
 		Run: func(cmd *cobra.Command, args []string) {
 			configPath, err := cmd.Flags().GetString("config")
@@ -19,7 +19,8 @@ func main() {
 				panic(fmt.Errorf("invalid config flag. %d", err))
 			}
 
-			app.NewNotaryApplication(configPath)
+			app := app.NewNotaryApplication(configPath)
+			app.Run()
 		},
 	}
 
