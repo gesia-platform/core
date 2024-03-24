@@ -1,9 +1,9 @@
 package context
 
 import (
+	"github.com/gesia-platform/core/chaintree"
 	"github.com/gesia-platform/core/config"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 type Context struct {
@@ -11,7 +11,7 @@ type Context struct {
 
 	config *config.Config
 
-	logger *logrus.Logger
+	chainTree *chaintree.ChainTree
 }
 
 func (c *Context) SetConfig(config *config.Config) {
@@ -22,10 +22,10 @@ func (c *Context) Config() *config.Config {
 	return c.config
 }
 
-func (c *Context) SetLogger(logger *logrus.Logger) {
-	c.logger = logger
+func (c *Context) SetChainTree(chainTree *chaintree.ChainTree) {
+	c.chainTree = chainTree
 }
 
-func (c *Context) Logger() *logrus.Logger {
-	return c.logger
+func (c *Context) ChainTree() *chaintree.ChainTree {
+	return c.chainTree
 }

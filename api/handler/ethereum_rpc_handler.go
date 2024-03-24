@@ -23,9 +23,9 @@ type ResponseJsonRPC struct {
 	Result []string
 }
 
-func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
+func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		nc := c.(*context.Context)
+		ctx := c.(*context.Context)
 
 		applicationID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
 		if err != nil {
@@ -33,7 +33,7 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 		}
 
 		// Instan public contract
-		instance, err := store.NewNotaryPublicStore(common.HexToAddress(nc.Config().NotaryPublicAddress), handler.chaintree.Host)
+		instance, err := store.NewNotaryPublicStore(common.HexToAddress(ctx.Config().NotaryPublicAddress), handler.chaintree.Host)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 
 		var body ResponseJsonRPC
 
-		if resp, err := http.Post(nc.Config().RPCURL, "application/json", bytes.NewBuffer(
+		if resp, err := http.Post(ctx.Config().RPCURL, "application/json", bytes.NewBuffer(
 			[]byte(`{"jsonrpc":"2.0","method": "clique_getSigners", "params":[], "id": 2}`),
 		)); err != nil {
 			return err
@@ -77,7 +77,7 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 			if notarized, _, _, err := instance.GetApplicationNotarizationDetails(
 				&bind.CallOpts{Pending: true},
 				big.NewInt(applicationID),
-				nc.Config().Chain,
+				ctx.Config().Chain,
 				signer,
 			); err != nil {
 				return err
@@ -101,7 +101,7 @@ func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFu
 
 		var whitelistedIP bool
 		for _, ip := range ips {
-			if strings.EqualFold(ip.To4().String(), nc.RealIP()) {
+			if strings.EqualFold(ip.To4().String(), ctx.RealIP()) {
 				whitelistedIP = true
 			}
 		}
