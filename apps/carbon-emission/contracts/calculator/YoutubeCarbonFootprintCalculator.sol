@@ -2,16 +2,16 @@
 pragma solidity ^0.8.23;
 
 
-import "../access/ApplicationAuthGuard.sol";
+
 import "../CarbonEmissions.sol";
 
-contract YoutubeCarbonFootprintCalculator is ApplicationAuthGuard {
+contract YoutubeCarbonEmissionsCalculator {
     uint256 EMISSIONS_PER_HOUR = 11; // scaled by 10,000
 
     CarbonEmissions public immutable carbonEmissions;
 
   constructor( address _applicationAccessManager,
-CarbonEmissions _carbonEmissions) ApplicationAuthGuard(_applicationAccessManager) {
+CarbonEmissions _carbonEmissions) 
         carbonEmissions = _carbonEmissions;
     }
     
@@ -19,7 +19,7 @@ CarbonEmissions _carbonEmissions) ApplicationAuthGuard(_applicationAccessManager
         uint256 applicationID,
         bytes memory userID,
         uint256 value
-    ) external onlyAuthorized(applicationID) returns (uint256) {
+    ) external returns (uint256) {
         uint256 result = EMISSIONS_PER_HOUR * (value * 10e4);
 
         carbonEmissions.mint(applicationID, result, userID);

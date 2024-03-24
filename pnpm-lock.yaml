@@ -37,6 +37,15 @@ importers:
         specifier: 4.7.3
         version: 4.7.3
 
+  apps/contract:
+    dependencies:
+      '@openzeppelin/contracts':
+        specifier: 4.7.3
+        version: 4.7.3
+      '@truffle/hdwallet-provider':
+        specifier: ^2.1.15
+        version: 2.1.15
+
   apps/notary:
     dependencies:
       '@openzeppelin/contracts':

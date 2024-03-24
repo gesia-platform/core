@@ -14,8 +14,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gesia-platform/core/apps/notary/notarycontext"
-	"github.com/gesia-platform/core/apps/notary/store"
+	"github.com/gesia-platform/core/context"
+	"github.com/gesia-platform/core/store"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,15 +25,15 @@ type ResponseJsonRPC struct {
 
 func (handler *Handler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		nc := c.(*notarycontext.NotaryContext)
+		nc := c.(*context.Context)
 
 		applicationID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
 		if err != nil {
 			return err
 		}
 
-		// Instantiate notary public contract
-		instance, err := store.NewNotaryPublicStore(common.HexToAddress(nc.Config().NotaryPublicAddress), handler.chainClient.Notary)
+		// Instan public contract
+		instance, err := store.NewNotaryPublicStore(common.HexToAddress(nc.Config().NotaryPublicAddress), handler.chaintree.Host)
 		if err != nil {
 			return err
 		}

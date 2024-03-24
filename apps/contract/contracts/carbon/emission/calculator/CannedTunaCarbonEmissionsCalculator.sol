@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.23;
 
-
 import "../CarbonEmissions.sol";
 
 contract CannedTunaCarbonEmissionsCalculator {
@@ -9,12 +8,10 @@ contract CannedTunaCarbonEmissionsCalculator {
 
     CarbonEmissions public immutable carbonEmissions;
 
-    constructor(
-        CarbonEmissions _carbonEmissions
-    ) {
+    constructor(CarbonEmissions _carbonEmissions) {
         carbonEmissions = _carbonEmissions;
     }
-    
+
     function calculate(
         uint256 applicationID,
         bytes memory userID,
