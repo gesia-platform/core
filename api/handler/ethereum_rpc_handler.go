@@ -9,9 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
-	"github.com/gesia-platform/core/types"
 	"github.com/labstack/echo/v4"
-	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
 )
 
 func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
@@ -44,7 +42,20 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 			return echo.ErrUnauthorized
 		}
 
-		notaryPublic, err := store.NewNotaryPublicStore(
+		if _, _, isGranted, err := appPermission.GetNetworkAccessResponse(
+			&bind.CallOpts{Pending: true},
+			big.NewInt(appID),
+			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
+		); err != nil {
+			return err
+		} else if !isGranted {
+			return echo.ErrUnauthorized
+		}
+
+		// Since only the network account owner designated by the node can respond,
+		// it is decided to allow the granted without separate verification.
+
+		/*notaryPublic, err := store.NewNotaryPublicStore(
 			common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
 			ctx.ChainTree().Host.Client(),
 		)
@@ -98,7 +109,7 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 
 		if verified := aggreatedSig.FastAggregateVerify(pubkeys, message); !verified {
 			return ehco.ErrUnauthorized
-		}
+		}*/
 
 		return next(c)
 	}
