@@ -1,14 +1,7 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"math"
 	"math/big"
-	"net"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -16,98 +9,95 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
+	"github.com/gesia-platform/core/types"
 	"github.com/labstack/echo/v4"
+	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
 )
-
-type ResponseJsonRPC struct {
-	Result []string
-}
 
 func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.(*context.Context)
 
-		applicationID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
+		appID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
 		if err != nil {
 			return err
 		}
 
-		// Instan public contract
-		instance, err := store.NewNotaryPublicStore(common.HexToAddress(ctx.Config().NotaryPublicAddress), handler.chaintree.Host)
-		if err != nil {
-			return err
-		}
-
-		// Get domain
-		domain, _, err := instance.GetApplicationDetails(
-			&bind.CallOpts{Pending: true},
-			big.NewInt(applicationID),
+		appPermission, err := store.NewAppPermissionStore(
+			common.HexToAddress(ctx.Config().ChainTree.Root.Address),
+			ctx.ChainTree().Root.Client(),
 		)
-
 		if err != nil {
 			return err
 		}
 
-		if len([]byte(domain)) == 0 {
-			return fmt.Errorf("domain not registered by applicationID. %d", applicationID)
+		requested, ip, err := appPermission.GetNetworkAccessRequest(
+			&bind.CallOpts{Pending: true},
+			big.NewInt(appID),
+			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
+		)
+		if err != nil {
+			return err
+		}
+
+		if !requested || !strings.EqualFold(ip, ctx.Context.RealIP()) {
+			return echo.ErrUnauthorized
+		}
+
+		notaryPublic, err := store.NewNotaryPublicStore(
+			common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
+			ctx.ChainTree().Host.Client(),
+		)
+		if err != nil {
+			return err
 		}
 
 		// Fetch Clique Signers
 		var signers []common.Address
+		var response types.JsonRPCResponse
 
-		var body ResponseJsonRPC
-
-		if resp, err := http.Post(ctx.Config().RPCURL, "application/json", bytes.NewBuffer(
-			[]byte(`{"jsonrpc":"2.0","method": "clique_getSigners", "params":[], "id": 2}`),
-		)); err != nil {
+		if err := ctx.ChainTree().Host.Client().Client().Call(
+			&response,
+			"clique_getSigners",
+		); err != nil {
 			return err
 		} else {
-			if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-				return err
-			}
-
-			for _, signer := range body.Result {
+			for _, signer := range response.Result {
 				signers = append(signers, common.HexToAddress(signer))
 			}
 		}
 
-		// Check notrazied from signer
-		var signatures int
+		var signatures [][]byte
+		var pubkeys []blst.PublicKey
+
 		for _, signer := range signers {
-			if notarized, _, _, err := instance.GetApplicationNotarizationDetails(
+			if pubkey, signature, err := notaryPublic.GetNotarization(
 				&bind.CallOpts{Pending: true},
-				big.NewInt(applicationID),
-				ctx.Config().Chain,
+				types.NetworkAccessPermissionPrefix,
 				signer,
-			); err != nil {
-				return err
-			} else {
-				if notarized {
-					signatures++
+			); err == nil && len(signature) >= 1 {
+				signatures = append(signatures, signature)
+				if key, err := blst.PublicKeyFromBytes(pubkey); err != nil {
+					return err
+				} else {
+					pubkeys = append(pubkeys, key)
 				}
 			}
 		}
 
-		quorum := int(math.Round(float64(len(signers)) * 2 / 3))
-		if quorum > signatures {
-			return errors.New("insufficient 2/3 required signature quorum")
+		if len(pubkeys) == 0 {
+			return ehco.ErrUnauthorized
 		}
 
-		// Check ip within domain
-		ips, err := net.LookupIP(domain)
+		message := types.GetNetwrokAccessPermissionMessage(*big.NewInt(appID))
+
+		aggreatedSig, err := blst.AggregateCompressedSignatures(signatures)
 		if err != nil {
 			return err
 		}
 
-		var whitelistedIP bool
-		for _, ip := range ips {
-			if strings.EqualFold(ip.To4().String(), ctx.RealIP()) {
-				whitelistedIP = true
-			}
-		}
-
-		if !whitelistedIP {
-			return echo.ErrForbidden
+		if verified := aggreatedSig.FastAggregateVerify(pubkeys, message); !verified {
+			return ehco.ErrUnauthorized
 		}
 
 		return next(c)

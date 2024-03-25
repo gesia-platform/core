@@ -14,3 +14,7 @@ func NewHost(url string) Host {
 
 	return Host{client}
 }
+
+func (host *Host) Client() *ethclient.Client {
+	return host.client
+}

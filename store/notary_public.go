@@ -31,7 +31,7 @@ var (
 
 // NotaryPublicStoreMetaData contains all meta data concerning the NotaryPublicStore contract.
 var NotaryPublicStoreMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"pubkey\",\"type\":\"bytes\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getPubkey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getNotarization\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // NotaryPublicStoreABI is the input ABI used to generate the binding from.
@@ -180,6 +180,69 @@ func (_NotaryPublicStore *NotaryPublicStoreTransactorRaw) Transact(opts *bind.Tr
 	return _NotaryPublicStore.Contract.contract.Transact(opts, method, params...)
 }
 
+// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+//
+// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) GetNotarization(opts *bind.CallOpts, prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
+	var out []interface{}
+	err := _NotaryPublicStore.contract.Call(opts, &out, "getNotarization", prefix, notary)
+
+	if err != nil {
+		return *new([]byte), *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+	out1 := *abi.ConvertType(out[1], new([]byte)).(*[]byte)
+
+	return out0, out1, err
+
+}
+
+// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+//
+// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreSession) GetNotarization(prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
+	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, notary)
+}
+
+// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+//
+// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetNotarization(prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
+	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, notary)
+}
+
+// GetPubkey is a free data retrieval call binding the contract method 0x0f260ca0.
+//
+// Solidity: function getPubkey(address notary) view returns(bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) GetPubkey(opts *bind.CallOpts, notary common.Address) ([]byte, error) {
+	var out []interface{}
+	err := _NotaryPublicStore.contract.Call(opts, &out, "getPubkey", notary)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// GetPubkey is a free data retrieval call binding the contract method 0x0f260ca0.
+//
+// Solidity: function getPubkey(address notary) view returns(bytes)
+func (_NotaryPublicStore *NotaryPublicStoreSession) GetPubkey(notary common.Address) ([]byte, error) {
+	return _NotaryPublicStore.Contract.GetPubkey(&_NotaryPublicStore.CallOpts, notary)
+}
+
+// GetPubkey is a free data retrieval call binding the contract method 0x0f260ca0.
+//
+// Solidity: function getPubkey(address notary) view returns(bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetPubkey(notary common.Address) ([]byte, error) {
+	return _NotaryPublicStore.Contract.GetPubkey(&_NotaryPublicStore.CallOpts, notary)
+}
+
 // Notarize is a paid mutator transaction binding the contract method 0xa0538ecd.
 //
 // Solidity: function notarize(bytes1 prefix, bytes signatrue) returns()
@@ -199,6 +262,27 @@ func (_NotaryPublicStore *NotaryPublicStoreSession) Notarize(prefix [1]byte, sig
 // Solidity: function notarize(bytes1 prefix, bytes signatrue) returns()
 func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) Notarize(prefix [1]byte, signatrue []byte) (*types.Transaction, error) {
 	return _NotaryPublicStore.Contract.Notarize(&_NotaryPublicStore.TransactOpts, prefix, signatrue)
+}
+
+// Register is a paid mutator transaction binding the contract method 0x82fbdc9c.
+//
+// Solidity: function register(bytes pubkey) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) Register(opts *bind.TransactOpts, pubkey []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "register", pubkey)
+}
+
+// Register is a paid mutator transaction binding the contract method 0x82fbdc9c.
+//
+// Solidity: function register(bytes pubkey) returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) Register(pubkey []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.Register(&_NotaryPublicStore.TransactOpts, pubkey)
+}
+
+// Register is a paid mutator transaction binding the contract method 0x82fbdc9c.
+//
+// Solidity: function register(bytes pubkey) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) Register(pubkey []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.Register(&_NotaryPublicStore.TransactOpts, pubkey)
 }
 
 // NotaryPublicStoreNotarizedIterator is returned from FilterNotarized and is used to iterate over the raw logs and unpacked data for Notarized events raised by the NotaryPublicStore contract.

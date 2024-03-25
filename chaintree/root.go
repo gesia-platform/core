@@ -14,3 +14,7 @@ func NewRoot(url string) Root {
 
 	return Root{client}
 }
+
+func (root *Root) Client() *ethclient.Client {
+	return root.client
+}
