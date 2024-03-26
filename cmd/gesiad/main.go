@@ -58,8 +58,15 @@ var (
 
 func start(configPath string) {
 	config := config.NewConfig(configPath)
+	fmt.Println("config marshalled")
 
-	chainTree := chaintree.NewChainTree(config.ChainTree.Root.RPCURL, config.ChainTree.Host.RPCURL)
+	chainTree := chaintree.NewChainTree(
+		config.ChainTree.Root.RPCURL,
+		config.ChainTree.Root.WSURL,
+		config.ChainTree.Host.RPCURL,
+		config.ChainTree.Host.WSURL,
+	)
+	fmt.Println("chaintree created")
 
 	context := &context.Context{}
 
@@ -69,11 +76,13 @@ func start(configPath string) {
 	notary := notary.NewNotary()
 
 	notary.SubscribeNetworkAccessRequested(context)
+	fmt.Println("root chain network access requested event subscribed")
 	notary.SubscribeNotarizedWithCondition(context)
 
 	apiHandler := handler.NewAPIHandler(context, notary)
 
 	api := api.NewAPI(config.Port, apiHandler)
+	fmt.Println("api created")
 
 	api.Start()
 }

@@ -13,11 +13,11 @@ import (
 
 func (notary *Notary) SubscribeNetworkAccessRequested(ctx *context.Context) {
 	config := ctx.Config()
-	rootClient := ctx.ChainTree().Root.Client()
+	rootWSClient := ctx.ChainTree().Root.WSClient()
 
 	appStore, err := store.NewAppPermissionStore(
 		common.HexToAddress(config.ChainTree.Root.AppStoreAddress),
-		rootClient,
+		rootWSClient,
 	)
 	if err != nil {
 		panic(err)
@@ -33,22 +33,24 @@ func (notary *Notary) SubscribeNetworkAccessRequested(ctx *context.Context) {
 		panic(err)
 	}
 
-	for {
-		select {
-		case err := <-sub.Err():
-			fmt.Println(fmt.Errorf("watch network access requested subscription err: %d", err))
-		case log := <-logs:
-			fmt.Printf("watched network access requested log: %d\n", &log)
+	go func() {
+		for {
+			select {
+			case err := <-sub.Err():
+				fmt.Println(fmt.Errorf("watch network access requested subscription err: %d", err))
+			case log := <-logs:
+				fmt.Printf("watched network access requested log: %d\n", &log)
 
-			if bytes.Equal(
-				log.NetworkAccount.Bytes(),
-				common.HexToAddress(config.ChainTree.Root.NetworkAccountAddress).Bytes(),
-			) {
-				if err := notarize(ctx, types.NetworkAccessPermissionPrefix, log.AppID); err != nil {
-					fmt.Println(fmt.Errorf("notarize network access requested subscription err: %d", err))
+				if bytes.Equal(
+					log.NetworkAccount.Bytes(),
+					common.HexToAddress(config.ChainTree.Root.NetworkAccountAddress).Bytes(),
+				) {
+					if err := notarize(ctx, types.NetworkAccessPermissionPrefix, log.AppID); err != nil {
+						fmt.Println(fmt.Errorf("notarize network access requested subscription err: %d", err))
+					}
 				}
 			}
 		}
-	}
+	}()
 
 }

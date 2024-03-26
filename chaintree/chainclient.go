@@ -7,11 +7,13 @@ type ChainTree struct {
 
 func NewChainTree(
 	rootURL string,
+	rootWSURL string,
 	hostURL string,
+	hostWSURL string,
 ) *ChainTree {
-	root := NewRoot(rootURL)
+	root := NewRoot(rootURL, rootWSURL)
 
-	host := NewHost(hostURL)
+	host := NewHost(hostURL, hostWSURL)
 
 	return &ChainTree{Root: &root, Host: &host}
 

@@ -16,6 +16,7 @@ type ChainTreeRoot struct {
 	ChainID uint64 `toml:"chain_id"`
 
 	RPCURL string `toml:"rpc_url"`
+	WSURL  string `toml:"ws_url"`
 
 	NetworkAccountAddress string `toml:"network_account_address"`
 
@@ -27,9 +28,10 @@ type ChainTreeRoot struct {
 type ChainTreeHost struct {
 	ChainID uint64 `toml:"chain_id"`
 
-	NotaryPublicAddress string `toml:"notary_public_address"`
+	ProxyPath string `toml:"proxy_path"`
 
 	RPCURL string `toml:"rpc_url"`
+	WSURL  string `toml:"ws_url"`
 
-	ProxyPath string `toml:"proxy_path"`
+	NotaryPublicAddress string `toml:"notary_public_address"`
 }

@@ -17,6 +17,8 @@ bls_secret_key =
 chain_id = 
 # root chain rpc url
 rpc_url = 
+# root chain ws url
+ws_url = 
 # poa network account contract ethereum hex address
 network_account_address = 
 # main app store contract ethereum hex address
@@ -30,6 +32,8 @@ app_permission_address =
 chain_id = 
 # host chain rpc url
 rpc_url = 
+# root chain ws url
+ws_url = 
 # host chain rpc proxy path
 proxy_path = 
 # main notary public contract ethereum hex address

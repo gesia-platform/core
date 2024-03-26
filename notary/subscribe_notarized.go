@@ -43,7 +43,7 @@ func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 
 func (notary *Notary) subscribeNotarized(ctx *context.Context) {
 	config := ctx.Config()
-	hostClient := ctx.ChainTree().Root.Client()
+	hostClient := ctx.ChainTree().Host.WSClient()
 
 	notaryPublic, err := store.NewNotaryPublicStore(
 		common.HexToAddress(config.ChainTree.Host.NotaryPublicAddress),
@@ -63,15 +63,18 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) {
 		panic(err)
 	}
 
-	for {
-		select {
-		case err := <-sub.Err():
-			fmt.Println(fmt.Errorf("watch notarized subscription err: %d", err))
-		case log := <-logs:
-			fmt.Printf("watched notarized log: %d\n", &log)
-			notary.checkAggreation(ctx, log, notaryPublic)
+	go func() {
+		for {
+			select {
+			case err := <-sub.Err():
+				fmt.Println(fmt.Errorf("watch notarized subscription err: %d", err))
+			case log := <-logs:
+				fmt.Printf("watched notarized log: %d\n", &log)
+				notary.checkAggreation(ctx, log, notaryPublic)
+			}
 		}
-	}
+	}()
+
 }
 
 func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPublicStoreNotarized, notaryPublic *store.NotaryPublicStore) error {
