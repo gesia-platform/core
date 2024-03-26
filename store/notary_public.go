@@ -31,7 +31,7 @@ var (
 
 // NotaryPublicStoreMetaData contains all meta data concerning the NotaryPublicStore contract.
 var NotaryPublicStoreMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"pubkey\",\"type\":\"bytes\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getPubkey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getNotarization\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"pubkey\",\"type\":\"bytes\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getPubkey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getNotarization\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // NotaryPublicStoreABI is the input ABI used to generate the binding from.
@@ -180,12 +180,12 @@ func (_NotaryPublicStore *NotaryPublicStoreTransactorRaw) Transact(opts *bind.Tr
 	return _NotaryPublicStore.Contract.contract.Transact(opts, method, params...)
 }
 
-// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+// GetNotarization is a free data retrieval call binding the contract method 0xedac6563.
 //
-// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
-func (_NotaryPublicStore *NotaryPublicStoreCaller) GetNotarization(opts *bind.CallOpts, prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
+// Solidity: function getNotarization(bytes1 prefix, uint256 appID, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) GetNotarization(opts *bind.CallOpts, prefix [1]byte, appID *big.Int, notary common.Address) ([]byte, []byte, error) {
 	var out []interface{}
-	err := _NotaryPublicStore.contract.Call(opts, &out, "getNotarization", prefix, notary)
+	err := _NotaryPublicStore.contract.Call(opts, &out, "getNotarization", prefix, appID, notary)
 
 	if err != nil {
 		return *new([]byte), *new([]byte), err
@@ -198,18 +198,18 @@ func (_NotaryPublicStore *NotaryPublicStoreCaller) GetNotarization(opts *bind.Ca
 
 }
 
-// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+// GetNotarization is a free data retrieval call binding the contract method 0xedac6563.
 //
-// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
-func (_NotaryPublicStore *NotaryPublicStoreSession) GetNotarization(prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
-	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, notary)
+// Solidity: function getNotarization(bytes1 prefix, uint256 appID, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreSession) GetNotarization(prefix [1]byte, appID *big.Int, notary common.Address) ([]byte, []byte, error) {
+	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, appID, notary)
 }
 
-// GetNotarization is a free data retrieval call binding the contract method 0x1ffbc354.
+// GetNotarization is a free data retrieval call binding the contract method 0xedac6563.
 //
-// Solidity: function getNotarization(bytes1 prefix, address notary) view returns(bytes, bytes)
-func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetNotarization(prefix [1]byte, notary common.Address) ([]byte, []byte, error) {
-	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, notary)
+// Solidity: function getNotarization(bytes1 prefix, uint256 appID, address notary) view returns(bytes, bytes)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetNotarization(prefix [1]byte, appID *big.Int, notary common.Address) ([]byte, []byte, error) {
+	return _NotaryPublicStore.Contract.GetNotarization(&_NotaryPublicStore.CallOpts, prefix, appID, notary)
 }
 
 // GetPubkey is a free data retrieval call binding the contract method 0x0f260ca0.
@@ -243,25 +243,25 @@ func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetPubkey(notary commo
 	return _NotaryPublicStore.Contract.GetPubkey(&_NotaryPublicStore.CallOpts, notary)
 }
 
-// Notarize is a paid mutator transaction binding the contract method 0xa0538ecd.
+// Notarize is a paid mutator transaction binding the contract method 0x7e004409.
 //
-// Solidity: function notarize(bytes1 prefix, bytes signatrue) returns()
-func (_NotaryPublicStore *NotaryPublicStoreTransactor) Notarize(opts *bind.TransactOpts, prefix [1]byte, signatrue []byte) (*types.Transaction, error) {
-	return _NotaryPublicStore.contract.Transact(opts, "notarize", prefix, signatrue)
+// Solidity: function notarize(bytes1 prefix, uint256 appID, bytes signatrue) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) Notarize(opts *bind.TransactOpts, prefix [1]byte, appID *big.Int, signatrue []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "notarize", prefix, appID, signatrue)
 }
 
-// Notarize is a paid mutator transaction binding the contract method 0xa0538ecd.
+// Notarize is a paid mutator transaction binding the contract method 0x7e004409.
 //
-// Solidity: function notarize(bytes1 prefix, bytes signatrue) returns()
-func (_NotaryPublicStore *NotaryPublicStoreSession) Notarize(prefix [1]byte, signatrue []byte) (*types.Transaction, error) {
-	return _NotaryPublicStore.Contract.Notarize(&_NotaryPublicStore.TransactOpts, prefix, signatrue)
+// Solidity: function notarize(bytes1 prefix, uint256 appID, bytes signatrue) returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) Notarize(prefix [1]byte, appID *big.Int, signatrue []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.Notarize(&_NotaryPublicStore.TransactOpts, prefix, appID, signatrue)
 }
 
-// Notarize is a paid mutator transaction binding the contract method 0xa0538ecd.
+// Notarize is a paid mutator transaction binding the contract method 0x7e004409.
 //
-// Solidity: function notarize(bytes1 prefix, bytes signatrue) returns()
-func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) Notarize(prefix [1]byte, signatrue []byte) (*types.Transaction, error) {
-	return _NotaryPublicStore.Contract.Notarize(&_NotaryPublicStore.TransactOpts, prefix, signatrue)
+// Solidity: function notarize(bytes1 prefix, uint256 appID, bytes signatrue) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) Notarize(prefix [1]byte, appID *big.Int, signatrue []byte) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.Notarize(&_NotaryPublicStore.TransactOpts, prefix, appID, signatrue)
 }
 
 // Register is a paid mutator transaction binding the contract method 0x82fbdc9c.
@@ -355,14 +355,15 @@ func (it *NotaryPublicStoreNotarizedIterator) Close() error {
 // NotaryPublicStoreNotarized represents a Notarized event raised by the NotaryPublicStore contract.
 type NotaryPublicStoreNotarized struct {
 	Prefix    [1]byte
+	AppID     *big.Int
 	Signatrue []byte
 	Notary    common.Address
 	Raw       types.Log // Blockchain specific contextual infos
 }
 
-// FilterNotarized is a free log retrieval operation binding the contract event 0xacdb5596a58de2795a84369a204c419750a07d77b12d8743575630619249ae3f.
+// FilterNotarized is a free log retrieval operation binding the contract event 0x05e59c60c32fb6565e9a30277c830760329a8da45b5eb3b0b995f70fb3c9682e.
 //
-// Solidity: event Notarized(bytes1 prefix, bytes signatrue, address notary)
+// Solidity: event Notarized(bytes1 prefix, uint256 appID, bytes signatrue, address notary)
 func (_NotaryPublicStore *NotaryPublicStoreFilterer) FilterNotarized(opts *bind.FilterOpts) (*NotaryPublicStoreNotarizedIterator, error) {
 
 	logs, sub, err := _NotaryPublicStore.contract.FilterLogs(opts, "Notarized")
@@ -372,9 +373,9 @@ func (_NotaryPublicStore *NotaryPublicStoreFilterer) FilterNotarized(opts *bind.
 	return &NotaryPublicStoreNotarizedIterator{contract: _NotaryPublicStore.contract, event: "Notarized", logs: logs, sub: sub}, nil
 }
 
-// WatchNotarized is a free log subscription operation binding the contract event 0xacdb5596a58de2795a84369a204c419750a07d77b12d8743575630619249ae3f.
+// WatchNotarized is a free log subscription operation binding the contract event 0x05e59c60c32fb6565e9a30277c830760329a8da45b5eb3b0b995f70fb3c9682e.
 //
-// Solidity: event Notarized(bytes1 prefix, bytes signatrue, address notary)
+// Solidity: event Notarized(bytes1 prefix, uint256 appID, bytes signatrue, address notary)
 func (_NotaryPublicStore *NotaryPublicStoreFilterer) WatchNotarized(opts *bind.WatchOpts, sink chan<- *NotaryPublicStoreNotarized) (event.Subscription, error) {
 
 	logs, sub, err := _NotaryPublicStore.contract.WatchLogs(opts, "Notarized")
@@ -409,9 +410,9 @@ func (_NotaryPublicStore *NotaryPublicStoreFilterer) WatchNotarized(opts *bind.W
 	}), nil
 }
 
-// ParseNotarized is a log parse operation binding the contract event 0xacdb5596a58de2795a84369a204c419750a07d77b12d8743575630619249ae3f.
+// ParseNotarized is a log parse operation binding the contract event 0x05e59c60c32fb6565e9a30277c830760329a8da45b5eb3b0b995f70fb3c9682e.
 //
-// Solidity: event Notarized(bytes1 prefix, bytes signatrue, address notary)
+// Solidity: event Notarized(bytes1 prefix, uint256 appID, bytes signatrue, address notary)
 func (_NotaryPublicStore *NotaryPublicStoreFilterer) ParseNotarized(log types.Log) (*NotaryPublicStoreNotarized, error) {
 	event := new(NotaryPublicStoreNotarized)
 	if err := _NotaryPublicStore.contract.UnpackLog(event, "Notarized", log); err != nil {

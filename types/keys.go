@@ -4,14 +4,14 @@ import "math/big"
 
 var (
 	NetworkAccessPermissionPrefix = [1]byte{0x01}
-	NetworkAccessPermissionKey    = []byte("network_access_permission")
+	networkAccessPermissionKey    = []byte("network_access_permission")
 )
 
 func GetNetwrokAccessPermissionMessage(appID big.Int) [32]byte {
 	var bz [32]byte
 
 	ki := 0
-	for _, b := range NetworkAccessPermissionKey {
+	for _, b := range networkAccessPermissionKey {
 		bz[ki] = b
 		ki++
 	}

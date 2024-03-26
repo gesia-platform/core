@@ -20,14 +20,6 @@ importers:
         specifier: latest
         version: 1.13.0
 
-  apps/carbon-emission:
-    dependencies:
-      '@openzeppelin/contracts':
-        specifier: 4.7.3
-        version: 4.7.3
-
-  apps/carbon-neutral: {}
-
   apps/carbon-offset:
     dependencies:
       '@chainlink/contracts':
@@ -45,15 +37,9 @@ importers:
       '@truffle/hdwallet-provider':
         specifier: ^2.1.15
         version: 2.1.15
-
-  apps/notary:
-    dependencies:
-      '@openzeppelin/contracts':
-        specifier: 4.7.3
-        version: 4.7.3
-      '@truffle/hdwallet-provider':
-        specifier: ^2.1.15
-        version: 2.1.15
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
 
   packages/eslint-config:
     devDependencies:
@@ -2071,6 +2057,11 @@ packages:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
     dev: true
+
+  /dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /ecc-jsbn@0.1.2:
     resolution: {integrity: sha512-eh9O+hwRHNbG4BLTjEl3nw044CkGm5X6LoaCf7LPp7UU8Qrt47JYNi6nPX8xjW97TKGKm1ouctg0QSpZe9qrnw==}

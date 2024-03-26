@@ -4,17 +4,20 @@ import (
 	"net/url"
 
 	"github.com/gesia-platform/core/context"
+	"github.com/gesia-platform/core/notary"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type APIHandler struct {
-	Mux *echo.Echo
+	Mux    *echo.Echo
+	Notary *notary.Notary
 }
 
-func NewAPIHandler(ctx *context.Context) *APIHandler {
+func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 	mux := echo.New()
-	apiHandler := &APIHandler{Mux: mux}
+
+	apiHandler := &APIHandler{Mux: mux, Notary: notary}
 
 	mux.Use(middleware.Logger())
 	mux.Use(func(next echo.HandlerFunc) echo.HandlerFunc {

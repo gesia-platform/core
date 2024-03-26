@@ -5,21 +5,18 @@ import (
 	"net/http"
 
 	"github.com/gesia-platform/core/api/handler"
-	"github.com/gesia-platform/core/context"
 )
 
 type API struct {
 	server *http.Server
 }
 
-func NewAPI(port uint, context *context.Context) API {
+func NewAPI(port uint, apiHandler *handler.APIHandler) API {
 	api := API{}
-
-	handler := handler.NewAPIHandler(context)
 
 	api.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: handler.Mux,
+		Handler: apiHandler.Mux,
 	}
 
 	return api

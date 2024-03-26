@@ -2,9 +2,11 @@ package main
 
 import (
 	"github.com/gesia-platform/core/api"
+	"github.com/gesia-platform/core/api/handler"
 	"github.com/gesia-platform/core/chaintree"
 	"github.com/gesia-platform/core/config"
 	"github.com/gesia-platform/core/context"
+	"github.com/gesia-platform/core/notary"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +34,14 @@ func start(configPath string) {
 	context.SetChainTree(chainTree)
 	context.SetConfig(config)
 
-	api := api.NewAPI(config.Port, context)
+	notary := notary.NewNotary()
+
+	notary.SubscribeNetworkAccessRequested(context)
+	notary.SubscribeNotarizedWithCondition(context)
+
+	apiHandler := handler.NewAPIHandler(context, notary)
+
+	api := api.NewAPI(config.Port, apiHandler)
 
 	api.Start()
 }
