@@ -30,7 +30,7 @@ func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 		panic(err)
 	}
 
-	if bytes.Equal(owner.Bytes(), common.HexToAddress(config.ChainTree.Root.Address).Bytes()) {
+	if bytes.Equal(owner.Bytes(), common.HexToAddress(config.ChainTree.Address).Bytes()) {
 		fmt.Println("you are network owner")
 		fmt.Println("start subscribe notarized event")
 		notary.subscribeNotarized(ctx)

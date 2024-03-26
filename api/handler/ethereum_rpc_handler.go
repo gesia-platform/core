@@ -22,7 +22,7 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 		}
 
 		appPermission, err := store.NewAppPermissionStore(
-			common.HexToAddress(ctx.Config().ChainTree.Root.Address),
+			common.HexToAddress(ctx.Config().ChainTree.Address),
 			ctx.ChainTree().Root.Client(),
 		)
 		if err != nil {

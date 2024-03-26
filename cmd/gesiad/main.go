@@ -1,28 +1,60 @@
 package main
 
 import (
+	"encoding/hex"
+	"fmt"
+	"os"
+
 	"github.com/gesia-platform/core/api"
 	"github.com/gesia-platform/core/api/handler"
 	"github.com/gesia-platform/core/chaintree"
 	"github.com/gesia-platform/core/config"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/notary"
+	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start gesia poa node",
+	Use:   "gesiad",
+	Short: "Gesia PoA Node",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			panic(err)
-		}
-
-		start(configPath)
+		os.Exit(1)
 	},
 }
+
+var (
+	startCmd = &cobra.Command{
+		Use:   "start",
+		Short: "Start gesia poa node",
+		Run: func(cmd *cobra.Command, args []string) {
+			configPath, err := cmd.Flags().GetString("config")
+			if err != nil {
+				panic(err)
+			}
+
+			start(configPath)
+		},
+	}
+
+	genBlsPubCmd = &cobra.Command{
+		Use:   "gen-bls-key",
+		Short: `Generate BLS Key Pair (Hex)`,
+		Run: func(cmd *cobra.Command, args []string) {
+			sk, err := blst.RandKey()
+			if err != nil {
+				panic(err)
+			}
+
+			skHex := hex.EncodeToString(sk.Marshal())
+			pkHex := hex.EncodeToString((sk.PublicKey().Marshal()))
+
+			cmd.Printf("Generated BLS SecretKey: %s\n", skHex)
+			cmd.Printf("Generated BLS PublicKey: %s\n", pkHex)
+		},
+	}
+)
 
 func start(configPath string) {
 	config := config.NewConfig(configPath)
@@ -46,6 +78,16 @@ func start(configPath string) {
 	api.Start()
 }
 
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
 func init() {
-	rootCmd.Flags().StringP("config", "c", "", "toml config absolute path")
+	startCmd.Flags().StringP("config", "c", "", "toml config absolute path")
+
+	rootCmd.AddCommand(genBlsPubCmd)
+	rootCmd.AddCommand(startCmd)
 }

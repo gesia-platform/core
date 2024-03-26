@@ -4,14 +4,16 @@ type ChainTree struct {
 	Root ChainTreeRoot `toml:"root"`
 
 	Host ChainTreeHost `toml:"host"`
-}
-
-type ChainTreeRoot struct {
-	ChainID uint64 `toml:"chain_id"`
 
 	Address string `toml:"address"`
 
 	PrivateKey string `toml:"private_key"`
+
+	BLSSecretKey string `toml:"bls_secret_key"`
+}
+
+type ChainTreeRoot struct {
+	ChainID uint64 `toml:"chain_id"`
 
 	RPCURL string `toml:"rpc_url"`
 
@@ -25,11 +27,7 @@ type ChainTreeRoot struct {
 type ChainTreeHost struct {
 	ChainID uint64 `toml:"chain_id"`
 
-	Address string `toml:"address"`
-
 	NotaryPublicAddress string `toml:"notary_public_address"`
-
-	PrivateKey string `toml:"private_key"`
 
 	RPCURL string `toml:"rpc_url"`
 

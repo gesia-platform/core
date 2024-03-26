@@ -25,7 +25,7 @@ func (notary *Notary) aggreate(ctx *context.Context, appID *big.Int, signatures 
 		panic(err)
 	}
 
-	txOpts, err := genTransactOpts(rootClient, chainId, config.ChainTree.Root.PrivateKey)
+	txOpts, err := genTransactOpts(rootClient, chainId, config.ChainTree.PrivateKey)
 	if err != nil {
 		return err
 	}

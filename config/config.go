@@ -7,8 +7,7 @@ import (
 )
 
 type Config struct {
-	Port       uint   `toml:"port"`
-	GatewayURL string `toml:"gateway_url"`
+	Port uint `toml:"port"`
 
 	ChainTree ChainTree `toml:"chain_tree"`
 }

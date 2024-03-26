@@ -1,11 +1,11 @@
 package notary
 
 import (
+	"encoding/hex"
 	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
 	"github.com/gesia-platform/core/types"
@@ -33,12 +33,12 @@ func notarize(ctx *context.Context, prefix [1]byte, appID *big.Int) error {
 		return err
 	}
 
-	ecdsa, err := crypto.HexToECDSA(config.ChainTree.Host.PrivateKey)
+	skbz, err := hex.DecodeString(config.ChainTree.BLSSecretKey)
 	if err != nil {
 		return err
 	}
 
-	sk, err := blst.SecretKeyFromBytes(crypto.FromECDSA(ecdsa))
+	sk, err := blst.SecretKeyFromBytes(skbz)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func notarize(ctx *context.Context, prefix [1]byte, appID *big.Int) error {
 	chainId := new(big.Int)
 	chainId.SetUint64(config.ChainTree.Host.ChainID)
 
-	txOpts, err := genTransactOpts(hostClient, chainId, config.ChainTree.Host.PrivateKey)
+	txOpts, err := genTransactOpts(hostClient, chainId, config.ChainTree.PrivateKey)
 	if err != nil {
 		return err
 	}
