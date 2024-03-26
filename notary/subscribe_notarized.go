@@ -2,6 +2,7 @@ package notary
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -9,6 +10,8 @@ import (
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
 	"github.com/gesia-platform/core/types"
+	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
+	blscommon "github.com/prysmaticlabs/prysm/v5/crypto/bls/common"
 )
 
 func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
@@ -87,9 +90,10 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 	}
 
 	var signatures [][]byte
+	var pubkeys []blscommon.PublicKey
 
 	for _, signer := range signers {
-		_, signature, err := notaryPublic.GetNotarization(
+		pubkeyBz, signature, err := notaryPublic.GetNotarization(
 			&bind.CallOpts{Pending: true},
 			log.Prefix,
 			log.AppID,
@@ -97,11 +101,33 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 		)
 		if err == nil && len(signature) >= 1 {
 			signatures = append(signatures, signature)
+
+			pubKey, err := blst.PublicKeyFromBytes(pubkeyBz)
+			if err == nil {
+				fmt.Println(fmt.Errorf("failed to blst public key from bytes: %d", err))
+
+				pubkeys = append(pubkeys, pubKey)
+			}
 		}
 	}
 
 	if len(signers) == len(signatures) {
-		notary.aggreate(ctx, log.AppID, signatures)
+		aggreatedSiganture, err := blst.AggregateCompressedSignatures(signatures)
+		if err != nil {
+			return err
+		}
+
+		var message [32]byte
+		switch log.Prefix {
+		case types.NetworkAccessPermissionPrefix:
+			message = types.GetNetwrokAccessPermissionMessage(*log.AppID)
+		}
+
+		if verified := aggreatedSiganture.FastAggregateVerify(pubkeys, message); !verified {
+			return errors.New("invalid bls signatures")
+		}
+
+		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal())
 	}
 
 	return nil

@@ -7,12 +7,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
-	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
 )
 
-func (notary *Notary) aggreate(ctx *context.Context, appID *big.Int, signatures [][]byte) error {
-	rootClient := ctx.ChainTree().Root.Client()
+func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appID *big.Int, aggreatedSiganture []byte) error {
 	config := ctx.Config()
+	rootClient := ctx.ChainTree().Root.Client()
 
 	chainId := new(big.Int)
 	chainId.SetUint64(config.ChainTree.Root.ChainID)
@@ -30,12 +29,7 @@ func (notary *Notary) aggreate(ctx *context.Context, appID *big.Int, signatures 
 		return err
 	}
 
-	aggreatedSiganture, err := blst.AggregateCompressedSignatures(signatures)
-	if err != nil {
-		return err
-	}
-
-	tx, err := appPermission.ResponseNetworkAccess(txOpts, appID, notary.networkAccountAddress, aggreatedSiganture.Marshal(), true)
+	tx, err := appPermission.ResponseNetworkAccess(txOpts, appID, notary.networkAccountAddress, aggreatedSiganture, true)
 	if err != nil {
 		return err
 	}
