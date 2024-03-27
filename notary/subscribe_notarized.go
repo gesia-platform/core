@@ -34,14 +34,16 @@ func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 	}
 
 	if bytes.Equal(owner.Bytes(), common.HexToAddress(config.ChainTree.Address).Bytes()) {
-		fmt.Println("you are network owner")
-		fmt.Println("start subscribe notarized event")
-		notary.subscribeNotarized(ctx)
+		fmt.Println("you are the network account owner")
+		fmt.Println("start subscribe notarized event for bls aggreation")
+		if err := notary.subscribeNotarized(ctx); err != nil {
+			panic(err)
+		}
 	}
 
 }
 
-func (notary *Notary) subscribeNotarized(ctx *context.Context) {
+func (notary *Notary) subscribeNotarized(ctx *context.Context) error {
 	config := ctx.Config()
 	hostClient := ctx.ChainTree().Host.WSClient()
 
@@ -50,7 +52,7 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) {
 		hostClient,
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	var logs chan *store.NotaryPublicStoreNotarized
@@ -60,7 +62,7 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) {
 		logs,
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	go func() {
@@ -70,18 +72,23 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) {
 				fmt.Println(fmt.Errorf("watch notarized subscription err: %d", err))
 			case log := <-logs:
 				fmt.Printf("watched notarized log: %d\n", &log)
-				notary.checkAggreation(ctx, log, notaryPublic)
+				if err := notary.checkAggreation(ctx, log, notaryPublic); err != nil {
+					fmt.Println(fmt.Errorf("failed aggreation: %d", err))
+				}
 			}
 		}
 	}()
 
+	return nil
 }
 
 func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPublicStoreNotarized, notaryPublic *store.NotaryPublicStore) error {
+	hostClient := ctx.ChainTree().Host.Client()
+
 	var signers []common.Address
 	var response types.JsonRPCResponse
 
-	if err := ctx.ChainTree().Host.Client().Client().Call(
+	if err := hostClient.Client().Call(
 		&response,
 		"clique_getSigners",
 	); err != nil {
@@ -105,10 +112,9 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 		if err == nil && len(signature) >= 1 {
 			signatures = append(signatures, signature)
 
-			pubKey, err := blst.PublicKeyFromBytes(pubkeyBz)
-			if err == nil {
-				fmt.Println(fmt.Errorf("failed to blst public key from bytes: %d", err))
-
+			if pubKey, err := blst.PublicKeyFromBytes(pubkeyBz); err != nil {
+				return errors.Join(err, fmt.Errorf("failed to gen bls pubkey from bytes: %s", signer.Hex()))
+			} else {
 				pubkeys = append(pubkeys, pubKey)
 			}
 		}
@@ -127,11 +133,11 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 		}
 
 		if verified := aggreatedSiganture.FastAggregateVerify(pubkeys, message); !verified {
-			return errors.New("invalid bls signatures")
+			return fmt.Errorf("bls verify failed")
 		}
 
 		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal())
-	}
+	} // else wait
 
 	return nil
 }

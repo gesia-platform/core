@@ -40,7 +40,6 @@ func (notary *Notary) SubscribeNetworkAccessRequested(ctx *context.Context) {
 				fmt.Println(fmt.Errorf("watch network access requested subscription err: %d", err))
 			case log := <-logs:
 				fmt.Printf("watched network access requested log: %d\n", &log)
-
 				if bytes.Equal(
 					log.NetworkAccount.Bytes(),
 					common.HexToAddress(config.ChainTree.Root.NetworkAccountAddress).Bytes(),
