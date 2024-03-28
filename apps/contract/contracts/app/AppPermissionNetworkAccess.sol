@@ -38,8 +38,6 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         address networkAccount,
         string memory ip
     ) external {
-        require(bytes(ip).length == 32, "incorrect ipv4 address");
-
         require(
             bytes(networkAccessRequests[appID][networkAccount].ip).length == 0,
             "already permission requested"
@@ -58,8 +56,6 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         address networkAccount,
         string memory ip
     ) external {
-        require(bytes(ip).length == 32, "incorrect ipv4 address");
-
         require(
             bytes(networkAccessRequests[appID][networkAccount].ip).length != 0,
             "permission not requested"
