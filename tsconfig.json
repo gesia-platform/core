@@ -1,3 +1,3 @@
 {
-  "extends": "@gesia/typescript-config/base.json"
+	"extends": "@gesia/typescript-config/base.json"
 }
