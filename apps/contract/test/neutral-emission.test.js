@@ -9,12 +9,12 @@ contract('AppStore and AppPermission Test', (accounts) => {
 	let appPermission;
 	let networkAccount;
 	const domain = 'https://test2-api.carbonmonster.kr/';
-	const ip = '3.38.3.29';
+	const ip = '3.39.139.167';
 	let appId = 1; // ! +1
 
-	const appStoreAddress = '0x40C506074157278555218a6def53fF14A6Cae5E6';
-	const appPermissionAddress = '0x07ea7ca3c49A8e97ec6907289bB084e3A017c3D6';
-	const networkAccountAddress = '0xa01C9b7F585e47969f3D82030344417D2B41C3BC';
+	const appStoreAddress = '0xde036bD4769b6bF96f83E5e3c3F2b1F59d83851d';
+	const appPermissionAddress = '0x42b6146640d15926184DeC78f0DFB7BCBa5291Ed';
+	const networkAccountAddress = '0x4b2aACB1Aa1b7Ee8Ce6f0c6d8a4ccfd930372668';
 
 	before(async () => {
 		appStore = await AppStore.at(appStoreAddress);
