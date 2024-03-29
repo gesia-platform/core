@@ -15,6 +15,8 @@ const WalkCarbonEmissionsCalculator = artifacts.require('WalkCarbonEmissionsCalc
 const YoutubeCarbonEmissionsCalculator = artifacts.require('YoutubeCarbonEmissionsCalculator');
 
 module.exports = async (deployer) => {
+	if (process.env.SKIP_MIGRATIONS) return;
+
 	await deployer.deploy(CarbonEmissions, 'BeefCarbonEmissions');
 	const beefCarbonEmissions = await CarbonEmissions.deployed();
 	await deployer.deploy(BeefCarbonEmissionsCalculator, beefCarbonEmissions.address);
