@@ -34,7 +34,7 @@ func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appI
 		return err
 	}
 
-	fmt.Printf("response network access success tx: %d\n", tx)
+	fmt.Printf("successfully response network access permission tx: %s\n", tx.Hash())
 
 	return nil
 }

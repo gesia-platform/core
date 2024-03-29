@@ -10,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	coretypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
 	"github.com/gesia-platform/core/types"
@@ -43,17 +44,22 @@ func (notary *Notary) SubscribeNetworkAccessRequested(ctx *context.Context) {
 			case err := <-sub.Err():
 				fmt.Println(fmt.Errorf("watch network access requested subscription err: %d", err))
 			case log := <-logs:
-				var event store.AppPermissionStoreNetworkAccessPermissionRequested
+				if bytes.Equal(
+					crypto.Keccak256Hash([]byte("NetworkAccessPermissionRequested(uint256,address,string)")).Bytes(),
+					log.Topics[0].Bytes(),
+				) {
+					var event store.AppPermissionStoreNetworkAccessPermissionRequested
 
-				if err := appPermissionABI.UnpackIntoInterface(&event, "NetworkAccessPermissionRequested", log.Data); err != nil {
-					fmt.Println(fmt.Errorf("faild to unpack event: %d", err))
-				} else {
-					if bytes.Equal(
-						event.NetworkAccount.Bytes(),
-						common.HexToAddress(config.ChainTree.Root.NetworkAccountAddress).Bytes(),
-					) {
-						if err := notarize(ctx, types.NetworkAccessPermissionPrefix, event.AppID); err != nil {
-							fmt.Println(fmt.Errorf("notarize network access requested subscription err: %d", err))
+					if err := appPermissionABI.UnpackIntoInterface(&event, "NetworkAccessPermissionRequested", log.Data); err != nil {
+						fmt.Println(fmt.Errorf("faild to unpack event: %d", err))
+					} else {
+						if bytes.Equal(
+							event.NetworkAccount.Bytes(),
+							common.HexToAddress(config.ChainTree.Root.NetworkAccountAddress).Bytes(),
+						) {
+							if err := notarize(ctx, types.NetworkAccessPermissionPrefix, event.AppID); err != nil {
+								fmt.Println(fmt.Errorf("notarize network access requested subscription err: %d", err))
+							}
 						}
 					}
 				}

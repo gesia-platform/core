@@ -3,12 +3,14 @@ package notary
 import (
 	"bytes"
 	basectx "context"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
 	coretypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -40,8 +42,7 @@ func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 	}
 
 	if bytes.Equal(owner.Bytes(), common.HexToAddress(config.ChainTree.Address).Bytes()) {
-		fmt.Println("you are the network account owner")
-		fmt.Println("start subscribe notarized event for bls aggreation")
+		fmt.Println("start subscribe notarized event for bls aggreation (you're network account owner)")
 		if err := notary.subscribeNotarized(ctx); err != nil {
 			panic(err)
 		}
@@ -77,13 +78,18 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) error {
 			case err := <-sub.Err():
 				fmt.Println(fmt.Errorf("watch notarized subscription err: %d", err))
 			case log := <-logs:
-				var event store.NotaryPublicStoreNotarized
+				if bytes.Equal(
+					crypto.Keccak256Hash([]byte("Notarized(bytes1,uint256,bytes,address)")).Bytes(),
+					log.Topics[0].Bytes(),
+				) {
+					var event store.NotaryPublicStoreNotarized
 
-				if err := notaryPublicABI.UnpackIntoInterface(&event, "Notarized", log.Data); err != nil {
-					fmt.Println(fmt.Errorf("faild to unpack event: %d", err))
-				} else {
-					if err := notary.checkAggreation(ctx, &event); err != nil {
-						fmt.Println(fmt.Errorf("failed aggreation: %d", err))
+					if err := notaryPublicABI.UnpackIntoInterface(&event, "Notarized", log.Data); err != nil {
+						fmt.Println(fmt.Errorf("faild to unpack event: %d", err))
+					} else {
+						if err := notary.checkAggreation(ctx, &event); err != nil {
+							fmt.Println(fmt.Errorf("failed aggreation: %d", err))
+						}
 					}
 				}
 
@@ -106,15 +112,21 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 	}
 
 	var signers []common.Address
-	var response types.JsonRPCResponse
+	var response []string
+
+	blockNumber, err := hostClient.BlockNumber(basectx.TODO())
+	if err != nil {
+		return err
+	}
 
 	if err := hostClient.Client().Call(
 		&response,
 		"clique_getSigners",
+		fmt.Sprintf("0x%x", blockNumber),
 	); err != nil {
 		return err
 	} else {
-		for _, signer := range response.Result {
+		for _, signer := range response {
 			signers = append(signers, common.HexToAddress(signer))
 		}
 	}
@@ -123,28 +135,40 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 	var pubkeys []blscommon.PublicKey
 
 	for _, signer := range signers {
-		pubkeyBz, signature, err := notaryPublic.GetNotarization(
+		if pubkeyBz, signature, err := notaryPublic.GetNotarization(
 			&bind.CallOpts{Pending: true},
 			log.Prefix,
 			log.AppID,
 			signer,
-		)
-		if err == nil && len(signature) >= 1 {
-			signatures = append(signatures, signature)
-
-			if pubKey, err := blst.PublicKeyFromBytes(pubkeyBz); err != nil {
-				return errors.Join(err, fmt.Errorf("failed to gen bls pubkey from bytes: %s", signer.Hex()))
-			} else {
-				pubkeys = append(pubkeys, pubKey)
+		); err != nil {
+			return err
+		} else {
+			if len(signature) >= 1 {
+				if len(pubkeyBz) == 0 {
+					return fmt.Errorf("bls public key is not registered: %s", signer.Hex())
+				} else {
+					if pubKey, err := blst.PublicKeyFromBytes(pubkeyBz); err != nil {
+						return errors.Join(err, fmt.Errorf("failed to gen bls pubkey from bytes: %s", signer.Hex()))
+					} else {
+						pubkeys = append(pubkeys, pubKey)
+						signatures = append(signatures, signature)
+					}
+				}
 			}
 		}
 	}
 
 	if len(signers) == len(signatures) {
+		fmt.Println("ready to bls aggreation")
+		for i, siganture := range signatures {
+			fmt.Printf("%s's BLS siganture: %s\n", signers[i].Hex(), hex.EncodeToString(siganture))
+		}
+
 		aggreatedSiganture, err := blst.AggregateCompressedSignatures(signatures)
 		if err != nil {
 			return err
 		}
+		fmt.Printf("aggreated BLS siganture: %s\n", hex.EncodeToString(aggreatedSiganture.Marshal()))
 
 		var message [32]byte
 		switch log.Prefix {

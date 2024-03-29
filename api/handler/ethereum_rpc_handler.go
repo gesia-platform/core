@@ -7,6 +7,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
 	"github.com/labstack/echo/v4"
@@ -29,7 +30,7 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 			return err
 		}
 
-		requested, ip, err := appPermission.GetNetworkAccessRequest(
+		requested, iphex, err := appPermission.GetNetworkAccessRequest(
 			&bind.CallOpts{Pending: true},
 			big.NewInt(appID),
 			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
@@ -37,6 +38,13 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 		if err != nil {
 			return err
 		}
+
+		ipbz, err := hexutil.Decode(iphex)
+		if err != nil {
+			return err
+		}
+
+		ip := string(ipbz[:])
 
 		if !requested || !strings.EqualFold(ip, ctx.Context.RealIP()) {
 			return echo.ErrUnauthorized
@@ -51,65 +59,6 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 		} else if !isGranted {
 			return echo.ErrUnauthorized
 		}
-
-		// Since only the network account owner designated by the node can respond,
-		// it is decided to allow the granted without separate verification.
-
-		/*notaryPublic, err := store.NewNotaryPublicStore(
-			common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
-			ctx.ChainTree().Host.Client(),
-		)
-		if err != nil {
-			return err
-		}
-
-		// Fetch Clique Signers
-		var signers []common.Address
-		var response types.JsonRPCResponse
-
-		if err := ctx.ChainTree().Host.Client().Client().Call(
-			&response,
-			"clique_getSigners",
-		); err != nil {
-			return err
-		} else {
-			for _, signer := range response.Result {
-				signers = append(signers, common.HexToAddress(signer))
-			}
-		}
-
-		var signatures [][]byte
-		var pubkeys []blst.PublicKey
-
-		for _, signer := range signers {
-			if pubkey, signature, err := notaryPublic.GetNotarization(
-				&bind.CallOpts{Pending: true},
-				types.NetworkAccessPermissionPrefix,
-				signer,
-			); err == nil && len(signature) >= 1 {
-				signatures = append(signatures, signature)
-				if key, err := blst.PublicKeyFromBytes(pubkey); err != nil {
-					return err
-				} else {
-					pubkeys = append(pubkeys, key)
-				}
-			}
-		}
-
-		if len(pubkeys) == 0 {
-			return ehco.ErrUnauthorized
-		}
-
-		message := types.GetNetwrokAccessPermissionMessage(*big.NewInt(appID))
-
-		aggreatedSig, err := blst.AggregateCompressedSignatures(signatures)
-		if err != nil {
-			return err
-		}
-
-		if verified := aggreatedSig.FastAggregateVerify(pubkeys, message); !verified {
-			return ehco.ErrUnauthorized
-		}*/
 
 		return next(c)
 	}

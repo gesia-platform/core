@@ -45,7 +45,7 @@ func notarize(ctx *context.Context, prefix [1]byte, appID *big.Int) error {
 
 	signature := sk.Sign(message[:])
 
-	fmt.Printf("bls siganture: %d\n", signature.Marshal())
+	fmt.Printf("bls siganture: %s\n", hex.EncodeToString(signature.Marshal()))
 
 	chainId := new(big.Int)
 	chainId.SetUint64(config.ChainTree.Host.ChainID)
@@ -65,7 +65,7 @@ func notarize(ctx *context.Context, prefix [1]byte, appID *big.Int) error {
 		return err
 	}
 
-	fmt.Printf("notarized success tx: %d\n", tx)
+	fmt.Printf("successfully notarized tx: %s\n", tx.Hash())
 
 	return nil
 }
