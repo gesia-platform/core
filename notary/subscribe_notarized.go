@@ -2,9 +2,15 @@ package notary
 
 import (
 	"bytes"
+	basectx "context"
 	"errors"
 	"fmt"
+	"strings"
 
+	"github.com/ethereum/go-ethereum"
+	coretypes "github.com/ethereum/go-ethereum/core/types"
+
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gesia-platform/core/context"
@@ -45,24 +51,24 @@ func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 
 func (notary *Notary) subscribeNotarized(ctx *context.Context) error {
 	config := ctx.Config()
-	hostClient := ctx.ChainTree().Host.WSClient()
+	hostWSClient := ctx.ChainTree().Host.WSClient()
 
-	notaryPublic, err := store.NewNotaryPublicStore(
-		common.HexToAddress(config.ChainTree.Host.NotaryPublicAddress),
-		hostClient,
-	)
+	notaryPublicABI, err := abi.JSON(strings.NewReader(string(store.NotaryPublicStoreABI)))
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	var logs chan *store.NotaryPublicStoreNotarized
+	logs := make(chan coretypes.Log)
 
-	sub, err := notaryPublic.WatchNotarized(
-		&bind.WatchOpts{},
+	sub, err := hostWSClient.SubscribeFilterLogs(
+		basectx.Background(),
+		ethereum.FilterQuery{
+			Addresses: []common.Address{common.HexToAddress(config.ChainTree.Host.NotaryPublicAddress)},
+		},
 		logs,
 	)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	go func() {
@@ -71,10 +77,16 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) error {
 			case err := <-sub.Err():
 				fmt.Println(fmt.Errorf("watch notarized subscription err: %d", err))
 			case log := <-logs:
-				fmt.Printf("watched notarized log: %d\n", &log)
-				if err := notary.checkAggreation(ctx, log, notaryPublic); err != nil {
-					fmt.Println(fmt.Errorf("failed aggreation: %d", err))
+				var event store.NotaryPublicStoreNotarized
+
+				if err := notaryPublicABI.UnpackIntoInterface(&event, "Notarized", log.Data); err != nil {
+					fmt.Println(fmt.Errorf("faild to unpack event: %d", err))
+				} else {
+					if err := notary.checkAggreation(ctx, &event); err != nil {
+						fmt.Println(fmt.Errorf("failed aggreation: %d", err))
+					}
 				}
+
 			}
 		}
 	}()
@@ -82,8 +94,16 @@ func (notary *Notary) subscribeNotarized(ctx *context.Context) error {
 	return nil
 }
 
-func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPublicStoreNotarized, notaryPublic *store.NotaryPublicStore) error {
+func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPublicStoreNotarized) error {
 	hostClient := ctx.ChainTree().Host.Client()
+
+	notaryPublic, err := store.NewNotaryPublicStore(
+		common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
+		hostClient,
+	)
+	if err != nil {
+		return err
+	}
 
 	var signers []common.Address
 	var response types.JsonRPCResponse
