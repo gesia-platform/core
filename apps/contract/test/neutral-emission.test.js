@@ -12,9 +12,9 @@ contract('AppStore and AppPermission Test', (accounts) => {
 	const ip = '3.39.139.167';
 	let appId = 1; // ! +1
 
-	const appStoreAddress = '0xde036bD4769b6bF96f83E5e3c3F2b1F59d83851d';
-	const appPermissionAddress = '0x42b6146640d15926184DeC78f0DFB7BCBa5291Ed';
-	const networkAccountAddress = '0x4b2aACB1Aa1b7Ee8Ce6f0c6d8a4ccfd930372668';
+	const appStoreAddress = '0xB0A568ac6a54F542C43882ea2E14a4bB3688b47a';
+	const appPermissionAddress = '0x30947A48c5B64651e38DEA64cAdE0AeA1946B14b';
+	const networkAccountAddress = '0x2D5c5950bB81379c969090733ee9c5970Eb3004d';
 
 	before(async () => {
 		appStore = await AppStore.at(appStoreAddress);
@@ -34,13 +34,13 @@ contract('AppStore and AppPermission Test', (accounts) => {
 	});
 
 	it('should allow a valid network access request via AppPermission', async () => {
-		const tx = await appPermission.requestNetworkAccess(appId, networkAccount.address, web3.utils.asciiToHex(ip), { from: accounts[0] });
+		const tx = await appPermission.requestNetworkAccess(appId, networkAccount.address, ip, { from: accounts[0] });
 		const networkAccessPermissionRequestedEvent = tx.logs.find((e) => e.event === 'NetworkAccessPermissionRequested');
 
 		const { appID, networkAccount: eventNetworkAccount, ip: eventIp } = networkAccessPermissionRequestedEvent.args;
 
 		assert.equal(appID.toNumber(), appId, 'App ID should match');
 		assert.equal(eventNetworkAccount, networkAccount.address, 'Network account should match');
-		assert.equal(web3.utils.hexToAscii(eventIp).replace(/\u0000/g, ''), ip, 'IP should match');
+		assert.equal(eventIp, ip, 'IP should match');
 	});
 });
