@@ -14,7 +14,6 @@ import (
 
 func notarize(ctx *context.Context, prefix [1]byte, appID *big.Int) error {
 	fmt.Printf("notarize prefix: %d, appId: %d\n", prefix, appID.Int64())
-
 	config := ctx.Config()
 	hostClient := ctx.ChainTree().Host.Client()
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"net/http"
 	"net/url"
 
 	"github.com/gesia-platform/core/context"
@@ -28,20 +29,48 @@ func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 		}
 	})
 
-	ethereum := mux.Group(ctx.Config().ChainTree.Host.ProxyPath)
+	proxyPath := ctx.Config().ChainTree.Host.ProxyPath
+	proxyURL, err := url.Parse(ctx.Config().ChainTree.Host.RPCURL)
+	if err != nil {
+		panic(err)
+	}
+
+	ethereum := mux.Group(proxyPath)
 
 	ethereum.Use(apiHandler.EthereumRPCHandler)
 
-	proxyURL, err := url.Parse(ctx.Config().ChainTree.Host.RPCURL)
-	if err != nil {
-		panic("failed to parse ethereum rpc url.")
-	}
+	// json RPC
+	ethereum.POST("", func(c echo.Context) error {
+		client := &http.Client{}
 
-	ethereum.Use(middleware.Proxy(middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
-		{
-			URL: proxyURL,
-		},
-	})))
+		req, err := http.NewRequest(c.Request().Method, proxyURL.String(), c.Request().Body)
+		if err != nil {
+			return err
+		}
+
+		for name, headers := range c.Request().Header {
+			for _, header := range headers {
+				req.Header.Add(name, header)
+			}
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+
+		for name, headers := range resp.Header {
+			for _, header := range headers {
+				c.Response().Header().Add(name, header)
+			}
+		}
+
+		return c.Stream(
+			resp.StatusCode,
+			resp.Header.Get("Content-Type"),
+			resp.Body,
+		)
+	})
 
 	return apiHandler
 }
