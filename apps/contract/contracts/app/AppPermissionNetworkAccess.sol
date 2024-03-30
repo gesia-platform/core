@@ -5,17 +5,15 @@ import "./AppPermissionBase.sol";
 import "../network/NetworkAccount.sol";
 
 contract AppPermissionNetworkAccess is AppPermissionBase {
-    struct NetworkAccessRequest {
-        string ip;
-    }
-
     struct NetworkAccessResponse {
         bytes signature;
         bool isGranted;
     }
 
-    mapping(uint256 appID => mapping(address networkAccount => NetworkAccessRequest))
+    mapping(uint256 appID => mapping(address networkAccount => string ip))
         internal networkAccessRequests;
+
+    mapping(string ip => uint256 appID) internal getAppIDByIP;
 
     mapping(uint256 appID => mapping(address networkAccount => NetworkAccessResponse))
         internal networkAccessResponses;
@@ -39,14 +37,15 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         string memory ip
     ) external {
         require(
-            bytes(networkAccessRequests[appID][networkAccount].ip).length == 0,
+            bytes(networkAccessRequests[appID][networkAccount]).length == 0,
             "already permission requested"
         );
 
         (uint256 id, , address owner) = appStore.getApp(appID);
         require(owner == msg.sender, "sender is not app owner");
 
-        networkAccessRequests[appID][networkAccount] = NetworkAccessRequest(ip);
+        networkAccessRequests[appID][networkAccount] = ip;
+        getAppIDByIP[ip] = appID;
 
         emit NetworkAccessPermissionRequested(id, networkAccount, ip);
     }
@@ -56,15 +55,16 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         address networkAccount,
         string memory ip
     ) external {
-        require(
-            bytes(networkAccessRequests[appID][networkAccount].ip).length != 0,
-            "permission not requested"
-        );
+        string memory previousIP = networkAccessRequests[appID][networkAccount];
+        require(bytes(previousIP).length != 0, "permission not requested");
 
         (, , address owner) = appStore.getApp(appID);
         require(owner == msg.sender, "sender is not app owner");
 
-        networkAccessRequests[appID][networkAccount] = NetworkAccessRequest(ip);
+        delete getAppIDByIP[previousIP];
+
+        networkAccessRequests[appID][networkAccount] = ip;
+        getAppIDByIP[ip] = appID;
     }
 
     function responseNetworkAccess(
@@ -96,11 +96,15 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         uint256 appID,
         address networkAccount
     ) public view returns (bool, string memory) {
-        NetworkAccessRequest memory request = networkAccessRequests[appID][
-            networkAccount
-        ];
+        string memory ip = networkAccessRequests[appID][networkAccount];
 
-        return (bytes(request.ip).length != 0, request.ip);
+        return (bytes(ip).length != 0, ip);
+    }
+
+    function getAppID(string memory ip) public view returns (bool, uint256) {
+        uint256 appID = getAppIDByIP[ip];
+
+        return (appID != 0, appID);
     }
 
     function getNetworkAccessResponse(
