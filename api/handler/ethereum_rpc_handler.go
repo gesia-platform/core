@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"math/big"
-	"strconv"
-	"strings"
+	"errors"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -17,11 +15,6 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 	return func(c echo.Context) error {
 		ctx := c.(*context.Context)
 
-		appID, err := strconv.ParseInt(c.Request().Header.Get("x-application-id"), 10, 64)
-		if err != nil {
-			return err
-		}
-
 		appPermission, err := store.NewAppPermissionStore(
 			common.HexToAddress(ctx.Config().ChainTree.Root.AppPermissionAddress),
 			ctx.ChainTree().Root.Client(),
@@ -30,29 +23,19 @@ func (handler *APIHandler) EthereumRPCHandler(next echo.HandlerFunc) echo.Handle
 			return err
 		}
 
-		requested, iphex, err := appPermission.GetNetworkAccessRequest(
+		appExists, appID, err := appPermission.GetAppID(
 			&bind.CallOpts{Pending: true},
-			big.NewInt(appID),
-			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
+			hexutil.Encode([]byte(ctx.Context.RealIP())),
 		)
 		if err != nil {
 			return err
-		}
-
-		ipbz, err := hexutil.Decode(iphex)
-		if err != nil {
-			return err
-		}
-
-		ip := string(ipbz[:])
-
-		if !requested || !strings.EqualFold(ip, ctx.Context.RealIP()) {
-			return echo.ErrUnauthorized
+		} else if !appExists {
+			return errors.New("does not exist app at request ip")
 		}
 
 		if _, _, isGranted, err := appPermission.GetNetworkAccessResponse(
 			&bind.CallOpts{Pending: true},
-			big.NewInt(appID),
+			appID,
 			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
 		); err != nil {
 			return err
