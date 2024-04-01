@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"math/big"
 	"os"
 
 	"github.com/gesia-platform/core/api"
@@ -11,6 +12,7 @@ import (
 	"github.com/gesia-platform/core/config"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/notary"
+	"github.com/gesia-platform/core/types"
 	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
 	"github.com/spf13/cobra"
 )
@@ -38,7 +40,7 @@ var (
 		},
 	}
 
-	genBlsPubCmd = &cobra.Command{
+	genBlsKeyCmd = &cobra.Command{
 		Use:   "gen-bls-key",
 		Short: `Generate BLS Key Pair (Hex)`,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -52,6 +54,45 @@ var (
 
 			cmd.Printf("Generated BLS SecretKey: %s\n", skHex)
 			cmd.Printf("Generated BLS PublicKey: %s\n", pkHex)
+		},
+	}
+
+	genBlsSignatureCmd = &cobra.Command{
+		Use:   "gen-bls-signature",
+		Short: `Generate BLS Signatrue given appID, secretKey, messageType`,
+		Run: func(cmd *cobra.Command, args []string) {
+			secretKey, err := cmd.Flags().GetString("secret-key")
+			if err != nil {
+				panic(err)
+			}
+
+			appID, err := cmd.Flags().GetUint64("app-id")
+			if err != nil {
+				panic(err)
+			}
+
+			messageType, err := cmd.Flags().GetString("message-type")
+			if err != nil {
+				panic(err)
+			}
+
+			skbz, err := hex.DecodeString(secretKey)
+			if err != nil {
+				panic(err)
+			}
+
+			secret, err := blst.SecretKeyFromBytes(skbz)
+			if err != nil {
+				panic(err)
+			}
+
+			var message [32]byte
+			switch messageType {
+			case string(types.NetworkAccessPermissionKey):
+				message = types.GetNetwrokAccessPermissionMessage(*big.NewInt(int64(appID)))
+			}
+
+			cmd.Printf("Signed BLS Signature: %s\n", hex.EncodeToString(secret.Sign(message[:]).Marshal()))
 		},
 	}
 )
@@ -95,8 +136,18 @@ func main() {
 }
 
 func init() {
-	startCmd.Flags().StringP("config", "c", "", "toml config absolute path")
-
-	rootCmd.AddCommand(genBlsPubCmd)
+	startCmd.Flags().String("config", "", "toml config absolute path")
 	rootCmd.AddCommand(startCmd)
+
+	rootCmd.AddCommand(genBlsKeyCmd)
+
+	genBlsSignatureCmd.Flags().String("secret-key", "", "bls secret key hex")
+	genBlsSignatureCmd.Flags().Uint64("app-id", 0, "taget app id")
+	genBlsSignatureCmd.Flags().String(
+		"message-type",
+		"",
+		`target meessage type
+	1. 'network_access_permission'`)
+
+	rootCmd.AddCommand(genBlsSignatureCmd)
 }
