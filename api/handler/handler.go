@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"net/http"
-	"net/url"
+	"strings"
 
+	apimiddleware "github.com/gesia-platform/core/api/middleware"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/notary"
 	"github.com/labstack/echo/v4"
@@ -11,14 +11,15 @@ import (
 )
 
 type APIHandler struct {
-	Mux    *echo.Echo
-	Notary *notary.Notary
+	Mux     *echo.Echo
+	Notary  *notary.Notary
+	Context *context.Context
 }
 
 func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 	mux := echo.New()
 
-	apiHandler := &APIHandler{Mux: mux, Notary: notary}
+	apiHandler := &APIHandler{Mux: mux, Notary: notary, Context: ctx}
 
 	mux.Use(middleware.Logger())
 	mux.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -29,48 +30,29 @@ func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 		}
 	})
 
-	proxyPath := ctx.Config().ChainTree.Host.ProxyPath
-	proxyURL, err := url.Parse(ctx.Config().ChainTree.Host.RPCURL)
-	if err != nil {
-		panic(err)
-	}
-
-	ethereum := mux.Group(proxyPath)
-
-	ethereum.Use(apiHandler.EthereumRPCHandler)
-
-	// json RPC
-	ethereum.POST("", func(c echo.Context) error {
-		client := &http.Client{}
-
-		req, err := http.NewRequest(c.Request().Method, proxyURL.String(), c.Request().Body)
-		if err != nil {
-			return err
-		}
-
-		for name, headers := range c.Request().Header {
-			for _, header := range headers {
-				req.Header.Add(name, header)
-			}
-		}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			return err
-		}
-
-		for name, headers := range resp.Header {
-			for _, header := range headers {
-				c.Response().Header().Add(name, header)
-			}
-		}
-
-		return c.Stream(
-			resp.StatusCode,
-			resp.Header.Get("Content-Type"),
-			resp.Body,
-		)
-	})
+	apiHandler.registerEthereum()
 
 	return apiHandler
+}
+
+func (apiHandler *APIHandler) registerEthereum() {
+	hostConfig := apiHandler.Context.Config().ChainTree.Host
+
+	proxyPath := hostConfig.ProxyPath
+
+	ethereum := apiHandler.Mux.Group(proxyPath)
+
+	ethereum.Use(apimiddleware.MiddlewareNetworkAccess)
+
+	ethereum.Any("", func(c echo.Context) error {
+		var url string
+
+		if strings.HasPrefix(c.Request().URL.Scheme, "ws") {
+			url = hostConfig.WSURL
+		} else {
+			url = hostConfig.RPCURL
+		}
+
+		return apiHandler.HandleProxy(c, url)
+	})
 }
