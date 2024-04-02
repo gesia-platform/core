@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../CarbonEmissions.sol";
 
 contract ElectricityCarbonEmissionsCalculator {
-    uint256 constant EMISSIONS_PER_KG = 47810; // scaled by 100,000 = 0.4781
+    uint256 constant EMISSIONS_PER_KG = 4781; // scaled by 10,000
 
     CarbonEmissions public immutable carbonEmissions;
 
@@ -21,9 +21,9 @@ contract ElectricityCarbonEmissionsCalculator {
         uint256 result;
 
         if (isSummer) {
-            result = EMISSIONS_PER_KG * (value * 10e5) * 2;
+            result = EMISSIONS_PER_KG * (value * 10e4) * 2 / 10e4;
         } else {
-            result = EMISSIONS_PER_KG * (value * 10e5);
+            result = EMISSIONS_PER_KG * (value * 10e4);
         }
 
         carbonEmissions.mint(msg.sender, applicationID, result, userID);

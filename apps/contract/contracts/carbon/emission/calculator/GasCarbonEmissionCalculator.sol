@@ -17,7 +17,7 @@ contract GasCarbonEmissionsCalculator {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_KG * (value * 10e4);
+        uint256 result = EMISSIONS_PER_KG * (value * 10e4) / 10e4;
 
         carbonEmissions.mint(msg.sender, applicationID, result, userID);
 

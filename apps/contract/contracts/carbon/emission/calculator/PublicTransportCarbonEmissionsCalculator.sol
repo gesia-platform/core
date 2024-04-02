@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 import "../CarbonEmissions.sol";
 
 contract PublicTransportCarbonEmissionsCalculator {
-    uint256 constant BUS_EMISSIONS_PER_KG = 57430430; // scaled by 10,000,000,000
-    uint256 constant SUBWAY_EMISSIONS_PER_KG = 437290; // scaled by 10,000,000,000
+    uint256 constant BUS_EMISSIONS_PER_KG = 5743043; // scaled by 10,000,000,000
+    uint256 constant SUBWAY_EMISSIONS_PER_KG = 43729; // scaled by 10,000,000,000
 
     CarbonEmissions public immutable carbonEmissions;
 
@@ -22,9 +22,9 @@ contract PublicTransportCarbonEmissionsCalculator {
         uint256 result;
 
         if (isBus) {
-            result = BUS_EMISSIONS_PER_KG * (value * 10e10);
+            result = BUS_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
         } else {
-            result = SUBWAY_EMISSIONS_PER_KG * (value * 10e10);
+            result = SUBWAY_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
         }
 
         carbonEmissions.mint(msg.sender, applicationID, result, userID);
