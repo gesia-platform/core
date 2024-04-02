@@ -929,6 +929,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/prestonvanloon/go-recaptcha v0.0.0-20190217191114-0834cef6e8bd/go.mod h1:VznrsvawieSl6CEevE2+VGbJPfKWUYfwjb00oJxSXvU=
+github.com/pretty66/websocketproxy v0.0.0-20220507015215-930b3a686308 h1:JfSau4YABtkm5gRtFWuRWHT2Lsw4ZbyB4F/qORwf+BA=
+github.com/pretty66/websocketproxy v0.0.0-20220507015215-930b3a686308/go.mod h1:hxhFuMswfNko9fAxYeqBapfUdJHAgDafBs/MzOZh0X8=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829/go.mod h1:p2iRAGwDERtqlqzRXnrOVns+ignqQo//hLXqYxZYVNs=
 github.com/prometheus/client_golang v1.0.0/go.mod h1:db9x61etRT2tGnBNRi70OPL5FsnadC4Ky3P0J6CfImo=

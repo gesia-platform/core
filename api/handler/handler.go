@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"net/http"
 	"strings"
 
 	apimiddleware "github.com/gesia-platform/core/api/middleware"
@@ -8,6 +9,7 @@ import (
 	"github.com/gesia-platform/core/notary"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/pretty66/websocketproxy"
 )
 
 type APIHandler struct {
@@ -36,7 +38,15 @@ func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 }
 
 func (apiHandler *APIHandler) registerEthereum() {
+
 	hostConfig := apiHandler.Context.Config().ChainTree.Host
+
+	wp, err := websocketproxy.NewProxy(hostConfig.WSURL, func(r *http.Request) error {
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	proxyPath := hostConfig.ProxyPath
 
@@ -45,14 +55,12 @@ func (apiHandler *APIHandler) registerEthereum() {
 	ethereum.Use(apimiddleware.MiddlewareNetworkAccess)
 
 	ethereum.Any("", func(c echo.Context) error {
-		var url string
-
-		if strings.HasPrefix(c.Request().URL.Scheme, "ws") {
-			url = hostConfig.WSURL
+		if strings.EqualFold(c.Request().Header.Get("Upgrade"), "websocket") {
+			wp.Proxy(c.Response().Writer, c.Request())
+			return nil
 		} else {
-			url = hostConfig.RPCURL
+			return apiHandler.HandleProxy(c, hostConfig.RPCURL)
 		}
-
-		return apiHandler.HandleProxy(c, url)
 	})
+
 }
