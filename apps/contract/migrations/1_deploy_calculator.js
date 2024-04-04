@@ -13,6 +13,14 @@ const PorkCarbonEmissionsCalculator = artifacts.require('PorkCarbonEmissionsCalc
 const SalmonCarbonEmissionsCalculator = artifacts.require('SalmonCarbonEmissionsCalculator');
 const WalkCarbonEmissionsCalculator = artifacts.require('WalkCarbonEmissionsCalculator');
 const YoutubeCarbonEmissionsCalculator = artifacts.require('YoutubeCarbonEmissionsCalculator');
+const ElectricityCarbonEmissionsCalculator = artifacts.require('ElectricityCarbonEmissionsCalculator');
+const WaterCarbonEmissionsCalculator = artifacts.require('WaterCarbonEmissionsCalculator');
+const GasCarbonEmissionsCalculator = artifacts.require('GasCarbonEmissionsCalculator');
+const PublicTransportCarbonEmissionsCalculator = artifacts.require('PublicTransportCarbonEmissionsCalculator');
+const CarCarbonEmissionsCalculator = artifacts.require('CarCarbonEmissionsCalculator');
+const AirplaneCarbonEmissionsCalculator = artifacts.require('AirplaneCarbonEmissionsCalculator');
+const TrainCarbonEmissionsCalculator = artifacts.require('TrainCarbonEmissionsCalculator');
+const AmericanoCarbonEmissionsCalculator = artifacts.require('AmericanoCarbonEmissionsCalculator');
 
 module.exports = async (deployer) => {
 	if (process.env.SKIP_MIGRATIONS) return;
@@ -87,32 +95,66 @@ module.exports = async (deployer) => {
 	await deployer.deploy(YoutubeCarbonEmissionsCalculator, youtubeCarbonEmissions.address);
 	const youtubeCarbonEmissionsCalculator = await YoutubeCarbonEmissionsCalculator.deployed();
 
-	console.log('BeefCarbonEmissions : ', beefCarbonEmissions.address);
+	await deployer.deploy(CarbonEmissions, 'ElectricityCarbonEmissions');
+	const electricityCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(ElectricityCarbonEmissionsCalculator, electricityCarbonEmissions.address);
+	const electricityCarbonEmissionsCalculator = await ElectricityCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'WaterCarbonEmissions');
+	const waterCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(WaterCarbonEmissionsCalculator, waterCarbonEmissions.address);
+	const waterCarbonEmissionsCalculator = await WaterCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'GasCarbonEmissions');
+	const gasCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(GasCarbonEmissionsCalculator, gasCarbonEmissions.address);
+	const gasCarbonEmissionsCalculator = await GasCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'PublicTransportCarbonEmissions');
+	const publicTransportCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(PublicTransportCarbonEmissionsCalculator, publicTransportCarbonEmissions.address);
+	const publicTransportCarbonEmissionsCalculator = await PublicTransportCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'CarCarbonEmissions');
+	const carCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(CarCarbonEmissionsCalculator, carCarbonEmissions.address);
+	const carCarbonEmissionsCalculator = await CarCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'AirplaneCarbonEmissions');
+	const airplaneCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(AirplaneCarbonEmissionsCalculator, airplaneCarbonEmissions.address);
+	const airplaneCarbonEmissionsCalculator = await AirplaneCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'TrainCarbonEmissions');
+	const trainCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(TrainCarbonEmissionsCalculator, trainCarbonEmissions.address);
+	const trainCarbonEmissionsCalculator = await TrainCarbonEmissionsCalculator.deployed();
+
+	await deployer.deploy(CarbonEmissions, 'AmericanoCarbonEmissions');
+	const americanoCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(AmericanoCarbonEmissionsCalculator, americanoCarbonEmissions.address);
+	const americanoCarbonEmissionsCalculator = await AmericanoCarbonEmissionsCalculator.deployed();
+
 	console.log('BeefCarbonEmissionsCalculator : ', beefCarbonEmissionsCalculator.address);
-	console.log('BicycleCarbonEmissions : ', bicycleCarbonEmissions.address);
 	console.log('BicycleCarbonEmissionsCalculator : ', bicycleCarbonEmissionsCalculator.address);
-	console.log('CannedTunaCarbonEmissions : ', cannedTunaCarbonEmissions.address);
 	console.log('CannedTunaCarbonEmissionsCalculator : ', cannedTunaCarbonEmissionsCalculator.address);
-	console.log('ChickenCarbonEmissions : ', chickenCarbonEmissions.address);
 	console.log('ChickenCarbonEmissionsCalculator : ', chickenCarbonEmissionsCalculator.address);
-	console.log('EggCarbonEmissions : ', eggCarbonEmissions.address);
 	console.log('EggCarbonEmissionsCalculator : ', eggCarbonEmissionsCalculator.address);
-	console.log('EmailCarbonEmissions : ', emailCarbonEmissions.address);
 	console.log('EmailCarbonEmissionsCalculator : ', emailCarbonEmissionsCalculator.address);
-	console.log('LambCarbonEmissions : ', lambCarbonEmissions.address);
 	console.log('LambCarbonEmissionsCalculator : ', lambCarbonEmissionsCalculator.address);
-	console.log('MilkCarbonEmissions : ', milkCarbonEmissions.address);
 	console.log('MilkCarbonEmissionsCalculator : ', milkCarbonEmissionsCalculator.address);
-	console.log('MobileCarbonEmissions : ', mobileCarbonEmissions.address);
 	console.log('MobileDataCarbonEmissionsCalculator : ', mobileDataCarbonEmissionsCalculator.address);
-	console.log('PhoneCarbonEmissions : ', phoneCarbonEmissions.address);
 	console.log('PhoneCallCarbonEmissionsCalculator : ', phoneCallCarbonEmissionsCalculator.address);
-	console.log('PorkCarbonEmissions : ', porkCarbonEmissions.address);
 	console.log('PorkCarbonEmissionsCalculator : ', porkCarbonEmissionsCalculator.address);
-	console.log('SalmonCarbonEmissions : ', salmonCarbonEmissions.address);
 	console.log('SalmonCarbonEmissionsCalculator : ', salmonCarbonEmissionsCalculator.address);
-	console.log('WalkCarbonEmissions : ', walkCarbonEmissions.address);
 	console.log('WalkCarbonEmissionsCalculator : ', walkCarbonEmissionsCalculator.address);
-	console.log('YoutubeCarbonEmissions : ', youtubeCarbonEmissions.address);
 	console.log('YoutubeCarbonEmissionsCalculator : ', youtubeCarbonEmissionsCalculator.address);
+	console.log('ElectricityCarbonEmissionsCalculator : ', electricityCarbonEmissionsCalculator.address);
+	console.log('WaterCarbonEmissionsCalculator : ', waterCarbonEmissionsCalculator.address);
+	console.log('GasCarbonEmissionsCalculator : ', gasCarbonEmissionsCalculator.address);
+	console.log('PublicTransportCarbonEmissionsCalculator : ', publicTransportCarbonEmissionsCalculator.address);
+	console.log('CarCarbonEmissionsCalculator : ', carCarbonEmissionsCalculator.address);
+	console.log('AirplaneCarbonEmissionsCalculator : ', airplaneCarbonEmissionsCalculator.address);
+	console.log('TrainCarbonEmissionsCalculator : ', trainCarbonEmissionsCalculator.address);
+	console.log('AmericanoCarbonEmissionsCalculator : ', americanoCarbonEmissionsCalculator.address);
 };
