@@ -21,8 +21,6 @@ rpc_url =
 ws_url = 
 # poa network account contract ethereum hex address
 network_account_address = 
-# main app store contract ethereum hex address
-app_store_address = 
 # main app permission contract ethereum hex address
 app_permission_address = 
 
@@ -34,8 +32,6 @@ chain_id =
 rpc_url = 
 # root chain ws url
 ws_url = 
-# host chain rpc proxy path
-proxy_path = 
 # main notary public contract ethereum hex address
 notary_public_address = 
 

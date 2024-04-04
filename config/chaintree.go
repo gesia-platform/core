@@ -20,15 +20,11 @@ type ChainTreeRoot struct {
 
 	NetworkAccountAddress string `toml:"network_account_address"`
 
-	AppStoreAddress string `toml:"app_store_address"`
-
 	AppPermissionAddress string `toml:"app_permission_address"`
 }
 
 type ChainTreeHost struct {
 	ChainID uint64 `toml:"chain_id"`
-
-	ProxyPath string `toml:"proxy_path"`
 
 	RPCURL string `toml:"rpc_url"`
 	WSURL  string `toml:"ws_url"`
