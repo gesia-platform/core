@@ -10,15 +10,17 @@ contract NotaryAccount {
         notaryPublic = _notaryPublic;
     }
 
-    function notaryCall(
-        address target,
-        bytes memory data
-    ) external returns (bool success, bytes memory result) {
+    function notaryCall(address target, bytes memory data) external {
         require(
             notaryPublic.hasMembership(msg.sender),
             "sender is not notary public member"
         );
 
-        return target.call(data);
+        (bool success, bytes memory result) = target.call(data);
+        if (!success) {
+            assembly {
+                revert(add(result, 32), mload(result))
+            }
+        }
     }
 }

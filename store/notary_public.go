@@ -31,7 +31,7 @@ var (
 
 // NotaryPublicStoreMetaData contains all meta data concerning the NotaryPublicStore contract.
 var NotaryPublicStoreMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"pubkey\",\"type\":\"bytes\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getPubkey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getNotarization\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"Notarized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notaryAccount\",\"type\":\"address\"}],\"name\":\"NotaryAccountCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"}],\"name\":\"createNotaryAccount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signatrue\",\"type\":\"bytes\"}],\"name\":\"notarize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"pubkey\",\"type\":\"bytes\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"membership\",\"type\":\"bool\"}],\"name\":\"setMembership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getPubkey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasMembership\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes1\",\"name\":\"prefix\",\"type\":\"bytes1\"},{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"notary\",\"type\":\"address\"}],\"name\":\"getNotarization\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"getAppIDByNotaryAccount\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // NotaryPublicStoreABI is the input ABI used to generate the binding from.
@@ -180,6 +180,38 @@ func (_NotaryPublicStore *NotaryPublicStoreTransactorRaw) Transact(opts *bind.Tr
 	return _NotaryPublicStore.Contract.contract.Transact(opts, method, params...)
 }
 
+// GetAppIDByNotaryAccount is a free data retrieval call binding the contract method 0xbf73a847.
+//
+// Solidity: function getAppIDByNotaryAccount(address account) view returns(bool, uint256)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) GetAppIDByNotaryAccount(opts *bind.CallOpts, account common.Address) (bool, *big.Int, error) {
+	var out []interface{}
+	err := _NotaryPublicStore.contract.Call(opts, &out, "getAppIDByNotaryAccount", account)
+
+	if err != nil {
+		return *new(bool), *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+
+	return out0, out1, err
+
+}
+
+// GetAppIDByNotaryAccount is a free data retrieval call binding the contract method 0xbf73a847.
+//
+// Solidity: function getAppIDByNotaryAccount(address account) view returns(bool, uint256)
+func (_NotaryPublicStore *NotaryPublicStoreSession) GetAppIDByNotaryAccount(account common.Address) (bool, *big.Int, error) {
+	return _NotaryPublicStore.Contract.GetAppIDByNotaryAccount(&_NotaryPublicStore.CallOpts, account)
+}
+
+// GetAppIDByNotaryAccount is a free data retrieval call binding the contract method 0xbf73a847.
+//
+// Solidity: function getAppIDByNotaryAccount(address account) view returns(bool, uint256)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetAppIDByNotaryAccount(account common.Address) (bool, *big.Int, error) {
+	return _NotaryPublicStore.Contract.GetAppIDByNotaryAccount(&_NotaryPublicStore.CallOpts, account)
+}
+
 // GetNotarization is a free data retrieval call binding the contract method 0xedac6563.
 //
 // Solidity: function getNotarization(bytes1 prefix, uint256 appID, address notary) view returns(bytes, bytes)
@@ -243,6 +275,89 @@ func (_NotaryPublicStore *NotaryPublicStoreCallerSession) GetPubkey(notary commo
 	return _NotaryPublicStore.Contract.GetPubkey(&_NotaryPublicStore.CallOpts, notary)
 }
 
+// HasMembership is a free data retrieval call binding the contract method 0xa88db6ad.
+//
+// Solidity: function hasMembership(address account) view returns(bool)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) HasMembership(opts *bind.CallOpts, account common.Address) (bool, error) {
+	var out []interface{}
+	err := _NotaryPublicStore.contract.Call(opts, &out, "hasMembership", account)
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// HasMembership is a free data retrieval call binding the contract method 0xa88db6ad.
+//
+// Solidity: function hasMembership(address account) view returns(bool)
+func (_NotaryPublicStore *NotaryPublicStoreSession) HasMembership(account common.Address) (bool, error) {
+	return _NotaryPublicStore.Contract.HasMembership(&_NotaryPublicStore.CallOpts, account)
+}
+
+// HasMembership is a free data retrieval call binding the contract method 0xa88db6ad.
+//
+// Solidity: function hasMembership(address account) view returns(bool)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) HasMembership(account common.Address) (bool, error) {
+	return _NotaryPublicStore.Contract.HasMembership(&_NotaryPublicStore.CallOpts, account)
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() view returns(address)
+func (_NotaryPublicStore *NotaryPublicStoreCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _NotaryPublicStore.contract.Call(opts, &out, "owner")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() view returns(address)
+func (_NotaryPublicStore *NotaryPublicStoreSession) Owner() (common.Address, error) {
+	return _NotaryPublicStore.Contract.Owner(&_NotaryPublicStore.CallOpts)
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() view returns(address)
+func (_NotaryPublicStore *NotaryPublicStoreCallerSession) Owner() (common.Address, error) {
+	return _NotaryPublicStore.Contract.Owner(&_NotaryPublicStore.CallOpts)
+}
+
+// CreateNotaryAccount is a paid mutator transaction binding the contract method 0xb741bdef.
+//
+// Solidity: function createNotaryAccount(uint256 appID) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) CreateNotaryAccount(opts *bind.TransactOpts, appID *big.Int) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "createNotaryAccount", appID)
+}
+
+// CreateNotaryAccount is a paid mutator transaction binding the contract method 0xb741bdef.
+//
+// Solidity: function createNotaryAccount(uint256 appID) returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) CreateNotaryAccount(appID *big.Int) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.CreateNotaryAccount(&_NotaryPublicStore.TransactOpts, appID)
+}
+
+// CreateNotaryAccount is a paid mutator transaction binding the contract method 0xb741bdef.
+//
+// Solidity: function createNotaryAccount(uint256 appID) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) CreateNotaryAccount(appID *big.Int) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.CreateNotaryAccount(&_NotaryPublicStore.TransactOpts, appID)
+}
+
 // Notarize is a paid mutator transaction binding the contract method 0x7e004409.
 //
 // Solidity: function notarize(bytes1 prefix, uint256 appID, bytes signatrue) returns()
@@ -283,6 +398,69 @@ func (_NotaryPublicStore *NotaryPublicStoreSession) Register(pubkey []byte) (*ty
 // Solidity: function register(bytes pubkey) returns()
 func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) Register(pubkey []byte) (*types.Transaction, error) {
 	return _NotaryPublicStore.Contract.Register(&_NotaryPublicStore.TransactOpts, pubkey)
+}
+
+// RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
+//
+// Solidity: function renounceOwnership() returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) RenounceOwnership(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "renounceOwnership")
+}
+
+// RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
+//
+// Solidity: function renounceOwnership() returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) RenounceOwnership() (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.RenounceOwnership(&_NotaryPublicStore.TransactOpts)
+}
+
+// RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
+//
+// Solidity: function renounceOwnership() returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) RenounceOwnership() (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.RenounceOwnership(&_NotaryPublicStore.TransactOpts)
+}
+
+// SetMembership is a paid mutator transaction binding the contract method 0x01746484.
+//
+// Solidity: function setMembership(address account, bool membership) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) SetMembership(opts *bind.TransactOpts, account common.Address, membership bool) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "setMembership", account, membership)
+}
+
+// SetMembership is a paid mutator transaction binding the contract method 0x01746484.
+//
+// Solidity: function setMembership(address account, bool membership) returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) SetMembership(account common.Address, membership bool) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.SetMembership(&_NotaryPublicStore.TransactOpts, account, membership)
+}
+
+// SetMembership is a paid mutator transaction binding the contract method 0x01746484.
+//
+// Solidity: function setMembership(address account, bool membership) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) SetMembership(account common.Address, membership bool) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.SetMembership(&_NotaryPublicStore.TransactOpts, account, membership)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(address newOwner) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
+	return _NotaryPublicStore.contract.Transact(opts, "transferOwnership", newOwner)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(address newOwner) returns()
+func (_NotaryPublicStore *NotaryPublicStoreSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.TransferOwnership(&_NotaryPublicStore.TransactOpts, newOwner)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(address newOwner) returns()
+func (_NotaryPublicStore *NotaryPublicStoreTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _NotaryPublicStore.Contract.TransferOwnership(&_NotaryPublicStore.TransactOpts, newOwner)
 }
 
 // NotaryPublicStoreNotarizedIterator is returned from FilterNotarized and is used to iterate over the raw logs and unpacked data for Notarized events raised by the NotaryPublicStore contract.
@@ -416,6 +594,294 @@ func (_NotaryPublicStore *NotaryPublicStoreFilterer) WatchNotarized(opts *bind.W
 func (_NotaryPublicStore *NotaryPublicStoreFilterer) ParseNotarized(log types.Log) (*NotaryPublicStoreNotarized, error) {
 	event := new(NotaryPublicStoreNotarized)
 	if err := _NotaryPublicStore.contract.UnpackLog(event, "Notarized", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// NotaryPublicStoreNotaryAccountCreatedIterator is returned from FilterNotaryAccountCreated and is used to iterate over the raw logs and unpacked data for NotaryAccountCreated events raised by the NotaryPublicStore contract.
+type NotaryPublicStoreNotaryAccountCreatedIterator struct {
+	Event *NotaryPublicStoreNotaryAccountCreated // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *NotaryPublicStoreNotaryAccountCreatedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(NotaryPublicStoreNotaryAccountCreated)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(NotaryPublicStoreNotaryAccountCreated)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *NotaryPublicStoreNotaryAccountCreatedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *NotaryPublicStoreNotaryAccountCreatedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// NotaryPublicStoreNotaryAccountCreated represents a NotaryAccountCreated event raised by the NotaryPublicStore contract.
+type NotaryPublicStoreNotaryAccountCreated struct {
+	AppID         *big.Int
+	NotaryAccount common.Address
+	Raw           types.Log // Blockchain specific contextual infos
+}
+
+// FilterNotaryAccountCreated is a free log retrieval operation binding the contract event 0xa37d3f614521f572029dcaaecfd63b783ded611520b64a15e0eab5e9ec73cbcc.
+//
+// Solidity: event NotaryAccountCreated(uint256 appID, address notaryAccount)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) FilterNotaryAccountCreated(opts *bind.FilterOpts) (*NotaryPublicStoreNotaryAccountCreatedIterator, error) {
+
+	logs, sub, err := _NotaryPublicStore.contract.FilterLogs(opts, "NotaryAccountCreated")
+	if err != nil {
+		return nil, err
+	}
+	return &NotaryPublicStoreNotaryAccountCreatedIterator{contract: _NotaryPublicStore.contract, event: "NotaryAccountCreated", logs: logs, sub: sub}, nil
+}
+
+// WatchNotaryAccountCreated is a free log subscription operation binding the contract event 0xa37d3f614521f572029dcaaecfd63b783ded611520b64a15e0eab5e9ec73cbcc.
+//
+// Solidity: event NotaryAccountCreated(uint256 appID, address notaryAccount)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) WatchNotaryAccountCreated(opts *bind.WatchOpts, sink chan<- *NotaryPublicStoreNotaryAccountCreated) (event.Subscription, error) {
+
+	logs, sub, err := _NotaryPublicStore.contract.WatchLogs(opts, "NotaryAccountCreated")
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(NotaryPublicStoreNotaryAccountCreated)
+				if err := _NotaryPublicStore.contract.UnpackLog(event, "NotaryAccountCreated", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseNotaryAccountCreated is a log parse operation binding the contract event 0xa37d3f614521f572029dcaaecfd63b783ded611520b64a15e0eab5e9ec73cbcc.
+//
+// Solidity: event NotaryAccountCreated(uint256 appID, address notaryAccount)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) ParseNotaryAccountCreated(log types.Log) (*NotaryPublicStoreNotaryAccountCreated, error) {
+	event := new(NotaryPublicStoreNotaryAccountCreated)
+	if err := _NotaryPublicStore.contract.UnpackLog(event, "NotaryAccountCreated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// NotaryPublicStoreOwnershipTransferredIterator is returned from FilterOwnershipTransferred and is used to iterate over the raw logs and unpacked data for OwnershipTransferred events raised by the NotaryPublicStore contract.
+type NotaryPublicStoreOwnershipTransferredIterator struct {
+	Event *NotaryPublicStoreOwnershipTransferred // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *NotaryPublicStoreOwnershipTransferredIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(NotaryPublicStoreOwnershipTransferred)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(NotaryPublicStoreOwnershipTransferred)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *NotaryPublicStoreOwnershipTransferredIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *NotaryPublicStoreOwnershipTransferredIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// NotaryPublicStoreOwnershipTransferred represents a OwnershipTransferred event raised by the NotaryPublicStore contract.
+type NotaryPublicStoreOwnershipTransferred struct {
+	PreviousOwner common.Address
+	NewOwner      common.Address
+	Raw           types.Log // Blockchain specific contextual infos
+}
+
+// FilterOwnershipTransferred is a free log retrieval operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
+//
+// Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) FilterOwnershipTransferred(opts *bind.FilterOpts, previousOwner []common.Address, newOwner []common.Address) (*NotaryPublicStoreOwnershipTransferredIterator, error) {
+
+	var previousOwnerRule []interface{}
+	for _, previousOwnerItem := range previousOwner {
+		previousOwnerRule = append(previousOwnerRule, previousOwnerItem)
+	}
+	var newOwnerRule []interface{}
+	for _, newOwnerItem := range newOwner {
+		newOwnerRule = append(newOwnerRule, newOwnerItem)
+	}
+
+	logs, sub, err := _NotaryPublicStore.contract.FilterLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	if err != nil {
+		return nil, err
+	}
+	return &NotaryPublicStoreOwnershipTransferredIterator{contract: _NotaryPublicStore.contract, event: "OwnershipTransferred", logs: logs, sub: sub}, nil
+}
+
+// WatchOwnershipTransferred is a free log subscription operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
+//
+// Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) WatchOwnershipTransferred(opts *bind.WatchOpts, sink chan<- *NotaryPublicStoreOwnershipTransferred, previousOwner []common.Address, newOwner []common.Address) (event.Subscription, error) {
+
+	var previousOwnerRule []interface{}
+	for _, previousOwnerItem := range previousOwner {
+		previousOwnerRule = append(previousOwnerRule, previousOwnerItem)
+	}
+	var newOwnerRule []interface{}
+	for _, newOwnerItem := range newOwner {
+		newOwnerRule = append(newOwnerRule, newOwnerItem)
+	}
+
+	logs, sub, err := _NotaryPublicStore.contract.WatchLogs(opts, "OwnershipTransferred", previousOwnerRule, newOwnerRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(NotaryPublicStoreOwnershipTransferred)
+				if err := _NotaryPublicStore.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseOwnershipTransferred is a log parse operation binding the contract event 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0.
+//
+// Solidity: event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+func (_NotaryPublicStore *NotaryPublicStoreFilterer) ParseOwnershipTransferred(log types.Log) (*NotaryPublicStoreOwnershipTransferred, error) {
+	event := new(NotaryPublicStoreOwnershipTransferred)
+	if err := _NotaryPublicStore.contract.UnpackLog(event, "OwnershipTransferred", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

@@ -11,9 +11,8 @@ abstract contract NotaryModule {
     }
 
     modifier onlyNotaryAccount(uint256 appID) {
-        (bool exists, uint256 ownedAppID) = notaryPublic.getAppIDByAccount(
-            msg.sender
-        );
+        (bool exists, uint256 ownedAppID) = notaryPublic
+            .getAppIDByNotaryAccount(msg.sender);
 
         if (!exists) {
             revert("unnotarized account call");

@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract NotaryPublic is Ownable {
     mapping(address => bool) internal memberships;
 
-    mapping(address => uint256 appID) internal accounts;
+    mapping(address => uint256 appID) internal notaryAccounts;
 
     mapping(bytes1 prefix => mapping(uint256 appID => mapping(address notary => bytes signature)))
         internal notarizations;
@@ -21,11 +21,13 @@ contract NotaryPublic is Ownable {
         address notary
     );
 
-    function createAccount(uint256 appID) external returns (address account) {
-        account = address(new NotaryAccount(this));
-        accounts[account] = appID;
+    event NotaryAccountCreated(uint256 appID, address notaryAccount);
 
-        return account;
+    function createNotaryAccount(uint256 appID) external {
+        address account = address(new NotaryAccount(this));
+        notaryAccounts[account] = appID;
+
+        emit NotaryAccountCreated(appID, account);
     }
 
     function notarize(
@@ -65,10 +67,10 @@ contract NotaryPublic is Ownable {
         return (pubkeys[notary], notarizations[prefix][appID][notary]);
     }
 
-    function getAppIDByAccount(
+    function getAppIDByNotaryAccount(
         address account
     ) public view returns (bool, uint256) {
-        uint256 appID = accounts[account];
+        uint256 appID = notaryAccounts[account];
         return (appID != 0, appID);
     }
 }

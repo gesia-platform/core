@@ -115,7 +115,7 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
     function getNetworkAccessResponse(
         uint256 appID,
         address networkAccount
-    ) public view returns (bool responsed, bytes memory, bool) {
+    ) public view returns (bool responsed, bytes memory, bool, address) {
         NetworkAccessResponse memory response = networkAccessResponses[appID][
             networkAccount
         ];
@@ -123,7 +123,8 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         return (
             bytes(response.signature).length != 0,
             response.signature,
-            response.isGranted
+            response.isGranted,
+            response.notaryAccount
         );
     }
 }

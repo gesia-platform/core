@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
@@ -180,7 +181,19 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 			return fmt.Errorf("bls verify failed")
 		}
 
-		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal())
+		cato, err := genTransactOpts(hostClient, big.NewInt(int64(ctx.Config().ChainTree.Host.ChainID)), ctx.Config().ChainTree.PrivateKey)
+		if err != nil {
+			return err
+		}
+
+		_, err = notaryPublic.CreateNotaryAccount(cato, log.AppID)
+		if err != nil {
+			return err
+		}
+
+		// notary account 받아오기
+
+		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal(), common.Address{})
 	} // else wait
 
 	return nil

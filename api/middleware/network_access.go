@@ -33,7 +33,7 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 			return errors.New("does not exist app at request ip")
 		}
 
-		if _, _, isGranted, err := appPermission.GetNetworkAccessResponse(
+		if _, _, isGranted, notaryAccount, err := appPermission.GetNetworkAccessResponse(
 			&bind.CallOpts{Pending: true},
 			appID,
 			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
@@ -41,8 +41,10 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 			return err
 		} else if !isGranted {
 			return echo.ErrUnauthorized
+		} else {
+			ctx.SetNotaryAccount(notaryAccount)
 		}
 
-		return next(c)
+		return next(ctx)
 	}
 }

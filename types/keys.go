@@ -2,6 +2,11 @@ package types
 
 import "math/big"
 
+const (
+	EthereumProxyPath      = "/ethereum"
+	EthereumNotaryCallPath = "/txs"
+)
+
 var (
 	NetworkAccessPermissionPrefix = [1]byte{0x01}
 	NetworkAccessPermissionKey    = []byte("network_access_permission")

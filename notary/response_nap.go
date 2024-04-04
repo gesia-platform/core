@@ -9,7 +9,7 @@ import (
 	"github.com/gesia-platform/core/store"
 )
 
-func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appID *big.Int, aggreatedSiganture []byte) error {
+func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appID *big.Int, aggreatedSiganture []byte, notaryAccount common.Address) error {
 	config := ctx.Config()
 	rootClient := ctx.ChainTree().Root.Client()
 
@@ -29,7 +29,7 @@ func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appI
 		return err
 	}
 
-	tx, err := appPermission.ResponseNetworkAccess(txOpts, appID, notary.networkAccountAddress, aggreatedSiganture, true)
+	tx, err := appPermission.ResponseNetworkAccess(txOpts, appID, notary.networkAccountAddress, aggreatedSiganture, true, notaryAccount)
 	if err != nil {
 		return err
 	}

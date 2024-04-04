@@ -7,6 +7,7 @@ import (
 	apimiddleware "github.com/gesia-platform/core/api/middleware"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/notary"
+	"github.com/gesia-platform/core/types"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pretty66/websocketproxy"
@@ -38,7 +39,6 @@ func NewAPIHandler(ctx *context.Context, notary *notary.Notary) *APIHandler {
 }
 
 func (apiHandler *APIHandler) registerEthereum() {
-
 	hostConfig := apiHandler.Context.Config().ChainTree.Host
 
 	wp, err := websocketproxy.NewProxy(hostConfig.WSURL, func(r *http.Request) error {
@@ -48,12 +48,12 @@ func (apiHandler *APIHandler) registerEthereum() {
 		panic(err)
 	}
 
-	proxyPath := hostConfig.ProxyPath
+	ethereum := apiHandler.Mux.Group(types.EthereumProxyPath)
 
-	ethereum := apiHandler.Mux.Group(proxyPath)
-
+	// Guard
 	ethereum.Use(apimiddleware.MiddlewareNetworkAccess)
 
+	// JSON-RPC
 	ethereum.Any("", func(c echo.Context) error {
 		if strings.EqualFold(c.Request().Header.Get("Upgrade"), "websocket") {
 			wp.Proxy(c.Response().Writer, c.Request())
@@ -63,4 +63,6 @@ func (apiHandler *APIHandler) registerEthereum() {
 		}
 	})
 
+	// Notary Call
+	ethereum.POST(types.EthereumNotaryCallPath, apiHandler.NotaryCall)
 }
