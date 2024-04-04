@@ -186,14 +186,27 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 			return err
 		}
 
-		_, err = notaryPublic.CreateNotaryAccount(cato, log.AppID)
+		cnatx, err := notaryPublic.CreateNotaryAccount(cato, log.AppID)
 		if err != nil {
 			return err
 		}
 
-		// notary account 받아오기
+		notaryPublicABI, err := abi.JSON(strings.NewReader(string(store.NotaryPublicStoreABI)))
+		if err != nil {
+			return err
+		}
+		rc, err := hostClient.TransactionReceipt(basectx.TODO(), cnatx.Hash())
+		if err != nil {
+			return err
+		}
 
-		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal(), common.Address{})
+		var nacEvent store.NotaryPublicStoreNotaryAccountCreated
+
+		if err := notaryPublicABI.UnpackIntoInterface(&nacEvent, "NotaryAccountCreated", rc.Logs[0].Data); err != nil {
+			return err
+		}
+
+		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal(), nacEvent.NotaryAccount)
 	} // else wait
 
 	return nil

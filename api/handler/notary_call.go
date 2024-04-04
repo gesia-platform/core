@@ -28,6 +28,7 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	toAddress := common.HexToAddress(body["to"].(string))
 
 	ctx := c.(*context.Context)
