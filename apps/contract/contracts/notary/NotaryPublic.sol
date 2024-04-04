@@ -23,7 +23,12 @@ contract NotaryPublic is Ownable {
 
     event NotaryAccountCreated(uint256 appID, address notaryAccount);
 
-    function createNotaryAccount(uint256 appID) external {
+    modifier onlyMembership() {
+        require(hasMembership(msg.sender), "sender has no membership");
+        _;
+    }
+
+    function createNotaryAccount(uint256 appID) external onlyMembership {
         address account = address(new NotaryAccount(this));
         notaryAccounts[account] = appID;
 
@@ -34,13 +39,13 @@ contract NotaryPublic is Ownable {
         bytes1 prefix,
         uint256 appID,
         bytes memory signatrue
-    ) external {
+    ) external onlyMembership {
         notarizations[prefix][appID][msg.sender] = signatrue;
 
         emit Notarized(prefix, appID, signatrue, msg.sender);
     }
 
-    function register(bytes memory pubkey) external {
+    function register(bytes memory pubkey) external onlyMembership {
         pubkeys[msg.sender] = pubkey;
     }
 

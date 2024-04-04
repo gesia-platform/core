@@ -4,23 +4,60 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract NetworkAccount is Ownable {
+    struct Gateway {
+        string hostname;
+        uint port; // http, 0 if not supported
+        uint sslPort; // https, 0 if not supported
+        uint wsPort; // ws, 0 if not supported
+        uint wssPort; // wss, 0 if not supported
+    }
+
     string public name;
-    string public gatewayURL;
+    string public details;
 
-    constructor(string memory _name, string memory _gatewayURL) {
+    Gateway public gateway;
+
+    constructor(string memory _name, string memory _details) {
         name = _name;
-        gatewayURL = _gatewayURL;
+        details = _details;
     }
 
-    function setGatewayURL(string memory _gatewayURL) public onlyOwner {
-        gatewayURL = _gatewayURL;
+    function set(
+        string memory _name,
+        string memory _details,
+        string memory hostname,
+        uint port,
+        uint sslPort,
+        uint wsPort,
+        uint wssPort
+    ) public onlyOwner {
+        name = _name;
+        details = _details;
+
+        gateway = Gateway(hostname, port, sslPort, wsPort, wssPort);
     }
 
-    function getName() public view returns (string memory) {
-        return name;
-    }
-
-    function getGatewayURL() public view returns (string memory) {
-        return gatewayURL;
+    function get()
+        public
+        view
+        returns (
+            string memory,
+            string memory,
+            string memory hostname,
+            uint port,
+            uint sslPort,
+            uint wsPort,
+            uint wssPort
+        )
+    {
+        return (
+            name,
+            details,
+            gateway.hostname,
+            gateway.port,
+            gateway.sslPort,
+            gateway.wsPort,
+            gateway.wssPort
+        );
     }
 }
