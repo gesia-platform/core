@@ -2,6 +2,7 @@
 
 # Dependencies
 *.toml
+*.abi
 
 node_modules
 artifacts
