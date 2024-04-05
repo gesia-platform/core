@@ -23,6 +23,10 @@ import (
 	blscommon "github.com/prysmaticlabs/prysm/v5/crypto/bls/common"
 )
 
+var (
+	notaryPublicABI abi.ABI
+)
+
 func (notary *Notary) SubscribeNotarizedWithCondition(ctx *context.Context) {
 	config := ctx.Config()
 	rootClient := ctx.ChainTree().Root.Client()
@@ -191,14 +195,14 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 			return err
 		}
 
-		notaryPublicABI, err := abi.JSON(strings.NewReader(string(store.NotaryPublicStoreABI)))
-		if err != nil {
-			return err
-		}
+		ctx.Logger().Infof("notary account created tx: %s", cnatx.Hash())
+
 		rc, err := hostClient.TransactionReceipt(basectx.TODO(), cnatx.Hash())
 		if err != nil {
 			return err
 		}
+
+		ctx.Logger().Infof("notary account created receipt found: %d", rc)
 
 		var nacEvent store.NotaryPublicStoreNotaryAccountCreated
 
@@ -210,4 +214,12 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 	} // else wait
 
 	return nil
+}
+
+func init() {
+	var err error
+	notaryPublicABI, err = abi.JSON(strings.NewReader(string(store.NotaryPublicStoreABI)))
+	if err != nil {
+		panic(err)
+	}
 }
