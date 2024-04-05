@@ -163,57 +163,41 @@ func (notary *Notary) checkAggreation(ctx *context.Context, log *store.NotaryPub
 		}
 	}
 
-	if len(signers) == len(signatures) {
-		fmt.Println("ready to bls aggreation")
-		for i, siganture := range signatures {
-			fmt.Printf("%s's BLS siganture: %s\n", signers[i].Hex(), hex.EncodeToString(siganture))
-		}
+	if len(signers) != len(signatures) {
+		return nil
+	}
 
-		aggreatedSiganture, err := blst.AggregateCompressedSignatures(signatures)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("aggreated BLS siganture: %s\n", hex.EncodeToString(aggreatedSiganture.Marshal()))
+	fmt.Println("ready to bls aggreation")
 
-		var message [32]byte
-		switch log.Prefix {
-		case types.NetworkAccessPermissionPrefix:
-			message = types.GetNetwrokAccessPermissionMessage(*log.AppID)
-		}
+	aggreatedSiganture, err := blst.AggregateCompressedSignatures(signatures)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("aggreated BLS siganture: %s\n", hex.EncodeToString(aggreatedSiganture.Marshal()))
 
-		if verified := aggreatedSiganture.FastAggregateVerify(pubkeys, message); !verified {
-			return fmt.Errorf("bls verify failed")
-		}
+	var message [32]byte
+	switch log.Prefix {
+	case types.NetworkAccessPermissionPrefix:
+		message = types.GetNetwrokAccessPermissionMessage(*log.AppID)
+	}
 
-		cato, err := genTransactOpts(hostClient, big.NewInt(int64(ctx.Config().ChainTree.Host.ChainID)), ctx.Config().ChainTree.PrivateKey)
-		if err != nil {
-			return err
-		}
+	if verified := aggreatedSiganture.FastAggregateVerify(pubkeys, message); !verified {
+		return fmt.Errorf("bls verify failed")
+	}
 
-		cnatx, err := notaryPublic.CreateNotaryAccount(cato, log.AppID)
-		if err != nil {
-			return err
-		}
+	cato, err := genTransactOpts(hostClient, big.NewInt(int64(ctx.Config().ChainTree.Host.ChainID)), ctx.Config().ChainTree.PrivateKey)
+	if err != nil {
+		return err
+	}
 
-		ctx.Logger().Infof("notary account created tx: %s", cnatx.Hash())
+	cnatx, err := notaryPublic.CreateNotaryAccount(cato, log.AppID)
+	if err != nil {
+		return err
+	}
 
-		rc, err := hostClient.TransactionReceipt(basectx.TODO(), cnatx.Hash())
-		if err != nil {
-			return err
-		}
+	fmt.Printf("notary account created tx: %s\n", cnatx.Hash())
 
-		ctx.Logger().Infof("notary account created receipt found: %d", rc)
-
-		var nacEvent store.NotaryPublicStoreNotaryAccountCreated
-
-		if err := notaryPublicABI.UnpackIntoInterface(&nacEvent, "NotaryAccountCreated", rc.Logs[0].Data); err != nil {
-			return err
-		}
-
-		return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal(), nacEvent.NotaryAccount)
-	} // else wait
-
-	return nil
+	return notary.responseNetworkAccessPermission(ctx, log.AppID, aggreatedSiganture.Marshal())
 }
 
 func init() {

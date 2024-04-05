@@ -31,7 +31,7 @@ var (
 
 // AppPermissionStoreMetaData contains all meta data concerning the AppPermissionStore contract.
 var AppPermissionStoreMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"contractAppStore\",\"name\":\"_appStore\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"NetworkAccessPermissionRequested\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isGranted\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"notaryAccount\",\"type\":\"address\"}],\"name\":\"NetworkAccessPermissionResponsed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"appStore\",\"outputs\":[{\"internalType\":\"contractAppStore\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"getAppID\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"}],\"name\":\"getNetworkAccessRequest\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"}],\"name\":\"getNetworkAccessResponse\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"responsed\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"requestNetworkAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_networkAccount\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"isGranted\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"notaryAccount\",\"type\":\"address\"}],\"name\":\"responseNetworkAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"setNetworkAccessRequestIP\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"contractAppStore\",\"name\":\"_appStore\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"NetworkAccessPermissionRequested\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"isGranted\",\"type\":\"bool\"}],\"name\":\"NetworkAccessPermissionResponsed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"appStore\",\"outputs\":[{\"internalType\":\"contractAppStore\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"getAppID\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"}],\"name\":\"getNetworkAccessRequest\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"}],\"name\":\"getNetworkAccessResponse\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"responsed\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"requestNetworkAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_networkAccount\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"bool\",\"name\":\"isGranted\",\"type\":\"bool\"}],\"name\":\"responseNetworkAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"appID\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"networkAccount\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"ip\",\"type\":\"string\"}],\"name\":\"setNetworkAccessRequestIP\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // AppPermissionStoreABI is the input ABI used to generate the binding from.
@@ -277,35 +277,34 @@ func (_AppPermissionStore *AppPermissionStoreCallerSession) GetNetworkAccessRequ
 
 // GetNetworkAccessResponse is a free data retrieval call binding the contract method 0xb50926e0.
 //
-// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool, address)
-func (_AppPermissionStore *AppPermissionStoreCaller) GetNetworkAccessResponse(opts *bind.CallOpts, appID *big.Int, networkAccount common.Address) (bool, []byte, bool, common.Address, error) {
+// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool)
+func (_AppPermissionStore *AppPermissionStoreCaller) GetNetworkAccessResponse(opts *bind.CallOpts, appID *big.Int, networkAccount common.Address) (bool, []byte, bool, error) {
 	var out []interface{}
 	err := _AppPermissionStore.contract.Call(opts, &out, "getNetworkAccessResponse", appID, networkAccount)
 
 	if err != nil {
-		return *new(bool), *new([]byte), *new(bool), *new(common.Address), err
+		return *new(bool), *new([]byte), *new(bool), err
 	}
 
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 	out1 := *abi.ConvertType(out[1], new([]byte)).(*[]byte)
 	out2 := *abi.ConvertType(out[2], new(bool)).(*bool)
-	out3 := *abi.ConvertType(out[3], new(common.Address)).(*common.Address)
 
-	return out0, out1, out2, out3, err
+	return out0, out1, out2, err
 
 }
 
 // GetNetworkAccessResponse is a free data retrieval call binding the contract method 0xb50926e0.
 //
-// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool, address)
-func (_AppPermissionStore *AppPermissionStoreSession) GetNetworkAccessResponse(appID *big.Int, networkAccount common.Address) (bool, []byte, bool, common.Address, error) {
+// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool)
+func (_AppPermissionStore *AppPermissionStoreSession) GetNetworkAccessResponse(appID *big.Int, networkAccount common.Address) (bool, []byte, bool, error) {
 	return _AppPermissionStore.Contract.GetNetworkAccessResponse(&_AppPermissionStore.CallOpts, appID, networkAccount)
 }
 
 // GetNetworkAccessResponse is a free data retrieval call binding the contract method 0xb50926e0.
 //
-// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool, address)
-func (_AppPermissionStore *AppPermissionStoreCallerSession) GetNetworkAccessResponse(appID *big.Int, networkAccount common.Address) (bool, []byte, bool, common.Address, error) {
+// Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool)
+func (_AppPermissionStore *AppPermissionStoreCallerSession) GetNetworkAccessResponse(appID *big.Int, networkAccount common.Address) (bool, []byte, bool, error) {
 	return _AppPermissionStore.Contract.GetNetworkAccessResponse(&_AppPermissionStore.CallOpts, appID, networkAccount)
 }
 
@@ -382,25 +381,25 @@ func (_AppPermissionStore *AppPermissionStoreTransactorSession) RequestNetworkAc
 	return _AppPermissionStore.Contract.RequestNetworkAccess(&_AppPermissionStore.TransactOpts, appID, networkAccount, ip)
 }
 
-// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x830feedd.
+// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x77a03f1e.
 //
-// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted, address notaryAccount) returns()
-func (_AppPermissionStore *AppPermissionStoreTransactor) ResponseNetworkAccess(opts *bind.TransactOpts, appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool, notaryAccount common.Address) (*types.Transaction, error) {
-	return _AppPermissionStore.contract.Transact(opts, "responseNetworkAccess", appID, _networkAccount, signature, isGranted, notaryAccount)
+// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted) returns()
+func (_AppPermissionStore *AppPermissionStoreTransactor) ResponseNetworkAccess(opts *bind.TransactOpts, appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool) (*types.Transaction, error) {
+	return _AppPermissionStore.contract.Transact(opts, "responseNetworkAccess", appID, _networkAccount, signature, isGranted)
 }
 
-// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x830feedd.
+// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x77a03f1e.
 //
-// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted, address notaryAccount) returns()
-func (_AppPermissionStore *AppPermissionStoreSession) ResponseNetworkAccess(appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool, notaryAccount common.Address) (*types.Transaction, error) {
-	return _AppPermissionStore.Contract.ResponseNetworkAccess(&_AppPermissionStore.TransactOpts, appID, _networkAccount, signature, isGranted, notaryAccount)
+// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted) returns()
+func (_AppPermissionStore *AppPermissionStoreSession) ResponseNetworkAccess(appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool) (*types.Transaction, error) {
+	return _AppPermissionStore.Contract.ResponseNetworkAccess(&_AppPermissionStore.TransactOpts, appID, _networkAccount, signature, isGranted)
 }
 
-// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x830feedd.
+// ResponseNetworkAccess is a paid mutator transaction binding the contract method 0x77a03f1e.
 //
-// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted, address notaryAccount) returns()
-func (_AppPermissionStore *AppPermissionStoreTransactorSession) ResponseNetworkAccess(appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool, notaryAccount common.Address) (*types.Transaction, error) {
-	return _AppPermissionStore.Contract.ResponseNetworkAccess(&_AppPermissionStore.TransactOpts, appID, _networkAccount, signature, isGranted, notaryAccount)
+// Solidity: function responseNetworkAccess(uint256 appID, address _networkAccount, bytes signature, bool isGranted) returns()
+func (_AppPermissionStore *AppPermissionStoreTransactorSession) ResponseNetworkAccess(appID *big.Int, _networkAccount common.Address, signature []byte, isGranted bool) (*types.Transaction, error) {
+	return _AppPermissionStore.Contract.ResponseNetworkAccess(&_AppPermissionStore.TransactOpts, appID, _networkAccount, signature, isGranted)
 }
 
 // SetNetworkAccessRequestIP is a paid mutator transaction binding the contract method 0x548734eb.
@@ -654,13 +653,12 @@ type AppPermissionStoreNetworkAccessPermissionResponsed struct {
 	NetworkAccount common.Address
 	Signature      []byte
 	IsGranted      bool
-	NotaryAccount  common.Address
 	Raw            types.Log // Blockchain specific contextual infos
 }
 
-// FilterNetworkAccessPermissionResponsed is a free log retrieval operation binding the contract event 0x64bc9275bd546b9f095ae8ed4392fc580d3485a5b86a14403413dc90fb4d081e.
+// FilterNetworkAccessPermissionResponsed is a free log retrieval operation binding the contract event 0xbe88eb6b46107091ccab269e16bee03c986d5ed4d3f36f48e59fa668375b10ab.
 //
-// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted, address notaryAccount)
+// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted)
 func (_AppPermissionStore *AppPermissionStoreFilterer) FilterNetworkAccessPermissionResponsed(opts *bind.FilterOpts) (*AppPermissionStoreNetworkAccessPermissionResponsedIterator, error) {
 
 	logs, sub, err := _AppPermissionStore.contract.FilterLogs(opts, "NetworkAccessPermissionResponsed")
@@ -670,9 +668,9 @@ func (_AppPermissionStore *AppPermissionStoreFilterer) FilterNetworkAccessPermis
 	return &AppPermissionStoreNetworkAccessPermissionResponsedIterator{contract: _AppPermissionStore.contract, event: "NetworkAccessPermissionResponsed", logs: logs, sub: sub}, nil
 }
 
-// WatchNetworkAccessPermissionResponsed is a free log subscription operation binding the contract event 0x64bc9275bd546b9f095ae8ed4392fc580d3485a5b86a14403413dc90fb4d081e.
+// WatchNetworkAccessPermissionResponsed is a free log subscription operation binding the contract event 0xbe88eb6b46107091ccab269e16bee03c986d5ed4d3f36f48e59fa668375b10ab.
 //
-// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted, address notaryAccount)
+// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted)
 func (_AppPermissionStore *AppPermissionStoreFilterer) WatchNetworkAccessPermissionResponsed(opts *bind.WatchOpts, sink chan<- *AppPermissionStoreNetworkAccessPermissionResponsed) (event.Subscription, error) {
 
 	logs, sub, err := _AppPermissionStore.contract.WatchLogs(opts, "NetworkAccessPermissionResponsed")
@@ -707,9 +705,9 @@ func (_AppPermissionStore *AppPermissionStoreFilterer) WatchNetworkAccessPermiss
 	}), nil
 }
 
-// ParseNetworkAccessPermissionResponsed is a log parse operation binding the contract event 0x64bc9275bd546b9f095ae8ed4392fc580d3485a5b86a14403413dc90fb4d081e.
+// ParseNetworkAccessPermissionResponsed is a log parse operation binding the contract event 0xbe88eb6b46107091ccab269e16bee03c986d5ed4d3f36f48e59fa668375b10ab.
 //
-// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted, address notaryAccount)
+// Solidity: event NetworkAccessPermissionResponsed(uint256 appID, address networkAccount, bytes signature, bool isGranted)
 func (_AppPermissionStore *AppPermissionStoreFilterer) ParseNetworkAccessPermissionResponsed(log types.Log) (*AppPermissionStoreNetworkAccessPermissionResponsed, error) {
 	event := new(AppPermissionStoreNetworkAccessPermissionResponsed)
 	if err := _AppPermissionStore.contract.UnpackLog(event, "NetworkAccessPermissionResponsed", log); err != nil {

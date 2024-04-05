@@ -8,7 +8,6 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
     struct NetworkAccessResponse {
         bytes signature;
         bool isGranted;
-        address notaryAccount;
     }
 
     mapping(uint256 appID => mapping(address networkAccount => string ip))
@@ -29,8 +28,7 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         uint256 appID,
         address networkAccount,
         bytes signature,
-        bool isGranted,
-        address notaryAccount
+        bool isGranted
     );
 
     function requestNetworkAccess(
@@ -73,8 +71,7 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         uint256 appID,
         address _networkAccount,
         bytes memory signature,
-        bool isGranted,
-        address notaryAccount
+        bool isGranted
     ) external {
         NetworkAccount networkAccount = NetworkAccount(_networkAccount);
         require(
@@ -84,16 +81,14 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
 
         networkAccessResponses[appID][_networkAccount] = NetworkAccessResponse(
             signature,
-            isGranted,
-            notaryAccount
+            isGranted
         );
 
         emit NetworkAccessPermissionResponsed(
             appID,
             _networkAccount,
             signature,
-            isGranted,
-            notaryAccount
+            isGranted
         );
     }
 
@@ -115,7 +110,7 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
     function getNetworkAccessResponse(
         uint256 appID,
         address networkAccount
-    ) public view returns (bool responsed, bytes memory, bool, address) {
+    ) public view returns (bool responsed, bytes memory, bool) {
         NetworkAccessResponse memory response = networkAccessResponses[appID][
             networkAccount
         ];
@@ -123,8 +118,7 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         return (
             bytes(response.signature).length != 0,
             response.signature,
-            response.isGranted,
-            response.notaryAccount
+            response.isGranted
         );
     }
 }
