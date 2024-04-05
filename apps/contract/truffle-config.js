@@ -39,6 +39,12 @@ module.exports = {
 			network_id: '5555',
 			provider: new HDWalletProvider(process.env.OFFSET_PRIVATE_KEY, 'http://43.200.218.66:8445/'),
 		},
+		emission_test: {
+			host: '3.39.139.167',
+			port: 8445,
+			network_id: '5555',
+			provider: new HDWalletProvider(process.env.OFFSET_PRIVATE_KEY, 'http://43.200.218.66:8445/'),
+		},
 	},
 	compilers: {
 		solc: {
