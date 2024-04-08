@@ -50,8 +50,8 @@ func genTransactOpts(client *ethclient.Client, chainId *big.Int, pkHex string) (
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)     // in wei
-	auth.GasLimit = uint64(300000) // in units
+	auth.Value = big.NewInt(0) // in wei
+	auth.GasLimit = uint64(0)  // in units
 	auth.GasPrice = gasPrice
 	auth.Context = context.TODO()
 
