@@ -27,7 +27,7 @@ contract TrainCarbonEmissionsCalculator {
             result =  KTX_SRT_EMISSIONS_PER_KG * (value * 10e4) / 10e6;
         }
 
-        carbonEmissions.mint(msg.sender, applicationID, result, userID);
+        carbonEmissions.mint(applicationID, result, userID);
 
         return result;
     }

@@ -19,7 +19,7 @@ contract MobileDataCarbonEmissionsCalculator {
     ) external returns (uint256) {
         uint256 result = EMISSIONS_PER_USAGE_MB * (value * 10e4);
 
-        carbonEmissions.mint(msg.sender, applicationID, result, userID);
+        carbonEmissions.mint(applicationID, result, userID);
 
         return result;
     }

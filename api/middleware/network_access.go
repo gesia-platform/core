@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,6 +16,8 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.(*context.Context)
 
+		ip := ctx.Context.RealIP()
+
 		appPermission, err := store.NewAppPermissionStore(
 			common.HexToAddress(ctx.Config().ChainTree.Root.AppPermissionAddress),
 			ctx.ChainTree().Root.Client(),
@@ -25,7 +28,7 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 
 		appExists, appID, err := appPermission.GetAppID(
 			&bind.CallOpts{Pending: true},
-			hexutil.Encode([]byte(ctx.Context.RealIP())),
+			hexutil.Encode([]byte(ip)),
 		)
 		if err != nil {
 			return err
@@ -55,7 +58,7 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 			} else if !exists {
 				return errors.New("cannot find notaryAccount by appID")
 			} else {
-				c.Logger().Infof("requester appID: %d, notaryAccount: %s", appID, notaryAccount.Hex())
+				fmt.Printf("requester appID: %d, notaryAccount: %s\n", appID, notaryAccount.Hex())
 				ctx.SetNotaryAccount(notaryAccount)
 			}
 

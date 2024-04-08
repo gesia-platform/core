@@ -2,27 +2,57 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "../../notary/NotaryPublic.sol";
 
 contract CarbonEmissions is ERC1155 {
     string private name;
 
-    error InvalidApprovedCalculator();
+    mapping(address => bool) private _calculatorApprovals;
+
+    address public immutable notaryPublic;
+
+    event CarbonEmitted(uint256 applicationID, uint256 emossions, bytes userID);
+
+    modifier onlyApprovalCalculator() {
+        require(
+            _calculatorApprovals[msg.sender],
+            "sender is not approved calculator"
+        );
+        _;
+    }
 
     /**
      * @param _name The emissions categroy name.
      */
 
-    constructor(string memory _name) ERC1155("") {
+    constructor(string memory _name, address _notaryPublic) ERC1155("") {
         name = _name;
+        notaryPublic = _notaryPublic;
     }
 
     function mint(
-        address to,
         uint256 applicationID,
         uint256 emossions, // scaled by 10,000
         bytes memory userID
-    ) external {
-        super._mint(to, applicationID, emossions, userID);
+    ) external onlyApprovalCalculator {
+        super._mint(address(this), applicationID, emossions, "");
+
+        emit CarbonEmitted(applicationID, emossions, userID);
+    }
+
+    function setCalculatorApproval(address calculator, bool approval) external {
+        require(
+            NotaryPublic(notaryPublic).hasMembership(msg.sender),
+            "sender is not notary member"
+        );
+
+        _calculatorApprovals[calculator] = approval;
+    }
+
+    function isApprovedCalculator(
+        address calculator
+    ) public view returns (bool) {
+        return _calculatorApprovals[calculator];
     }
 
     function getName() public view returns (string memory) {

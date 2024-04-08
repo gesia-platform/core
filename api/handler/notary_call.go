@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math/big"
 
 	gocontext "context"
@@ -27,7 +28,7 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 	toPlain := body["to"].(string)
 	dataPlain := body["data"].(string)
 
-	c.Logger().Infof("notary call requested to: %s, data: %s", toPlain, dataPlain)
+	fmt.Printf("notary call requested to: %s, data: %s\n", toPlain, dataPlain)
 
 	abiData, err := hexutil.Decode(dataPlain)
 	if err != nil {
@@ -84,17 +85,12 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 	auth.GasLimit = uint64(0)
 	auth.GasPrice = gasPrice
 
-	c.Logger().Infof("request notary transaction")
 	tx, err := notaryAccount.NotaryCall(auth, toAddress, abiData)
 	if err != nil {
 		return err
 	}
 
-	c.Logger().Infof("notary call transaction: %s", tx.Hash())
+	fmt.Printf("notary call transaction: %s\n", tx.Hash())
 
-	if err := c.JSON(200, tx); err != nil {
-		return err
-	}
-
-	return nil
+	return c.JSON(200, tx)
 }

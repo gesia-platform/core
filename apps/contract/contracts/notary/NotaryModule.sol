@@ -15,7 +15,7 @@ abstract contract NotaryModule {
             .getAppIDByNotaryAccount(msg.sender);
 
         if (!exists) {
-            revert("unnotarized account call");
+            revert("unauthroized account call");
         } else if (appID != 0 && ownedAppID != appID) {
             revert("unauthroized");
         }

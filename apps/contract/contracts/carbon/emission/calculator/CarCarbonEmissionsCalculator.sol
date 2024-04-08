@@ -36,7 +36,7 @@ contract CarCarbonEmissionsCalculator {
             result = LPG_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
         }
 
-        carbonEmissions.mint(msg.sender, applicationID, result, userID);
+        carbonEmissions.mint(applicationID, result, userID);
 
         return result;
     }
