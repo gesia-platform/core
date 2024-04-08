@@ -2,16 +2,17 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "../../notary/NotaryPublic.sol";
 
-contract CarbonEmissions is ERC1155 {
+contract CarbonEmissions is ERC1155, ERC1155Holder {
     string private name;
 
     mapping(address => bool) private _calculatorApprovals;
 
     address public immutable notaryPublic;
 
-    event CarbonEmitted(uint256 applicationID, uint256 emossions, bytes userID);
+    event CarbonEmitted(uint256 applicationID, uint256 emissions, bytes userID);
 
     modifier onlyApprovalCalculator() {
         require(
@@ -32,12 +33,12 @@ contract CarbonEmissions is ERC1155 {
 
     function mint(
         uint256 applicationID,
-        uint256 emossions, // scaled by 10,000
+        uint256 emissions, // scaled by 10,000
         bytes memory userID
     ) external onlyApprovalCalculator {
-        super._mint(address(this), applicationID, emossions, "");
+        super._mint(address(this), applicationID, emissions, "");
 
-        emit CarbonEmitted(applicationID, emossions, userID);
+        emit CarbonEmitted(applicationID, emissions, userID);
     }
 
     function setCalculatorApproval(address calculator, bool approval) external {
@@ -57,5 +58,9 @@ contract CarbonEmissions is ERC1155 {
 
     function getName() public view returns (string memory) {
         return name;
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, ERC1155Receiver) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 }
