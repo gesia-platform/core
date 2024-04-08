@@ -53,6 +53,9 @@ func (apiHandler *APIHandler) registerEthereum() {
 	// Guard
 	ethereum.Use(apimiddleware.MiddlewareNetworkAccess)
 
+	// Notary Call
+	ethereum.POST(types.EthereumNotaryCallPath, apiHandler.NotaryCall)
+
 	// JSON-RPC
 	ethereum.Any("", func(c echo.Context) error {
 		if strings.EqualFold(c.Request().Header.Get("Upgrade"), "websocket") {
@@ -63,6 +66,4 @@ func (apiHandler *APIHandler) registerEthereum() {
 		}
 	})
 
-	// Notary Call
-	ethereum.POST(types.EthereumNotaryCallPath, apiHandler.NotaryCall)
 }

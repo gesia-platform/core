@@ -24,12 +24,17 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	abiData, err := hexutil.Decode(body["data"].(string))
+	toPlain := body["to"].(string)
+	dataPlain := body["data"].(string)
+
+	c.Logger().Infof("notary call requested to: %s, data: %s", toPlain, dataPlain)
+
+	abiData, err := hexutil.Decode(dataPlain)
 	if err != nil {
 		return err
 	}
 
-	toAddress := common.HexToAddress(body["to"].(string))
+	toAddress := common.HexToAddress(toPlain)
 
 	ctx := c.(*context.Context)
 	client := ctx.ChainTree().Host.Client()
@@ -56,12 +61,12 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
-	nonce, err := client.PendingNonceAt(gocontext.Background(), fromAddress)
+	nonce, err := client.PendingNonceAt(gocontext.TODO(), fromAddress)
 	if err != nil {
 		return err
 	}
 
-	gasPrice, err := client.SuggestGasPrice(gocontext.Background())
+	gasPrice, err := client.SuggestGasPrice(gocontext.TODO())
 	if err != nil {
 		return err
 	}
@@ -76,15 +81,16 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(1000000)
+	auth.GasLimit = uint64(0)
 	auth.GasPrice = gasPrice
 
+	c.Logger().Infof("request notary transaction")
 	tx, err := notaryAccount.NotaryCall(auth, toAddress, abiData)
 	if err != nil {
 		return err
 	}
 
-	c.Logger().Info("notary call transaction: ", tx.Hash())
+	c.Logger().Infof("notary call transaction: %s", tx.Hash())
 
 	if err := c.JSON(200, tx); err != nil {
 		return err
