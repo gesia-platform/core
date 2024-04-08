@@ -16,16 +16,11 @@ contract ElectricityCarbonEmissionsCalculator is NotaryModule {
     function calculate(
         uint256 applicationID,
         bytes memory userID,
-        uint256 value,
-        bool isSummer
+        uint256 value
     ) external returns (uint256) {
         uint256 result;
 
-        if (isSummer) {
-            result = EMISSIONS_PER_KG * (value * 10e4) * 2 / 10e4;
-        } else {
-            result = EMISSIONS_PER_KG * (value * 10e4);
-        }
+        result = EMISSIONS_PER_KG * (value * 10e4) / 10e4;
 
         carbonEmissions.mint(applicationID, result, userID);
 
