@@ -18,7 +18,7 @@ contract MilkCarbonEmissionsCalculator is NotaryModule {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_L * (value * 10e4);
+        uint256 result = EMISSIONS_PER_L / 10e2 * (value * 10e4);
 
         carbonEmissions.mint(applicationID, result, userID);
 
