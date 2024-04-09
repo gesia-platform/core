@@ -21,6 +21,7 @@ const CarCarbonEmissionsCalculator = artifacts.require('CarCarbonEmissionsCalcul
 const AirplaneCarbonEmissionsCalculator = artifacts.require('AirplaneCarbonEmissionsCalculator');
 const TrainCarbonEmissionsCalculator = artifacts.require('TrainCarbonEmissionsCalculator');
 const AmericanoCarbonEmissionsCalculator = artifacts.require('AmericanoCarbonEmissionsCalculator');
+const PaperCarbonEmissionsCalculator = artifacts.require('PaperCarbonEmissionsCalculator');
 
 module.exports = async (deployer) => {
 	if (process.env.SKIP_MIGRATIONS) return;
@@ -157,6 +158,12 @@ module.exports = async (deployer) => {
 	const americanoCarbonEmissionsCalculator = await AmericanoCarbonEmissionsCalculator.deployed();
 	await americanoCarbonEmissions.setCalculatorApproval(americanoCarbonEmissionsCalculator.address, true);
 
+	await deployer.deploy(CarbonEmissions, 'PaperCarbonEmissions', process.env.EMISSION_NOTARY_PUBLIC);
+	const paperCarbonEmissions = await CarbonEmissions.deployed();
+	await deployer.deploy(PaperCarbonEmissionsCalculator, paperCarbonEmissions.address, process.env.EMISSION_NOTARY_PUBLIC);
+	const paperCarbonEmissionsCalculator = await PaperCarbonEmissionsCalculator.deployed();
+	await paperCarbonEmissions.setCalculatorApproval(paperCarbonEmissionsCalculator.address, true);
+
 	console.log('BeefCarbonEmissionsCalculator : ', beefCarbonEmissionsCalculator.address);
 	console.log('BicycleCarbonEmissionsCalculator : ', bicycleCarbonEmissionsCalculator.address);
 	console.log('CannedTunaCarbonEmissionsCalculator : ', cannedTunaCarbonEmissionsCalculator.address);
@@ -179,4 +186,5 @@ module.exports = async (deployer) => {
 	console.log('AirplaneCarbonEmissionsCalculator : ', airplaneCarbonEmissionsCalculator.address);
 	console.log('TrainCarbonEmissionsCalculator : ', trainCarbonEmissionsCalculator.address);
 	console.log('AmericanoCarbonEmissionsCalculator : ', americanoCarbonEmissionsCalculator.address);
+	console.log('PaperCarbonEmissionsCalculator : ', paperCarbonEmissionsCalculator.address);
 };
