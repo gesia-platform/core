@@ -5,7 +5,8 @@ import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
 contract AirplaneCarbonEmissionsCalculator is NotaryModule {
-    uint256 constant EMISSIONS_PER_KG = 31600; // scaled by 10,000
+    uint256 constant EMISSIONS_PER_KG = 3160000000; // scaled by 1,000,000,000
+    uint256 constant AVERAGE_VALUE = 16; // scaled by 1,000
 
     CarbonEmissions public immutable carbonEmissions;
 
@@ -18,7 +19,7 @@ contract AirplaneCarbonEmissionsCalculator is NotaryModule {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_KG * (value * 10e4) / 10e3;
+        uint256 result = EMISSIONS_PER_KG * AVERAGE_VALUE * (value * 10e4) / 10e4 / 10e2;
 
         carbonEmissions.mint(applicationID, result, userID);
 
