@@ -5,7 +5,7 @@ import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
 contract MilkCarbonEmissionsCalculator is NotaryModule {
-    uint256 EMISSIONS_PER_L = 3150000; // scaled by 1,000,000,000
+    uint256 constant EMISSIONS_PER_L = 3150000; // scaled by 1,000,000,000
 
     CarbonEmissions public immutable carbonEmissions;
 
