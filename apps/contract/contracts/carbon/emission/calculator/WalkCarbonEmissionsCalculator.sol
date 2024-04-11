@@ -5,8 +5,7 @@ import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
 contract WalkCarbonEmissionsCalculator is NotaryModule {
-    uint256 EMISSIONS_PER_HOUR = 771800000; // scaled by 1,000,000,000
-    uint256 constant MINUTE_TO_HOUR = 60;
+    uint256 EMISSIONS_PER_HOUR = 12900000; // scaled by 1,000,000,000
 
     CarbonEmissions public immutable carbonEmissions;
 
@@ -19,7 +18,7 @@ contract WalkCarbonEmissionsCalculator is NotaryModule {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_HOUR * (value * 10e4) / MINUTE_TO_HOUR / 10e4;
+        uint256 result = EMISSIONS_PER_HOUR * (value * 10e4) / 10e4;
 
         carbonEmissions.mint(applicationID, result, userID);
 
