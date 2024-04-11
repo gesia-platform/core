@@ -5,9 +5,13 @@ import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
 contract CarCarbonEmissionsCalculator is NotaryModule {
-    uint256 constant GASOLINE_EMISSIONS_PER_KG = 217760; // scaled by 10,000
-    uint256 constant DIESEL_EMISSIONS_PER_KG = 260030; // scaled by 10,000
-    uint256 constant LPG_EMISSIONS_PER_KG = 373090; // scaled by 10,000
+    uint256 constant GASOLINE_EMISSIONS_PER_KG = 2177600000; // scaled by 1,000,000,000
+    uint256 constant DIESEL_EMISSIONS_PER_KG = 2600300000; // scaled by 1,000,000,000
+    uint256 constant LPG_EMISSIONS_PER_KG = 3730900000; // scaled by 1,000,000,000
+
+    uint256 constant AVERAGE_PRICE_GASOLINE = 157680; // scaled by 100
+    uint256 constant AVERAGE_PRICE_DIESEL = 138898; // scaled by 100
+    uint256 constant AVERAGE_PRICE_LPG = 96033; // scaled by 100
 
     enum CAR_TYPE {
         GASOLINE,
@@ -30,11 +34,11 @@ contract CarCarbonEmissionsCalculator is NotaryModule {
         uint256 result;
 
         if(car_type == CAR_TYPE.GASOLINE){
-            result = GASOLINE_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
+            result = GASOLINE_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_GASOLINE / 10e4;
         } else if(car_type == CAR_TYPE.DIESEL) {
-            result = DIESEL_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
+            result = DIESEL_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_DIESEL / 10e4;
         } else {
-            result = LPG_EMISSIONS_PER_KG * (value * 10e4) / 10e4;
+            result = LPG_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_LPG / 10e4;
         }
 
         carbonEmissions.mint(applicationID, result, userID);

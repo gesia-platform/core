@@ -19,7 +19,7 @@ contract BicycleCarbonEmissionsCalculator is NotaryModule {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_HOUR * (value * 10e4) / 10e4 / MINUTE_TO_HOUR;
+        uint256 result = EMISSIONS_PER_HOUR * (value * 10e4) / MINUTE_TO_HOUR / 10e4;
 
         carbonEmissions.mint(applicationID, result, userID);
 
