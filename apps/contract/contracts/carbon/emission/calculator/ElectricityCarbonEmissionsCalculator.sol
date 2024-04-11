@@ -5,7 +5,7 @@ import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
 contract ElectricityCarbonEmissionsCalculator is NotaryModule {
-    uint256 constant EMISSIONS_PER_KG = 4781; // scaled by 10,000
+    uint256 constant EMISSIONS_PER_KG = 478100000; // scaled by 10,000
 
     CarbonEmissions public immutable carbonEmissions;
 

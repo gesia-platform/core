@@ -3,8 +3,11 @@ pragma solidity ^0.8.0;
 
 import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
+import "../util/SafeMath.sol";
 
 contract CarCarbonEmissionsCalculator is NotaryModule {
+    using SafeMath for uint256;
+
     uint256 constant GASOLINE_EMISSIONS_PER_KG = 2177600000; // scaled by 1,000,000,000
     uint256 constant DIESEL_EMISSIONS_PER_KG = 2600300000; // scaled by 1,000,000,000
     uint256 constant LPG_EMISSIONS_PER_KG = 3730900000; // scaled by 1,000,000,000
@@ -34,11 +37,11 @@ contract CarCarbonEmissionsCalculator is NotaryModule {
         uint256 result;
 
         if(car_type == CAR_TYPE.GASOLINE){
-            result = GASOLINE_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_GASOLINE / 10e4;
+            result = GASOLINE_EMISSIONS_PER_KG.mul(value).mul(10e4).mul(10e1).div(AVERAGE_PRICE_GASOLINE).div(10e4);
         } else if(car_type == CAR_TYPE.DIESEL) {
-            result = DIESEL_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_DIESEL / 10e4;
+            result = DIESEL_EMISSIONS_PER_KG.mul(value).mul(10e4).mul(10e1).div(AVERAGE_PRICE_DIESEL).div(10e4);
         } else {
-            result = LPG_EMISSIONS_PER_KG * (value * 10e4) * 10e1 / AVERAGE_PRICE_LPG / 10e4;
+            result = LPG_EMISSIONS_PER_KG.mul(value).mul(10e4).mul(10e1).div(AVERAGE_PRICE_LPG).div(10e4);
         }
 
         carbonEmissions.mint(applicationID, result, userID);
