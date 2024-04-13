@@ -49,6 +49,8 @@ func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appI
 
 	tx, err := appPermission.ResponseNetworkAccess(txOpts, appID, notary.networkAccountAddress, aggreatedSiganture, true)
 	if err != nil {
+		// 실패 시 삭제
+		ctx.Keychain().Del(basectx.Background(), appID.String())
 		return err
 	}
 
