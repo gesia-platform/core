@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "../openzeppelin//access/Ownable.sol";
 import "./IOperator.sol";
 
 contract OperatorManager is Ownable, IOperator {
