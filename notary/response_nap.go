@@ -1,13 +1,13 @@
 package notary
 
 import (
+	"encoding/hex"
 	"fmt"
 	"math/big"
 
 	basectx "context"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/store"
@@ -38,7 +38,7 @@ func (notary *Notary) responseNetworkAccessPermission(ctx *context.Context, appI
 	}
 	ioaAddress := crypto.PubkeyToAddress(pk.PublicKey)
 
-	if err := ctx.Keychain().Set(basectx.Background(), appID.String(), hexutil.Encode(crypto.FromECDSA(pk)), 0).Err(); err != nil {
+	if err := ctx.Keychain().Set(basectx.Background(), appID.String(), hex.EncodeToString(crypto.FromECDSA(pk)), 0).Err(); err != nil {
 		fmt.Println("failed to set notary account to redis")
 		return err
 	}
