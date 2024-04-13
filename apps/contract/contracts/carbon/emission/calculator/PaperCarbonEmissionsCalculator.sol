@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 import "../CarbonEmissions.sol";
 import "../../../notary/NotaryModule.sol";
 
-contract EmailCarbonEmissionsCalculator is NotaryModule {
-    uint256 EMISSIONS_PER_EMAIL = 4000000; // scaled by 1,000,000,000
+contract PaperCarbonEmissionsCalculator is NotaryModule {
+    uint256 EMISSIONS_PER_HOUR = 113000000; // scaled by 1,000,000,000
 
     CarbonEmissions public immutable carbonEmissions;
 
@@ -18,7 +18,7 @@ contract EmailCarbonEmissionsCalculator is NotaryModule {
         bytes memory userID,
         uint256 value
     ) external returns (uint256) {
-        uint256 result = EMISSIONS_PER_EMAIL * (value * 10e4) / 10e4;
+        uint256 result = EMISSIONS_PER_HOUR * (value * 10e4) / 10e4;
 
         carbonEmissions.mint(applicationID, result, userID);
 

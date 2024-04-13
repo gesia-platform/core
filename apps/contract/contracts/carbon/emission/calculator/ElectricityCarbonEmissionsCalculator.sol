@@ -2,29 +2,25 @@
 pragma solidity ^0.8.0;
 
 import "../CarbonEmissions.sol";
+import "../../../notary/NotaryModule.sol";
 
-contract ElectricityCarbonEmissionsCalculator {
-    uint256 constant EMISSIONS_PER_KG = 4781; // scaled by 10,000
+contract ElectricityCarbonEmissionsCalculator is NotaryModule {
+    uint256 constant EMISSIONS_PER_KG = 478100000; // scaled by 10,000
 
     CarbonEmissions public immutable carbonEmissions;
 
-    constructor(CarbonEmissions _carbonEmissions) {
+    constructor(CarbonEmissions _carbonEmissions, NotaryPublic _notaryPublic) NotaryModule(_notaryPublic) {
         carbonEmissions = _carbonEmissions;
     }
 
     function calculate(
         uint256 applicationID,
         bytes memory userID,
-        uint256 value,
-        bool isSummer
+        uint256 value
     ) external returns (uint256) {
         uint256 result;
 
-        if (isSummer) {
-            result = EMISSIONS_PER_KG * (value * 10e4) * 2 / 10e4;
-        } else {
-            result = EMISSIONS_PER_KG * (value * 10e4);
-        }
+        result = EMISSIONS_PER_KG * (value * 10e4) / 10e4;
 
         carbonEmissions.mint(applicationID, result, userID);
 
