@@ -2,14 +2,14 @@
 pragma solidity ^0.8.0;
 
 import "../CarbonEmissions.sol";
-import "../../../notary/NotaryModule.sol";
 
-contract TestAmericanoCarbonEmissionsCalculator is NotaryModule {
+
+contract TestAmericanoCarbonEmissionsCalculator {
     uint256 constant EMISSIONS_PER_KG = 210; // scaled by 10,000
 
     CarbonEmissions public immutable carbonEmissions;
 
-    constructor(CarbonEmissions _carbonEmissions, NotaryPublic _notaryPublic) NotaryModule(_notaryPublic) {
+    constructor(CarbonEmissions _carbonEmissions)  {
         carbonEmissions = _carbonEmissions;
     }
 
