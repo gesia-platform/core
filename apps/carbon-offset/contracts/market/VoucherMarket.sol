@@ -5,17 +5,17 @@ import "../operator/IOperator.sol";
 import "../whitelist/IWhitelist.sol";
 import "../fee/IFeeManager.sol";
 import "../price/IPrice.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import "../openzeppelin//utils/math/SafeMath.sol";
+import "../openzeppelin//token/ERC20/utils/SafeERC20.sol";
+import "../openzeppelin//token/ERC20/ERC20.sol";
+import "../openzeppelin//utils/Counters.sol";
+import "../openzeppelin//token/ERC20/IERC20.sol";
+import "../openzeppelin//token/ERC1155/IERC1155.sol";
+import "../openzeppelin//token/ERC1155/utils/ERC1155Holder.sol";
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract VoucherMarket is ERC1155Holder {
+contract VoucherMarket is ERC1155Holder{
     using Counters for Counters.Counter;
     using SafeMath for uint256;
     using SafeERC20 for ERC20;
@@ -43,7 +43,10 @@ contract VoucherMarket is ERC1155Holder {
         bool isVerified
     );
 
-    event MinPriceChange(uint256 price, bool isBnb);
+    event MinPriceChange(
+        uint256 price,
+        bool isBnb
+    );
 
     event TokenPlaced(
         address indexed voucherContract,
@@ -51,8 +54,7 @@ contract VoucherMarket is ERC1155Holder {
         uint256 tokenId,
         uint256 amount,
         address seller,
-        uint256 price
-    );
+        uint256 price);
 
     event TokenUnPlaced(
         address indexed voucherContract,
@@ -61,8 +63,7 @@ contract VoucherMarket is ERC1155Holder {
         uint256 deductedAmount,
         uint256 remainAmount,
         address seller,
-        uint256 price
-    );
+        uint256 price);
 
     event TokenSold(
         address indexed voucherContract,
@@ -74,16 +75,14 @@ contract VoucherMarket is ERC1155Holder {
         uint256 price,
         uint256 totalPrice,
         uint256 feeAmount, // amount to fee address
-        uint256 remainAmount
-    );
+        uint256 remainAmount);
 
     constructor(
         address _usdtContractAddress,
         address _operatorManager,
         address _minterContract,
         address _whitelistManager,
-        address _feeManager
-    ) {
+        address _feeManager){
         usdtContractAddress = _usdtContractAddress;
         operatorManager = _operatorManager;
         minterContract = _minterContract;
@@ -91,26 +90,20 @@ contract VoucherMarket is ERC1155Holder {
         feeManager = _feeManager;
     }
 
-    receive() external payable {}
+    receive() external payable {
+    }
 
     modifier operatorsOnly() {
-        require(
-            IOperator(operatorManager).isOperator(msg.sender),
-            "#operatorsOnly:"
-        );
+        require(IOperator(operatorManager).isOperator(msg.sender), "#operatorsOnly:");
         _;
     }
 
-    function verifyVoucherContract(
-        address _voucherContract
-    ) external operatorsOnly {
+    function verifyVoucherContract(address _voucherContract) external operatorsOnly {
         voucherContractMap[_voucherContract] = true;
         emit VerificationVoucherContract(_voucherContract, true);
     }
 
-    function unVerifyVoucherContract(
-        address _voucherContract
-    ) external operatorsOnly {
+    function unVerifyVoucherContract(address _voucherContract) external operatorsOnly {
         voucherContractMap[_voucherContract] = false;
         emit VerificationVoucherContract(_voucherContract, false);
     }
@@ -127,33 +120,15 @@ contract VoucherMarket is ERC1155Holder {
     //   approve();
     //   place
     //  }
-    function place(
-        uint256 _tokenId,
-        uint256 _amount,
-        address _voucherContract,
-        uint256 _perTokenPrice
-    ) external {
+    function place(uint256 _tokenId, uint256 _amount, address _voucherContract, uint256 _perTokenPrice) external {
         // check voucher contract verification
-        require(
-            voucherContractMap[_voucherContract],
-            "Not Valid Voucher Contract"
-        );
+        require(voucherContractMap[_voucherContract], "Not Valid Voucher Contract");
         // check for minimum amount
         require(_amount >= minVoucherAmount, "Minimum purchase amount error");
         // check for whitelist
-        require(
-            IWhitelist(whitelistManager).isWhitelist(
-                _voucherContract,
-                _tokenId,
-                msg.sender
-            ),
-            "not in whitelist"
-        );
+        require(IWhitelist(whitelistManager).isWhitelist(_voucherContract,_tokenId, msg.sender), "not in whitelist");
         // check min _perTokenPrice
-        require(
-            _perTokenPrice >= IPrice(_voucherContract).getCarbonPrice(_tokenId),
-            "minimum usdt price issue"
-        );
+        require(_perTokenPrice >= IPrice(_voucherContract).getCarbonPrice(_tokenId), "minimum usdt price issue");
         // increment marketId
         _marketItemIds.increment();
         uint256 marketId = _marketItemIds.current();
@@ -166,22 +141,9 @@ contract VoucherMarket is ERC1155Holder {
             address(msg.sender)
         );
         // voucher token : transfer from seller wallet to contract
-        IERC1155(_voucherContract).safeTransferFrom(
-            msg.sender,
-            address(this),
-            _tokenId,
-            _amount,
-            ""
-        );
+        IERC1155(_voucherContract).safeTransferFrom(msg.sender, address(this), _tokenId, _amount, "");
         // trigger event
-        emit TokenPlaced(
-            _voucherContract,
-            marketId,
-            _tokenId,
-            _amount,
-            address(msg.sender),
-            _perTokenPrice
-        );
+        emit TokenPlaced(_voucherContract, marketId, _tokenId, _amount, address(msg.sender), _perTokenPrice);
     }
 
     // unPlance : cancel voucher token amount
@@ -192,33 +154,15 @@ contract VoucherMarket is ERC1155Holder {
         require(_amount > 0, "Must be higher than zero");
         MarketItem storage marketItem = _marketItemMap[_marketId];
         // check owner
-        require(
-            marketItem.seller == address(msg.sender) ||
-                IOperator(operatorManager).isOperator(address(msg.sender)),
-            "Not ownerOf or Operators"
-        );
+        require(marketItem.seller == address(msg.sender) || IOperator(operatorManager).isOperator(address(msg.sender)), "Not ownerOf or Operators");
         // check market amount to deduct
         require(marketItem.amount >= _amount, "Not Enough amount");
         // deduct amount from market amount
         marketItem.amount = marketItem.amount.sub(_amount);
         // send deducted amount to seller address
-        IERC1155(marketItem.voucherContract).safeTransferFrom(
-            address(this),
-            msg.sender,
-            marketItem.tokenId,
-            _amount,
-            ""
-        );
+        IERC1155(marketItem.voucherContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, _amount, "");
         // trigger event
-        emit TokenUnPlaced(
-            marketItem.voucherContract,
-            _marketId,
-            marketItem.tokenId,
-            _amount,
-            marketItem.amount,
-            marketItem.seller,
-            marketItem.price
-        );
+        emit TokenUnPlaced(marketItem.voucherContract, _marketId, marketItem.tokenId, _amount, marketItem.amount, marketItem.seller, marketItem.price);
     }
 
     // purchaseInUSDT : voucher token purchasable by USDT
@@ -238,69 +182,28 @@ contract VoucherMarket is ERC1155Holder {
         // get marketItem
         MarketItem storage marketItem = _marketItemMap[_marketId];
         // check for whitelist
-        require(
-            IWhitelist(whitelistManager).isWhitelist(
-                marketItem.voucherContract,
-                marketItem.tokenId,
-                msg.sender
-            ),
-            "not in whitelist"
-        );
+        require(IWhitelist(whitelistManager).isWhitelist(marketItem.voucherContract, marketItem.tokenId , msg.sender), "not in whitelist");
         // check amount from market amount
         require(marketItem.amount >= _amount, "Not Enough amount");
         // divide totalPrice to decimal
         uint256 totalPrice = marketItem.price.mul(_amount);
         // fee amount
-        uint256 feeAmount = IFeeManager(feeManager).feeAmount(totalPrice);
+        uint256 feeAmount = IFeeManager(feeManager).voucherMarketFeeAmount(totalPrice);
         // remain amount
         uint256 remainAmount = totalPrice.sub(feeAmount);
         // check contract balance
-        require(
-            IERC1155(marketItem.voucherContract).balanceOf(
-                address(this),
-                marketItem.tokenId
-            ) >= _amount,
-            "Insufficient tokens in contract"
-        );
+        require(IERC1155(marketItem.voucherContract).balanceOf(address(this), marketItem.tokenId) >= _amount, "Insufficient tokens in contract");
         // check user's wallet balance
-        require(
-            IERC20(usdtContractAddress).balanceOf(msg.sender) >= totalPrice,
-            "Insufficient USDT balance"
-        );
+        require(IERC20(usdtContractAddress).balanceOf(msg.sender) >= totalPrice, "Insufficient USDT balance");
         // deduct amount
         marketItem.amount = marketItem.amount.sub(_amount);
         // transfer remainAmount to seller
-        ERC20(usdtContractAddress).safeTransferFrom(
-            msg.sender,
-            marketItem.seller,
-            remainAmount
-        );
+        ERC20(usdtContractAddress).safeTransferFrom(msg.sender, marketItem.seller, remainAmount);
         // transfer feeAmount to feeAddress
-        ERC20(usdtContractAddress).safeTransferFrom(
-            msg.sender,
-            IFeeManager(feeManager).feeAddress(),
-            feeAmount
-        );
+        ERC20(usdtContractAddress).safeTransferFrom(msg.sender, IFeeManager(feeManager).feeAddress(), feeAmount);
         // transfer voucher
-        IERC1155(marketItem.voucherContract).safeTransferFrom(
-            address(this),
-            msg.sender,
-            marketItem.tokenId,
-            _amount,
-            ""
-        );
+        IERC1155(marketItem.voucherContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, _amount, "");
         // trigger event
-        emit TokenSold(
-            marketItem.voucherContract,
-            _marketId,
-            marketItem.tokenId,
-            _amount,
-            address(msg.sender),
-            marketItem.seller,
-            marketItem.price,
-            totalPrice,
-            feeAmount,
-            remainAmount
-        );
+        emit TokenSold(marketItem.voucherContract, _marketId, marketItem.tokenId, _amount, address(msg.sender), marketItem.seller, marketItem.price, totalPrice, feeAmount, remainAmount);
     }
 }
