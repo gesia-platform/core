@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	gocontext "context"
+
 	"github.com/gesia-platform/core/api"
 	"github.com/gesia-platform/core/api/handler"
 	"github.com/gesia-platform/core/chaintree"
@@ -12,6 +14,7 @@ import (
 	"github.com/gesia-platform/core/context"
 	"github.com/gesia-platform/core/notary"
 	"github.com/prysmaticlabs/prysm/v5/crypto/bls/blst"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cobra"
 )
 
@@ -72,6 +75,19 @@ func start(configPath string) {
 
 	context.SetChainTree(chainTree)
 	context.SetConfig(config)
+	context.SetKeychain(redis.NewClient(&redis.Options{
+		Addr:       config.Keychain.Host,
+		ClientName: config.ChainTree.Address,
+		Username:   config.ChainTree.Address,
+		Password:   config.Keychain.Password,
+		DB:         0,
+	}))
+
+	if err := context.Keychain().Ping(gocontext.Background()).Err(); err != nil {
+		panic("keychain connection unstabled")
+	} else {
+		fmt.Printf("keychain connected host: %s, user: %s\n", config.Keychain.Host, config.ChainTree.Address)
+	}
 
 	notary := notary.NewNotary()
 

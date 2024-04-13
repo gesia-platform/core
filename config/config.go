@@ -10,6 +10,8 @@ type Config struct {
 	Port uint `toml:"port"`
 
 	ChainTree ChainTree `toml:"chain_tree"`
+
+	Keychain Keychain `toml:"keychain"`
 }
 
 func NewConfig(path string) *Config {

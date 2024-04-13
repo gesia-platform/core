@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -44,25 +43,24 @@ func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 			return err
 		} else if !isGranted {
 			return echo.ErrUnauthorized
-		} else {
-			notaryPublic, err := store.NewNotaryPublicStore(
-				common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
-				ctx.ChainTree().Host.Client(),
-			)
-			if err != nil {
-				return err
-			}
-
-			if exists, notaryAccount, err := notaryPublic.GetNotaryAccount(&bind.CallOpts{Pending: true}, appID); err != nil {
-				return err
-			} else if !exists {
-				return errors.New("cannot find notaryAccount by appID")
-			} else {
-				fmt.Printf("requester appID: %d, notaryAccount: %s\n", appID, notaryAccount.Hex())
-				ctx.SetNotaryAccount(notaryAccount)
-			}
-
 		}
+
+		ctx.SetAppID(appID)
+		/*notaryPublic, err := store.NewNotaryPublicStore(
+			common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
+			ctx.ChainTree().Host.Client(),
+		)
+		if err != nil {
+			return err
+		}
+
+		if exists, notaryAccount, err := notaryPublic.GetNotaryAccount(&bind.CallOpts{Pending: true}, appID); err != nil {
+			return err
+		} else if !exists {
+			return errors.New("cannot find notaryAccount by appID")
+		} else {
+			fmt.Printf("requester appID: %d, notaryAccount: %s\n", appID, notaryAccount.Hex())
+		}*/
 
 		return next(ctx)
 	}

@@ -9,12 +9,11 @@ import (
 
 	gocontext "context"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gesia-platform/core/context"
-	"github.com/gesia-platform/core/store"
 	"github.com/labstack/echo/v4"
 )
 
@@ -41,15 +40,15 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 	client := ctx.ChainTree().Host.Client()
 	chainId := big.NewInt(int64(ctx.Config().ChainTree.Host.ChainID))
 
-	notaryAccount, err := store.NewNotaryAccountStore(
-		ctx.NotaryAccount(),
-		client,
-	)
+	// Keychain에서 불러오기
+	pkHex, err := ctx.Keychain().Get(gocontext.Background(), ctx.AppID().String()).Result()
 	if err != nil {
 		return err
+	} else if len([]byte(pkHex)) == 0 {
+		return errors.New("empty notary private key")
 	}
 
-	privateKey, err := crypto.HexToECDSA(ctx.Config().ChainTree.PrivateKey)
+	privateKey, err := crypto.HexToECDSA(pkHex)
 	if err != nil {
 		return err
 	}
@@ -72,25 +71,20 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(
-		privateKey,
-		chainId,
-	)
+	tx := types.NewTransaction(nonce, toAddress, big.NewInt(0), 0, gasPrice, abiData)
+
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainId), privateKey)
 	if err != nil {
+		fmt.Println("failed to sign notarized transaction")
 		return err
 	}
 
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(0)
-	auth.GasPrice = gasPrice
-
-	tx, err := notaryAccount.NotaryCall(auth, toAddress, abiData)
-	if err != nil {
+	if err := client.SendTransaction(gocontext.Background(), signedTx); err != nil {
+		fmt.Printf("failed notary transaction: %s\n", signedTx.Hash())
 		return err
+	} else {
+		fmt.Printf("success notary transaction: %s\n", signedTx.Hash())
 	}
 
-	fmt.Printf("notary call transaction: %s\n", tx.Hash())
-
-	return c.JSON(200, tx)
+	return c.JSON(200, signedTx)
 }

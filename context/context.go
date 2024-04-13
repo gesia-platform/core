@@ -1,10 +1,12 @@
 package context
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"math/big"
+
 	"github.com/gesia-platform/core/chaintree"
 	"github.com/gesia-platform/core/config"
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 type Context struct {
@@ -14,7 +16,9 @@ type Context struct {
 
 	chainTree *chaintree.ChainTree
 
-	notaryAccount common.Address
+	appID *big.Int
+
+	keychain *redis.Client
 }
 
 func (c *Context) SetConfig(config *config.Config) {
@@ -33,10 +37,18 @@ func (c *Context) ChainTree() *chaintree.ChainTree {
 	return c.chainTree
 }
 
-func (c *Context) SetNotaryAccount(notaryAccount common.Address) {
-	c.notaryAccount = notaryAccount
+func (c *Context) SetAppID(appID *big.Int) {
+	c.appID = appID
 }
 
-func (c *Context) NotaryAccount() common.Address {
-	return c.notaryAccount
+func (c *Context) AppID() *big.Int {
+	return c.appID
+}
+
+func (c *Context) SetKeychain(keychain *redis.Client) {
+	c.keychain = keychain
+}
+
+func (c *Context) Keychain() *redis.Client {
+	return c.keychain
 }

@@ -35,4 +35,7 @@ ws_url =
 # main notary public contract ethereum hex address
 notary_public_address = 
 
+[keychain]
+# {hostname}:{port}
+host =
 ```
