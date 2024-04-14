@@ -41,11 +41,7 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	// for contract creation
-	toAddress := common.Address{}
-	if !strings.EqualFold(toPlain, "") {
-		toAddress = common.HexToAddress(toPlain)
-	}
+	toAddress := common.HexToAddress(toPlain)
 
 	ctx := c.(*context.Context)
 	client := ctx.ChainTree().Host.Client()
@@ -82,7 +78,13 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	tx := types.NewTransaction(nonce, toAddress, big.NewInt(0), uint64(4700000), gasPrice, abiData)
+	var tx *types.Transaction
+	if strings.EqualFold(toPlain, "") {
+		tx = types.NewContractCreation(nonce, big.NewInt(0), uint64(4700000), gasPrice, abiData)
+	} else {
+		tx = types.NewTransaction(nonce, toAddress, big.NewInt(0), uint64(4700000), gasPrice, abiData)
+
+	}
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainId), privateKey)
 	if err != nil {
