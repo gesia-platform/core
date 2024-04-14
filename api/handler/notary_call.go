@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 
 	gocontext "context"
 
@@ -24,7 +25,13 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	toPlain := body["to"].(string)
+	var toPlain string
+	if body["to"] == nil {
+		toPlain = ""
+	} else {
+		toPlain = body["to"].(string)
+	}
+
 	dataPlain := body["data"].(string)
 
 	fmt.Printf("notary call requested to: %s, data: %s\n", toPlain, dataPlain)
@@ -34,7 +41,11 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	toAddress := common.HexToAddress(toPlain)
+	// for contract creation
+	toAddress := common.Address{}
+	if !strings.EqualFold(toPlain, "") {
+		toAddress = common.HexToAddress(toPlain)
+	}
 
 	ctx := c.(*context.Context)
 	client := ctx.ChainTree().Host.Client()
