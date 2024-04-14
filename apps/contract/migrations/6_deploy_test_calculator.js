@@ -6,7 +6,7 @@ module.exports = async (deployer) => {
 
 	await deployer.deploy(CarbonEmissions, 'TestCarbonEmissions', process.env.EMISSION_NOTARY_PUBLIC);
 	const testCarbonEmissions = await CarbonEmissions.deployed();
-	await deployer.deploy(TestAmericanoCarbonEmissionsCalculator, testCarbonEmissions.address, process.env.EMISSION_NOTARY_PUBLIC);
+	await deployer.deploy(TestAmericanoCarbonEmissionsCalculator, testCarbonEmissions.address);
 	const testAmericanoCarbonEmissionsCalculator = await TestAmericanoCarbonEmissionsCalculator.deployed();
 	await testCarbonEmissions.setCalculatorApproval(testAmericanoCarbonEmissionsCalculator.address, true);
 
