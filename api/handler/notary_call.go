@@ -71,7 +71,7 @@ func (handler *APIHandler) NotaryCall(c echo.Context) error {
 		return err
 	}
 
-	tx := types.NewTransaction(nonce, toAddress, big.NewInt(0), 0, gasPrice, abiData)
+	tx := types.NewTransaction(nonce, toAddress, big.NewInt(0), uint64(4700000), gasPrice, abiData)
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainId), privateKey)
 	if err != nil {
