@@ -1,5 +1,5 @@
 import { Main } from "@/components/main";
-import { TxList } from "@/containers/txs/tx-list";
+import { TxList } from "@/containers/tx/list";
 
 export default function Txs() {
   return (

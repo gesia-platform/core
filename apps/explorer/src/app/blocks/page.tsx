@@ -1,5 +1,5 @@
 import { Main } from "@/components/main";
-import { BlockList } from "@/containers/blocks/block-list";
+import { BlockList } from "@/containers/block/list";
 
 export default function Blocks() {
   return (
