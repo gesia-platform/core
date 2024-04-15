@@ -17,6 +17,13 @@ export const Footer = ({}) => {
             <div className="grid grid-flow-row auto-rows-min gap-y-3">
               <span className="text-[16px] font-medium">Company</span>
               <Link
+                href={"https://gesia.io"}
+                target="_blank"
+                className="text-[12px]"
+              >
+                GESIA Platform
+              </Link>
+              <Link
                 href={"https://www.gec-gesia.org/"}
                 target="_blank"
                 className="text-[12px]"
@@ -24,13 +31,6 @@ export const Footer = ({}) => {
                 GEC
                 <br />
                 Green Earth Community
-              </Link>
-              <Link
-                href={"https://gesia.io"}
-                target="_blank"
-                className="text-[12px]"
-              >
-                GESIA Platform
               </Link>
             </div>
 
@@ -50,7 +50,11 @@ export const Footer = ({}) => {
 
             <div className="grid grid-flow-row auto-rows-min gap-y-3">
               <span className="text-[16px] font-medium">Social</span>
-              <Link href={"https://github.com/gesia-platform"} target="_blank" className="text-[12px]">
+              <Link
+                href={"https://github.com/gesia-platform"}
+                target="_blank"
+                className="text-[12px]"
+              >
                 <Image src="/github.png" width={24} height={24} alt="Github" />
               </Link>
             </div>
