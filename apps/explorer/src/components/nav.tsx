@@ -16,6 +16,8 @@ export const Nav = ({}) => {
         <div className="ml-auto">
           <NavLink href="/">Home</NavLink>
           <NavLink href="/chains">Chains</NavLink>
+          <NavLink href="/blocks">Blocks</NavLink>
+          <NavLink href="/txs">Transactions</NavLink>
           <NavLink href="https://gesia.gitbook.io/gesia-project-kr">
             Docs
           </NavLink>

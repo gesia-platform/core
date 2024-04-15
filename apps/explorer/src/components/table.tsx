@@ -10,24 +10,27 @@ export const Table = ({
 }: {
   columns: { label: string; render: (data: any, index: number) => ReactNode }[];
   data: any[];
-  label: string;
+  label?: string;
   headerComponent?: ReactNode;
   footerLeftComponent?: ReactNode;
   footerRightComponent?: ReactNode;
 }) => {
   return (
     <div className="bg-white border border-[#EAECED] shadow-md rounded-[8px]">
-      <div className="flex items-center justify-between p-[15px]">
-        <span className="text-[16px] font-medium">{label}</span>
-        <div className="ml-auto flex items-center">{headerComponent}</div>
-      </div>
+      {(label || headerComponent) && (
+        <div className="flex items-center justify-between p-[15px] border-b-[#EAECED] border-b">
+          <span className="text-[16px] font-medium">{label}</span>
+          <div className="ml-auto flex items-center">{headerComponent}</div>
+        </div>
+      )}
+
       <table cellSpacing={0} cellPadding={0} className="w-full">
-        <thead className="border-t-[#EAECED] border-t">
+        <thead className="">
           <tr>
             {columns.map((col, index) => (
               <th
                 key={index}
-                className="h-[56px] text-[16px] font-medium border-b-[#EAECED] border-b"
+                className="h-[56px] text-[16px] font-medium "
               >
                 {col.label}
               </th>
@@ -41,7 +44,7 @@ export const Table = ({
                 {columns.map((z, y) => {
                   return (
                     <td
-                      className="h-[52px] text-[16px] border-b-[#EAECED] border-b text-center"
+                      className="h-[52px] text-[16px] border-t-[#EAECED] border-t text-center"
                       key={y}
                     >
                       {z.render(x, i)}
@@ -53,10 +56,15 @@ export const Table = ({
           })}
         </tbody>
       </table>
-      <div className="flex items-center justify-between p-[15px]">
-        <div>{footerLeftComponent}</div>
-        <div className="ml-auto flex items-center">{footerRightComponent}</div>
-      </div>
+
+      {(footerLeftComponent || footerRightComponent) && (
+        <div className="flex items-center justify-between p-[15px] border-t-[#EAECED] border-t">
+          <div>{footerLeftComponent}</div>
+          <div className="ml-auto flex items-center">
+            {footerRightComponent}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
