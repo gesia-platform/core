@@ -23,7 +23,6 @@ contract AppPermissionNetworkAccess is AppPermissionBase {
         address networkAccount,
         string ip
     );
-
     event NetworkAccessPermissionResponsed(
         uint256 appID,
         address networkAccount,
