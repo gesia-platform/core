@@ -31,7 +31,7 @@ export const CarbonCard = ({
         />
         <span className="mt-4 text-[16px/24px] font-medium">{label}</span>
         <span className="text-[22px/28px] font-medium">
-          {tco2}
+          {BigInt(tco2).toLocaleString()}
           <span className="text-[16px/20px] font-normal ml-1">tCO2</span>
         </span>
       </div>

@@ -3,7 +3,7 @@
 import { LastBlockItem } from "@/components/last-block-item";
 import { LastList } from "@/components/last-list";
 import { LastTransactionItem } from "@/components/last-transaction-item";
-import { CHAINS } from "@/constants/chain";
+import { CHAINS, CHAIN_ID_NEUTRALITY } from "@/constants/chain";
 import { useListBlocks } from "@/hooks/use-list-blocks";
 import { useEffect } from "react";
 import {
@@ -69,11 +69,14 @@ export const LastChainData = ({}) => {
           {listBlocks.data?.blocks?.map((block: any) => {
             return (
               <LastBlockItem
+                minedLabel={
+                  chainStore.id === CHAIN_ID_NEUTRALITY ? "Validated" : "Signed"
+                }
                 key={block.height}
                 number={block.height}
                 txns={block.txns}
                 time={formatTimestampFromNow(block.timestamp)}
-                proposer={formatAddress(block.miner)}
+                proposer={block.miner}
               />
             );
           })}
@@ -87,10 +90,10 @@ export const LastChainData = ({}) => {
           {listTxs.data?.txs?.map((tx: any) => (
             <LastTransactionItem
               key={tx.hash}
-              hash={formatHash(tx.hash)}
+              hash={tx.hash}
               time={formatTimestampFromNow(tx.block?.timestamp)}
-              from={formatAddress(tx.from)}
-              to={formatAddress(tx.to)}
+              from={tx.from}
+              to={tx.to}
             />
           ))}
         </LastList>

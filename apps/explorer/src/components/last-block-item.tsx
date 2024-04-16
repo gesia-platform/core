@@ -1,3 +1,4 @@
+import { formatAddress } from "@/utils/formatter";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,7 +7,9 @@ export const LastBlockItem = ({
   number,
   proposer,
   txns,
+  minedLabel,
 }: {
+  minedLabel: string;
   txns: number;
   proposer: string;
   number: number;
@@ -32,9 +35,12 @@ export const LastBlockItem = ({
       </div>
 
       <div className="ml-10 flex flex-col">
-        <span className="text-[12px] text-[#1C1E20]">Validated By</span>
-        <Link className="text-[14px] text-[#0091C2]" href={"/addresses/" + number}>
-          {proposer}
+        <span className="text-[12px] text-[#1C1E20]">{minedLabel} By</span>
+        <Link
+          className="text-[14px] text-[#0091C2]"
+          href={"/addresses/" + proposer}
+        >
+          {formatAddress(proposer)}
         </Link>
       </div>
       <span className="ml-auto text-[14px] text-[#1c1e20]">{txns} txns</span>

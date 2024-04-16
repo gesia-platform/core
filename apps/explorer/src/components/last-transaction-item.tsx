@@ -1,3 +1,4 @@
+import { formatAddress, formatHash } from "@/utils/formatter";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -27,11 +28,8 @@ export const LastTransactionItem = ({
       <div className="ml-5 flex flex-col">
         <div className="flex items-center">
           <span className="text-[12px] text-[#1C1E20] w-[46px]">Tx#</span>
-          <Link
-            className="text-[14px] text-[#0091C2]"
-            href={"/txs/" + hash}
-          >
-            {hash}
+          <Link className="text-[14px] text-[#0091C2]" href={"/txs/" + hash}>
+            {formatHash(hash)}
           </Link>
         </div>
 
@@ -45,13 +43,16 @@ export const LastTransactionItem = ({
             className="text-[14px] text-[#0091C2]"
             href={"/addresses/" + from}
           >
-            {from}
+            {formatAddress(from)}
           </Link>
         </div>
         <div className="flex items-center">
           <span className="text-[12px] text-[#1C1E20] w-[46px]">To</span>
-          <Link className="text-[14px] text-[#0091C2]" href={"/addresses/" + to}>
-            {to}
+          <Link
+            className="text-[14px] text-[#0091C2]"
+            href={"/addresses/" + to}
+          >
+            {formatAddress(to)}
           </Link>
         </div>
       </div>

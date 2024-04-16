@@ -3,6 +3,7 @@
 import { ChainSelect } from "@/components/chain-select";
 import { Pagination } from "@/components/pagination";
 import { Table } from "@/components/table";
+import { CHAIN_ID_NEUTRALITY } from "@/constants/chain";
 import { useListBlocks } from "@/hooks/use-list-blocks";
 import useChainState from "@/stores/use-chain-state";
 import { formatAddress, formatTimestampFromNow } from "@/utils/formatter";
@@ -23,7 +24,9 @@ export const BlockList = ({}) => {
   return (
     <div className="mt-5">
       <Table
-        label={`Total of ${listBlocks.data?.totalSize ?? 0} blocks`}
+        label={`Total of ${BigInt(
+          listBlocks.data?.totalSize ?? 0
+        ).toLocaleString()} blocks`}
         headerComponent={
           <>
             <ChainSelect />
@@ -50,7 +53,7 @@ export const BlockList = ({}) => {
           { label: "Age", render: (d) => formatTimestampFromNow(d.timestamp) },
           { label: "Txn", render: (d) => d.txns },
           {
-            label: "Fee Recipient",
+            label: chainID === CHAIN_ID_NEUTRALITY ? "Validator" : "Signer",
             render: (d) => (
               <Link className="text-[#0091C2]" href={"/addresses/" + d.miner}>
                 {formatAddress(d.miner)}
