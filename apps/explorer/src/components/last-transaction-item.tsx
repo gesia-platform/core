@@ -29,7 +29,7 @@ export const LastTransactionItem = ({
           <span className="text-[12px] text-[#1C1E20] w-[46px]">Tx#</span>
           <Link
             className="text-[14px] text-[#0091C2]"
-            href={"/transactions/" + hash}
+            href={"/txs/" + hash}
           >
             {hash}
           </Link>
@@ -43,14 +43,14 @@ export const LastTransactionItem = ({
           <span className="text-[12px] text-[#1C1E20] w-[46px]">From</span>
           <Link
             className="text-[14px] text-[#0091C2]"
-            href={"/address/" + from}
+            href={"/addresses/" + from}
           >
             {from}
           </Link>
         </div>
         <div className="flex items-center">
           <span className="text-[12px] text-[#1C1E20] w-[46px]">To</span>
-          <Link className="text-[14px] text-[#0091C2]" href={"/address/" + to}>
+          <Link className="text-[14px] text-[#0091C2]" href={"/addresses/" + to}>
             {to}
           </Link>
         </div>

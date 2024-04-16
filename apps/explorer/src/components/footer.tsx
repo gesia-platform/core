@@ -6,12 +6,14 @@ export const Footer = ({}) => {
     <div className="bg-[#F5F6F7] w-full flex">
       <footer className="mx-auto w-full max-w-[1440px] px-[90px] py-10">
         <div className="border-b border-b-[#D8DBDE] flex pb-[100px] items-start">
-          <Image
-            src="/logo-simple.svg"
-            width={110}
-            height={28}
-            alt="Logo Simple"
-          />
+          <Link href={"/"}>
+            <Image
+              src="/logo-simple.svg"
+              width={110}
+              height={28}
+              alt="Logo Simple"
+            />
+          </Link>
 
           <div className="ml-auto grid grid-flow-col auto-cols-max gap-x-[100px]">
             <div className="grid grid-flow-row auto-rows-min gap-y-3">

@@ -1,5 +1,5 @@
 import { Main } from "@/components/main";
-import { ChainList } from "@/containers/chains/chain-list";
+import { ChainList } from "@/containers/chain/chain-list";
 
 export default function Chains() {
   return (

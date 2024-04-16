@@ -1,23 +1,39 @@
-'use client'
+"use client";
 
 import { SearchBar } from "@/components/search-bar";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export const HomeSearch = ({}) => {
   const router = useRouter();
+
+  const input = useRef<HTMLInputElement>(null);
+
   return (
     <div className="mt-2">
       <SearchBar
         buttonProps={{
           onClick: () => {
-            router.push("/search");
+            router.push(
+              "/search?string=" + encodeURIComponent(input.current?.value ?? "")
+            );
           },
         }}
         inputProps={{
-          placeholder: "Carbon Tx, Carbon Calculator Address, Wallet Address",
+          ref: input,
+          onChange: (e) => {
+            if (input.current) {
+              input.current.value = e.target.value;
+            }
+          },
+          placeholder:
+            "Block, Tx, Carbon Calculator/Voucher Address, Wallet Address",
           onKeyDown: (e) => {
             if (e.key === "Enter") {
-              router.push("/search");
+              router.push(
+                "/search?string=" +
+                  encodeURIComponent(input.current?.value ?? "")
+              );
             }
           },
         }}
