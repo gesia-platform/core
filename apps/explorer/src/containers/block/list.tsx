@@ -1,31 +1,99 @@
+"use client";
+
 import { ChainSelect } from "@/components/chain-select";
 import { Pagination } from "@/components/pagination";
 import { Table } from "@/components/table";
+import { useListBlocks } from "@/hooks/use-list-blocks";
+import useChainState from "@/stores/use-chain-state";
+import { formatAddress, formatTimestampFromNow } from "@/utils/formatter";
+import Link from "next/link";
+import { useState } from "react";
+import Web3 from "web3";
 
 export const BlockList = ({}) => {
+  const chainID = useChainState((s) => s.id);
+  const [page, setPage] = useState({ offset: 0, size: 10 });
+
+  const listBlocks = useListBlocks({
+    chainID,
+    pageOffset: page.offset,
+    pageSize: page.size,
+  });
+
   return (
     <div className="mt-5">
       <Table
-        label={`Total of 19,323,232 blocks`}
+        label={`Total of ${listBlocks.data?.totalSize ?? 0} blocks`}
         headerComponent={
           <>
             <ChainSelect />
-            <Pagination totalPage={323} page={1} />
+            <Pagination
+              onOffsetChange={(offset) =>
+                setPage((prev) => ({ ...prev, offset }))
+              }
+              offset={page.offset}
+              size={page.size}
+              totalSize={listBlocks.data?.totalSize ?? 0}
+            />
           </>
         }
-        data={[{}, {}, {}, {}, {}, {}, {}, {}]}
+        data={listBlocks.data?.blocks ?? []}
         columns={[
-          { label: "Block", render: () => "hih" },
-          { label: "Age", render: () => "hih" },
-          { label: "Txn", render: () => "hih" },
-          { label: "Fee Recipient", render: () => "hih" },
-          { label: "Gas Used", render: () => "hih" },
-          { label: "Gas Limit", render: () => "hih" },
-          { label: "Base Fee", render: () => "hih" },
-          { label: "Reward", render: () => "hih" },
-          { label: "Brunt Fees (ETH)", render: () => "hih" },
+          {
+            label: "Block",
+            render: (d) => (
+              <Link className="text-[#0091C2]" href={"/blocks/" + d.height}>
+                {d.height}
+              </Link>
+            ),
+          },
+          { label: "Age", render: (d) => formatTimestampFromNow(d.timestamp) },
+          { label: "Txn", render: (d) => d.txns },
+          {
+            label: "Fee Recipient",
+            render: (d) => (
+              <Link className="text-[#0091C2]" href={"/addresses/" + d.miner}>
+                {formatAddress(d.miner)}
+              </Link>
+            ),
+          },
+          {
+            label: "Gas Used",
+            render: (d) => BigInt(d.gasUsed).toLocaleString(),
+          },
+          {
+            label: "Gas Limit",
+            render: (d) => BigInt(d.gasLimit).toLocaleString(),
+          },
+          // { label: "Base Fee", render: (d) => d.baseFeePerGas + " Gwei" },
+          {
+            label: "Reward",
+            render: (d) => {
+              return (
+                Web3.utils
+                  .fromWei(
+                    d.txs?.reduce(
+                      (p: any, c: any) =>
+                        p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
+                      BigInt(0)
+                    ),
+                    "ether"
+                  )
+                  .toString() + " ETH"
+              );
+            },
+          },
         ]}
-        footerRightComponent={<Pagination totalPage={323} page={1} />}
+        footerRightComponent={
+          <Pagination
+            onOffsetChange={(offset) =>
+              setPage((prev) => ({ ...prev, offset }))
+            }
+            offset={page.offset}
+            size={page.size}
+            totalSize={listBlocks.data?.totalSize ?? 0}
+          />
+        }
       />
     </div>
   );
