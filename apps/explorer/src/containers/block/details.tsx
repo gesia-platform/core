@@ -8,6 +8,7 @@ import { useGetBlock } from "@/hooks/use-get-block";
 import useChainState from "@/stores/use-chain-state";
 import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useMemo } from "react";
 import Web3 from "web3";
 
@@ -18,6 +19,8 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
   const block = useMemo(() => {
     return getBlock.data?.block || null;
   }, [getBlock]);
+
+  if (getBlock.error) return redirect("/error");
 
   if (!block) return null;
 

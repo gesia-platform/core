@@ -15,7 +15,7 @@ export const HomeSearch = ({}) => {
         buttonProps={{
           onClick: () => {
             router.push(
-              "/search?string=" + encodeURIComponent(input.current?.value ?? "")
+              "/search?q=" + encodeURIComponent(input.current?.value ?? "")
             );
           },
         }}
@@ -31,8 +31,7 @@ export const HomeSearch = ({}) => {
           onKeyDown: (e) => {
             if (e.key === "Enter") {
               router.push(
-                "/search?string=" +
-                  encodeURIComponent(input.current?.value ?? "")
+                "/search?q=" + encodeURIComponent(input.current?.value ?? "")
               );
             }
           },

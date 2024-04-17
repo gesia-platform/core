@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Block } from './schemas/block.schema';
 import mongoose, {
@@ -67,6 +67,8 @@ export class BlocksService {
 
     const results = await this.blockModel.aggregate(pipelines);
 
+    if (!results[0]) throw new NotFoundException();
+    
     return {
       block: results[0],
     };

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import ChainProvider from "@/providers/chain-provider";
+import ScrollTopProvider from "@/providers/scroll-top-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ScrollTopProvider />
         <ChainProvider>
           <Nav />
           {children}

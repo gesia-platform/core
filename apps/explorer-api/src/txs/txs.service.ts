@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Tx } from './schemas/tx.schema';
 import mongoose, {
@@ -65,6 +65,8 @@ export class TxsService {
     ];
 
     const results = await this.txModel.aggregate([...pipelines]);
+    
+    if (!results[0]) throw new NotFoundException();
 
     return { tx: results[0] };
   }

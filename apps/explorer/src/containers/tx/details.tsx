@@ -9,10 +9,12 @@ import { useGetTx } from "@/hooks/use-get-tx";
 import useChainState from "@/stores/use-chain-state";
 import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { useMemo } from "react";
 import Web3 from "web3";
 
 export const TxDetails = ({ txID }: { txID: string }) => {
+  const chainID = useChainState((s) => s.id);
   const getTx = useGetTx({ txID });
   const getChain = useChainState((s) => s.getChain);
 
@@ -25,11 +27,13 @@ export const TxDetails = ({ txID }: { txID: string }) => {
     return chainID ? getChain(chainID) : null;
   }, [getChain, tx]);
 
+  if (getTx.error) return redirect("/error");
+  
   if (!tx || !chain) return null;
 
   return (
     <div className="mt-5">
-      <Details grid headerComponent={<CarbonLabel chainID={1} />}>
+      <Details grid headerComponent={<CarbonLabel chainID={chainID} />}>
         <DetailsRows>
           <DetailsRow label="Chain ID">{`#${chain.id} ${chain.label}`}</DetailsRow>
           <DetailsRow label="Transaction Hash">{tx.hash}</DetailsRow>

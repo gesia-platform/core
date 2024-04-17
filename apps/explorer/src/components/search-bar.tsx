@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import { ChainSelect } from "./chain-select";
 
 export const SearchBar = ({
   inputProps,
@@ -15,10 +16,11 @@ export const SearchBar = ({
   >;
 }) => {
   return (
-    <div className="rounded-[8px] bg-white p-[6px] flex items-center w-full max-w-[672px] border border-[#EAECED]">
+    <div className="rounded-[8px] bg-white p-[6px] flex items-center w-full max-w-[780px] border border-[#EAECED]">
+      <ChainSelect borderHidden />
       <input
         {...inputProps}
-        className="flex-1 self-stretch placeholder:text-[#AAAEB1] text-[14px/24px] focus:outline-none ml-2 mr-4"
+        className="flex-1 self-stretch placeholder:text-[#AAAEB1] text-[14px] focus:outline-none ml-2 mr-4"
       />
 
       <button

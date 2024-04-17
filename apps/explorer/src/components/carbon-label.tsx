@@ -30,12 +30,12 @@ export const CarbonLabel = ({ chainID }: { chainID: number }) => {
         <Image
           src="/emission-white.png"
           alt="Emission"
-          width={15}
+          width={17}
           height={30}
         />
       )}
       {chain?.id === CHAIN_ID_OFFSET && (
-        <Image src="/offset-white.png" alt="Offset" width={25} height={30} />
+        <Image src="/offset-white.png" alt="Offset" width={17} height={30} />
       )}
 
       <span className="ml-[15px] text-[16px] font-medium text-[#fff]">

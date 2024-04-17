@@ -98,8 +98,8 @@ export class Web3Service {
   async syncPreviousBlocks() {
     this.providers.forEach(async ({ chainID, provider }) => {
       const chainLatestBlock = await provider.eth.getBlock();
-      console.log(chainLatestBlock.number);
       let i = BigInt(chainLatestBlock.number);
+      i = chainID ===1 ? BigInt(9093) : chainID ===2 ? BigInt(354804) : BigInt(354809)
       while (i--) {
         if (i === BigInt(0)) {
           continue;
