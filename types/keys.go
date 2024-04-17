@@ -5,7 +5,7 @@ import "math/big"
 const (
 	EthereumProxyPath = "/ethereum"
 	EthereumTxPath    = "/txs"
-	EthereumIOAPath   = "/ioas"
+	IOAPath           = "/ioas"
 )
 
 var (

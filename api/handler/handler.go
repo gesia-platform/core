@@ -48,6 +48,8 @@ func (apiHandler *APIHandler) registerEthereum() {
 		panic(err)
 	}
 
+	apiHandler.Mux.GET(types.IOAPath, apiHandler.ListIOAs)
+
 	ethereum := apiHandler.Mux.Group(types.EthereumProxyPath)
 
 	// Guard
@@ -55,8 +57,6 @@ func (apiHandler *APIHandler) registerEthereum() {
 
 	// Notary Call
 	ethereum.POST(types.EthereumTxPath, apiHandler.NotaryCall)
-
-	ethereum.GET(types.EthereumIOAPath, apiHandler.ListIOAs)
 
 	// JSON-RPC
 	ethereum.Any("", func(c echo.Context) error {

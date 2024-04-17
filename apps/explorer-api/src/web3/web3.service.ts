@@ -28,10 +28,10 @@ export class Web3Service {
     this.offset = new Web3(process.env.CHAIN_OFFSET_WS_URL);
 
     this.emissionVoucherAddresses =
-      process.env.CHAIN_EMISSION_VOUCHER_ADDRESSES.split(' ');
+      process.env.CHAIN_EMISSION_VOUCHER_ADDRESSES.match(/.{1,42}/g);
 
     this.offsetVoucherAddresses =
-      process.env.CHAIN_OFFSET_VOUCHER_ADDRESSES.split(' ');
+      process.env.CHAIN_OFFSET_VOUCHER_ADDRESSES.match(/.{1,42}/g);
 
     this.providers = [
       {

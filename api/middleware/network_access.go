@@ -2,6 +2,9 @@ package middleware
 
 import (
 	"errors"
+	"math/big"
+	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -11,56 +14,59 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var cahced = map[string](struct {
+	appID *big.Int
+	time  time.Time
+}){}
+
 func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.(*context.Context)
 
 		ip := ctx.Context.RealIP()
 
-		appPermission, err := store.NewAppPermissionStore(
-			common.HexToAddress(ctx.Config().ChainTree.Root.AppPermissionAddress),
-			ctx.ChainTree().Root.Client(),
-		)
-		if err != nil {
-			return err
+		cachedApp := cahced[ip]
+
+		if cachedApp.appID == nil || strings.EqualFold(c.Request().URL.Query().Get("cache"), "update") || time.Now().After(cachedApp.time.Add(time.Duration(24)*time.Hour)) {
+			appPermission, err := store.NewAppPermissionStore(
+				common.HexToAddress(ctx.Config().ChainTree.Root.AppPermissionAddress),
+				ctx.ChainTree().Root.Client(),
+			)
+			if err != nil {
+				return err
+			}
+
+			appExists, appID, err := appPermission.GetAppID(
+				&bind.CallOpts{Pending: true},
+				hexutil.Encode([]byte(ip)),
+			)
+			if err != nil {
+				return err
+			} else if !appExists {
+				return errors.New("does not exist app at request ip")
+			}
+
+			if _, _, isGranted, err := appPermission.GetNetworkAccessResponse(
+				&bind.CallOpts{Pending: true},
+				appID,
+				common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
+			); err != nil {
+				return err
+			} else if !isGranted {
+				return echo.ErrUnauthorized
+			}
+
+			cahced[ip] = struct {
+				appID *big.Int
+				time  time.Time
+			}{
+				appID: appID,
+				time:  time.Now(),
+			}
+			cachedApp.appID = appID
 		}
 
-		appExists, appID, err := appPermission.GetAppID(
-			&bind.CallOpts{Pending: true},
-			hexutil.Encode([]byte(ip)),
-		)
-		if err != nil {
-			return err
-		} else if !appExists {
-			return errors.New("does not exist app at request ip")
-		}
-
-		if _, _, isGranted, err := appPermission.GetNetworkAccessResponse(
-			&bind.CallOpts{Pending: true},
-			appID,
-			common.HexToAddress(ctx.Config().ChainTree.Root.NetworkAccountAddress),
-		); err != nil {
-			return err
-		} else if !isGranted {
-			return echo.ErrUnauthorized
-		}
-
-		ctx.SetAppID(appID)
-		/*notaryPublic, err := store.NewNotaryPublicStore(
-			common.HexToAddress(ctx.Config().ChainTree.Host.NotaryPublicAddress),
-			ctx.ChainTree().Host.Client(),
-		)
-		if err != nil {
-			return err
-		}
-
-		if exists, notaryAccount, err := notaryPublic.GetNotaryAccount(&bind.CallOpts{Pending: true}, appID); err != nil {
-			return err
-		} else if !exists {
-			return errors.New("cannot find notaryAccount by appID")
-		} else {
-			fmt.Printf("requester appID: %d, notaryAccount: %s\n", appID, notaryAccount.Hex())
-		}*/
+		ctx.SetAppID(cachedApp.appID)
 
 		return next(ctx)
 	}
