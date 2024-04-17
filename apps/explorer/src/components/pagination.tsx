@@ -11,8 +11,9 @@ export const Pagination = ({
   totalSize: number;
   onOffsetChange: (offset: number) => void;
 }) => {
-  const currentPage = Math.floor(offset / size) + 1;
-  const totalPage = Math.floor((totalSize ?? 0) / size);
+  const currentPage = Math.ceil(offset / size) + 1;
+  const totalPage = Math.floor((totalSize ?? 0) / size) + 1;
+
   return (
     <div className="grid grid-flow-col auto-cols-auto gap-x-2">
       <button
@@ -63,7 +64,7 @@ export const Pagination = ({
       <button
         className="h-[30px] px-[10px] border border-[#EAECED] text-[14px] text-[#1C1E20] rounded-[8px]"
         onClick={() => {
-          onOffsetChange(totalSize - size || 0);
+          onOffsetChange((totalPage * size) - size);
         }}
       >
         Last

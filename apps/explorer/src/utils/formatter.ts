@@ -5,7 +5,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 export const formatAddress = (address: string) =>
-  address.substring(0, 13) + "..." + address.substring(address.length - 10);
+  address?.substring(0, 13) + "..." + address?.substring(address.length - 10);
 
 export const formatHash = (hash: string) => hash.substring(0, 15) + "...";
 
