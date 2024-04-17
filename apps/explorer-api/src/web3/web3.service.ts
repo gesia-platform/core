@@ -89,8 +89,12 @@ export class Web3Service {
   async syncPreviousBlocks() {
     this.providers.forEach(async ({ chainID, provider }) => {
       const chainLatestBlock = await provider.eth.getBlock();
-
-      for (let i = BigInt(chainLatestBlock.number); i === BigInt(0); i--) {
+      console.log(chainLatestBlock.number);
+      let i = BigInt(chainLatestBlock.number);
+      while (i--) {
+        if (i === BigInt(0)) {
+          continue;
+        }
         const blockExists = await this.blocksService.exists(chainID, i);
         this.logger.log(`Exists: chain #${chainID} block #${i.toString()}`);
         if (!blockExists) {
