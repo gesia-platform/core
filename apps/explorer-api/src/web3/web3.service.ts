@@ -91,14 +91,17 @@ export class Web3Service {
       const originChainID = await provider.eth.getChainId();
 
       for (let i = BigInt(1); i < chainLatestBlock.number; i++) {
-        if (!(await this.blocksService.exists(chainID, i))) {
+        const blockExists = await this.blocksService.exists(chainID, i);
+        if (!blockExists) {
           try {
-            await this.processBlock(
-              provider,
-              chainID,
-              originChainID.toString(),
-              i.toString(),
-            );
+            await new Promise((re, rj) => {
+              let tm = setTimeout(() => {
+                clearTimeout(tm);
+                re(null);
+              }, 200);
+            });
+
+            await this.processBlock(provider, chainID, i.toString());
             this.logger.log(
               `chain #${chainID} block #${i.toString()} processed!`,
             );
@@ -126,6 +129,7 @@ export class Web3Service {
     block.chainID = chainID;
 
     block.height = blockData.number.toString();
+
     block.hash = blockData.hash;
     block.parentHash = blockData.parentHash;
     block.nonce = blockData.nonce.toString();

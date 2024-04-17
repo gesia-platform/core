@@ -16,3 +16,7 @@ export const formatTimestampFromNow = (timestamp: string) => {
 
   return result;
 };
+
+export const formatTimestamp = (timestamp: string) => {
+  return dayjs.unix(Number(timestamp)).local().toString();
+};

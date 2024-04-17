@@ -9,7 +9,7 @@ export const CarbonCard = ({
   srcBg: string;
   src: string;
   label: string;
-  tco2: number;
+  tco2: string;
 }) => {
   return (
     <div className="relative h-[146px] shadow-md rounded-[8px]">

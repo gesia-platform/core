@@ -1,28 +1,27 @@
 "use client";
 
 import { Table } from "@/components/table";
-import { useListChains } from "@/hooks/use-list-chains";
 import useChainState from "@/stores/use-chain-state";
 import Link from "next/link";
 
 export const ChainList = ({}) => {
-  const listChains = useListChains({});
   const setChainID = useChainState((s) => s.setID);
+  const chains = useChainState((s) => s.chains);
 
   return (
     <div className="mt-5">
       <Table
-        data={listChains.data?.chains ?? []}
+        data={chains}
         columns={[
           { label: "Chain ID", render: (d) => d.id },
           { label: "Chain Name", render: (d) => d.label },
           {
-            label: "Fee Consensus Algorithm",
+            label: "Consensus Algorithm",
             render: (d) => d.consensusAlgorithm,
           },
-          { label: "Node Count", render: (d) => d.nodes },
+          { label: "Nodes", render: (d) => d.nodes },
           {
-            label: "Last Block Num",
+            label: "Last Block",
             render: (d) => (
               <Link
                 className=" text-[#0091C2]"

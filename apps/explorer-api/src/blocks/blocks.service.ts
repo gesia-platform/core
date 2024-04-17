@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Block } from './schemas/block.schema';
-import { Model } from 'mongoose';
+import mongoose, {
+  Model,
+  PipelineStage,
+  isObjectIdOrHexString,
+} from 'mongoose';
 import {
   ListBlocksRequestQueryDto,
   ListBlocksResponseDto,
 } from './dtos/list-blocks.dto';
+import { GetBlockRequestQueryDto } from './dtos/get-block.dto';
 
 @Injectable()
 export class BlocksService {
@@ -17,9 +22,9 @@ export class BlocksService {
     return await blockModel.save();
   }
 
-  async exists(networkID: number, height: BigInt) {
+  async exists(chainID: number, height: BigInt) {
     return await this.blockModel.exists({
-      networkID,
+      chainID,
       height: height.toString(),
     });
   }
@@ -31,6 +36,40 @@ export class BlocksService {
       { sort: { height: -1 } },
     );
     return block;
+  }
+
+  async getBlock(blockID: string, query: GetBlockRequestQueryDto) {
+    const pipelines: PipelineStage[] = [
+      { $match: { chainID: Number(query.chainID) } },
+      {
+        $lookup: {
+          from: 'txs',
+          localField: '_id',
+          foreignField: 'blockID',
+          as: 'txs',
+        },
+      },
+      {
+        $addFields: {
+          txns: { $size: '$txs' },
+          heightLong: { $toLong: '$height' },
+        },
+      },
+    ];
+
+    const results = await this.blockModel.aggregate(pipelines);
+
+    if (blockID) {
+      pipelines.push({
+        $match: isObjectIdOrHexString(blockID)
+          ? { _id: new mongoose.Types.ObjectId(blockID) }
+          : { height: blockID },
+      });
+    }
+
+    return {
+      block: results[0],
+    };
   }
 
   async listBlocks(

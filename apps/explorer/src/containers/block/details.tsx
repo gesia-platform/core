@@ -1,11 +1,29 @@
+"use client";
+
 import { CarbonLabel } from "@/components/carbon-label";
 import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
-import { CHAIN_ID_NEUTRALITY, CHAIN_LABEL_NEUTRALITY } from "@/constants/chain";
+import { CHAIN_LABEL_NEUTRALITY } from "@/constants/chain";
+import { useGetBlock } from "@/hooks/use-get-block";
+import useChainState from "@/stores/use-chain-state";
+import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
 import Image from "next/image";
+import Link from "next/link";
+import { useMemo } from "react";
 
-export const BlockDetails = ({}) => {
+export const BlockDetails = ({ blockID }: { blockID: string }) => {
+  const { id: chainID, getChain } = useChainState();
+  const getBlock = useGetBlock({ blockID, chainID });
+
+  const block = useMemo(() => {
+    return getBlock.data?.block || null;
+  }, [getBlock]);
+
+  if (!block) return null;
+
+  console.log(block);
+
   return (
     <div className="mt-5">
       <Details
@@ -26,19 +44,40 @@ export const BlockDetails = ({}) => {
         }
       >
         <DetailsRows>
-          <DetailsRow label="Chain ID">{`#${CHAIN_ID_NEUTRALITY} ${CHAIN_LABEL_NEUTRALITY}`}</DetailsRow>
-          <DetailsRow label="Block Height">3123213123</DetailsRow>
+          <DetailsRow label="Chain ID">{`#${chainID} ${getChain()
+            ?.label}`}</DetailsRow>
+          <DetailsRow label="Block Height">{block.height}</DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Timestamp">#1</DetailsRow>
-          <DetailsRow label="Proposed On">#1</DetailsRow>
-          <DetailsRow label="Transactions">#1</DetailsRow>
-          <DetailsRow label="Withdrawals">#1</DetailsRow>
+          <DetailsRow label="Timestamp">
+            {formatTimestampFromNow(block.timestamp)} (
+            {formatTimestamp(block.timestamp)})
+          </DetailsRow>
+          {/**
+           * <DetailsRow label="Proposed On">
+            <Link className="text-[#0091C2]" href={"/addresses/" + block.miner}>
+              {block.miner}
+            </Link>
+          </DetailsRow>
+           */}
+          <DetailsRow label="Transactions">
+            {block.txns} transactions in this block
+            {
+              //and 8 contract internal transactions
+            }
+          </DetailsRow>
+          {
+            // <DetailsRow label="Withdrawals">{bloc}</DetailsRow>
+          }
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Fee Recipient">#1</DetailsRow>
+          <DetailsRow label="Fee Recipient">
+            <Link className="text-[#0091C2]" href={"/addresses/" + block.miner}>
+              {block.miner}
+            </Link>
+          </DetailsRow>
           <DetailsRow label="Block Reward">#1</DetailsRow>
           <DetailsRow label="Total Difficulty">#1</DetailsRow>
           <DetailsRow label="Size">#1</DetailsRow>

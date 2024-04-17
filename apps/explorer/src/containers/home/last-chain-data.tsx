@@ -3,14 +3,9 @@
 import { LastBlockItem } from "@/components/last-block-item";
 import { LastList } from "@/components/last-list";
 import { LastTransactionItem } from "@/components/last-transaction-item";
-import { CHAINS, CHAIN_ID_NEUTRALITY } from "@/constants/chain";
 import { useListBlocks } from "@/hooks/use-list-blocks";
 import { useEffect } from "react";
-import {
-  formatAddress,
-  formatHash,
-  formatTimestampFromNow,
-} from "@/utils/formatter";
+import { formatTimestampFromNow } from "@/utils/formatter";
 import useNetworkStore from "@/stores/use-chain-state";
 import { useListTxs } from "@/hooks/use-list-txs";
 
@@ -43,7 +38,7 @@ export const LastChainData = ({}) => {
   return (
     <div className="bg-white border border-[#eaeced] shadow-md rounded-[8px] mt-5">
       <div className="grid grid-cols-3">
-        {CHAINS.map((data) => (
+        {chainStore.chains.map((data) => (
           <button
             key={data.name}
             onClick={() => {
@@ -70,7 +65,9 @@ export const LastChainData = ({}) => {
             return (
               <LastBlockItem
                 minedLabel={
-                  chainStore.id === CHAIN_ID_NEUTRALITY ? "Validated" : "Signed"
+                  chainStore.getChain()?.consensusAlgorithm === "PoS"
+                    ? "Validated"
+                    : "Signed"
                 }
                 key={block.height}
                 number={block.height}
