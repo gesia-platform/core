@@ -8,16 +8,20 @@ export const CarbonCard = ({
   tco2,
   src,
   srcBg,
+  smallIcon,
 }: {
+  smallIcon?: boolean;
   srcBg: string;
   src: string;
   label: string;
   tco2: string;
 }) => {
   const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
   }, [isClient]);
+
   return (
     <div className="relative h-[146px] shadow-md rounded-[8px]">
       <Image
@@ -32,15 +36,15 @@ export const CarbonCard = ({
         <Image
           src={src}
           alt={label}
-          width={25}
+          width={smallIcon ? 17 : 25}
           height={30}
           objectFit="contain"
         />
-        <span className="mt-4 text-[16px/24px] font-medium">{label}</span>
+        <span className="mt-4 text-[16px] font-medium">{label}</span>
         {isClient && (
-          <span className="text-[22px/28px] font-medium">
+          <span className="text-[22px] font-medium">
             {BigInt(tco2).toLocaleString()}
-            <span className="text-[16px/20px] font-normal ml-1">tCO2</span>
+            <span className="text-[16px] font-normal ml-1">tCO2</span>
           </span>
         )}
       </div>
