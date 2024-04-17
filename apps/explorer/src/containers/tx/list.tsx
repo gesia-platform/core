@@ -28,6 +28,7 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
   return (
     <div className="mt-5">
       <Table
+        className="max-md:min-w-[1000px]"
         label={`More than ${BigInt(
           listTxs.data?.totalSize ?? 0
         ).toLocaleString()} transactions found`}

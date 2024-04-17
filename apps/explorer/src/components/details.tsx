@@ -13,9 +13,9 @@ export const Details = ({
     <div className="shadow-md border rounded-[8px] bg-white">
       {headerComponent}
       <div
-        className={`py-[30px] px-5 ${
+        className={`py-[30px] max-md:!py-6  px-5 max-md:!px-4 ${
           grid
-            ? "grid grid-flow-row gap-y-[30px]"
+            ? "grid grid-flow-row gap-y-[30px] max-md:gap-x-6"
             : "flex flex-col"
         }`}
       >

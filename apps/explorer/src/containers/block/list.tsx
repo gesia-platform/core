@@ -24,6 +24,7 @@ export const BlockList = ({}) => {
   return (
     <div className="mt-5">
       <Table
+        className="max-md:min-w-[1000px]"
         label={`Total of ${BigInt(
           listBlocks.data?.totalSize ?? 0
         ).toLocaleString()} blocks`}

@@ -11,6 +11,7 @@ export const ChainList = ({}) => {
   return (
     <div className="mt-5">
       <Table
+        className="max-md:min-w-[700px]"
         data={chains}
         columns={[
           { label: "Chain ID", render: (d) => d.id },
