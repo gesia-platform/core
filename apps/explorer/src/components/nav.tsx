@@ -3,11 +3,29 @@
 import Image from "next/image";
 import { NavLink } from "./nav-link";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export const Nav = ({}) => {
   const [open, setOpen] = useState(false);
   const [navHeight, setNavHeight] = useState(0);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "scroll";
+      };
+    }
+  }, [open]);
 
   const links = (
     <Fragment>
