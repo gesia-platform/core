@@ -19,21 +19,19 @@ export const HomeCarbonStats = ({}) => {
       <CarbonCard
         srcBg="/neutral-bg.jpg"
         src="/neutral.png"
-        tco2={
-          getChain(CHAIN_ID_NEUTRALITY)?.carbonTotalAmount ?? "12000" ?? "0"
-        }
+        tco2={getChain(CHAIN_ID_NEUTRALITY)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_NEUTRALITY}
       />
       <CarbonCard
         srcBg="/emission-bg.jpg"
         src="/emission.png"
-        tco2={getChain(CHAIN_ID_EMISSION)?.carbonTotalAmount ?? "43000" ?? "0"}
+        tco2={getChain(CHAIN_ID_EMISSION)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_EMISSION}
       />
       <CarbonCard
         srcBg="/offset-bg.jpg"
         src="/offset.png"
-        tco2={getChain(CHAIN_ID_OFFSET)?.carbonTotalAmount ?? "55000" ?? "0"}
+        tco2={getChain(CHAIN_ID_OFFSET)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_OFFSET}
       />
     </div>

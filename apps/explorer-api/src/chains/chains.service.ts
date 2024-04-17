@@ -1,4 +1,4 @@
-import { Injectable, Module } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ChainsConstants } from './chains.constant';
 import { Web3Service } from 'src/web3/web3.service';
 import Web3 from 'web3';
@@ -57,6 +57,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoS',
           latestBlockHeight: latestBlockHeightNeutrality.toString(),
           nodes: validatorsRes.data.data?.length ?? 0,
+          carbonTotalAmount: 32000,
         },
         {
           id: ChainsConstants.EMISSION_ID,
@@ -65,6 +66,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightEmission.toString(),
           nodes: emissionSigners?.length ?? 0,
+          carbonTotalAmount: 32000,
         },
         {
           id: ChainsConstants.OFFSET_ID,
@@ -73,6 +75,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightOffset.toString(),
           nodes: offsetSigners?.length ?? 0,
+          carbonTotalAmount: 50000,
         },
       ],
     };
