@@ -57,8 +57,6 @@ export class BlocksService {
       },
     ];
 
-    const results = await this.blockModel.aggregate(pipelines);
-
     if (blockID) {
       pipelines.push({
         $match: isObjectIdOrHexString(blockID)
@@ -66,6 +64,8 @@ export class BlocksService {
           : { height: blockID },
       });
     }
+
+    const results = await this.blockModel.aggregate(pipelines);
 
     return {
       block: results[0],

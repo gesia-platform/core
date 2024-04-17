@@ -14,12 +14,13 @@ import Link from "next/link";
 import { useState } from "react";
 import Web3 from "web3";
 
-export const TxList = ({}) => {
+export const TxList = ({ blockID }: { blockID?: string }) => {
   const chainID = useChainState((s) => s.id);
   const [page, setPage] = useState({ offset: 0, size: 10 });
 
   const listTxs = useListTxs({
     chainID,
+    blockID: blockID || undefined,
     pageOffset: page.offset,
     pageSize: page.size,
   });

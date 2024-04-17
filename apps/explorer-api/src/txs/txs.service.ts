@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Tx } from './schemas/tx.schema';
-import mongoose, { Model, PipelineStage } from 'mongoose';
+import mongoose, {
+  Model,
+  PipelineStage,
+  isObjectIdOrHexString,
+} from 'mongoose';
 import {
   ListTxsRequestQueryDto,
   ListTxsResponseDto,
@@ -74,7 +78,9 @@ export class TxsService {
 
     if (query.blockID) {
       pipelines.push({
-        $match: { blockID: new mongoose.Types.ObjectId(query.blockID) },
+        $match: isObjectIdOrHexString(query.blockID)
+          ? { blockID: new mongoose.Types.ObjectId(query.blockID) }
+          : { 'block.height': query.blockID },
       });
     }
 
@@ -90,7 +96,6 @@ export class TxsService {
         },
       },
     ]);
-
 
     return {
       txs: results[0]?.data ?? [],

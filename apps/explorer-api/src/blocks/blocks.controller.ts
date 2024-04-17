@@ -7,7 +7,7 @@ import { GetBlockRequestQueryDto } from './dtos/get-block.dto';
 export class BlocksController {
   constructor(private blocksService: BlocksService) {}
 
-  @Get(':blockID')
+  @Get('/:blockID')
   getBlockByNumber(
     @Query() query: GetBlockRequestQueryDto,
     @Param('blockID') blockID: string,

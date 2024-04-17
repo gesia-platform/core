@@ -43,7 +43,12 @@ export const LastBlockItem = ({
           {formatAddress(proposer)}
         </Link>
       </div>
-      <span className="ml-auto text-[14px] text-[#1c1e20]">{txns} txns</span>
+      <Link
+        className="ml-auto text-[14px] text-[#0091C2]"
+        href={"/txs?block=" + number}
+      >
+        {txns} txns
+      </Link>
     </div>
   );
 };

@@ -51,7 +51,14 @@ export const BlockList = ({}) => {
             ),
           },
           { label: "Age", render: (d) => formatTimestampFromNow(d.timestamp) },
-          { label: "Txn", render: (d) => d.txns },
+          {
+            label: "Txn",
+            render: (d) => (
+              <Link className="text-[#0091C2]" href={"/txs?block=" + d.height}>
+                {d.txns}
+              </Link>
+            ),
+          },
           {
             label: chainID === CHAIN_ID_NEUTRALITY ? "Validator" : "Signer",
             render: (d) => (
