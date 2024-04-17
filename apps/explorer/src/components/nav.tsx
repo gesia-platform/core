@@ -48,7 +48,7 @@ export const Nav = ({}) => {
       >
         <Link
           href={"/"}
-          className="w-[234px] h-[26px] max-md:!w-[180px] max-md:!h-[20px] relative"
+          className="w-[185px] h-[26px] max-md:!w-[140px] max-md:!h-[20px] relative"
         >
           <Image src="/logo.svg" alt="Logo" fill />
         </Link>

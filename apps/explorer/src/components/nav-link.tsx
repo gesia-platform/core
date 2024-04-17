@@ -18,7 +18,6 @@ export const NavLink = ({
   return (
     <Link
       href={href}
-      target={href.startsWith("http") ? "_blank" : undefined}
       className={`h-full px-5 font-[14px/18px] 
       ${focused ? "text-[#00C1B3] font-medium" : "text-[#1C1E20]"}
       max-md:h-auto max-md:!px-5 max-md:py-5`}

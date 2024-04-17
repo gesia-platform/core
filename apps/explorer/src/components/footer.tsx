@@ -6,9 +6,9 @@ export const Footer = ({}) => {
     <div className="bg-[#F5F6F7] w-full flex">
       <footer className="mx-auto w-full max-w-[1440px] px-10 py-10 max-md:!px-4 max-md:!py-6 max-md:!pb-10">
         <div className="border-b border-b-[#D8DBDE] flex pb-[100px] items-start max-md:flex-col max-md:!pb-6">
-          <Link href={"/"}>
-            <div className="relative w-[110px] h-[28px] max-md:!w-[90px] max-md:!h-[20px]">
-              <Image src="/logo-simple.svg" alt="Logo Simple" fill />
+          <Link href={"https://gesia.io"}>
+            <div className="relative w-[240px] h-[26px] max-md:!w-[203px] max-md:!h-[22px]">
+              <Image src="/logo-powered-by.svg" alt="Logo Simple" fill />
             </div>
           </Link>
 
