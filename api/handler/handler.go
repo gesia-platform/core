@@ -54,7 +54,9 @@ func (apiHandler *APIHandler) registerEthereum() {
 	ethereum.Use(apimiddleware.MiddlewareNetworkAccess)
 
 	// Notary Call
-	ethereum.POST(types.EthereumNotaryCallPath, apiHandler.NotaryCall)
+	ethereum.POST(types.EthereumTxPath, apiHandler.NotaryCall)
+
+	ethereum.GET(types.EthereumIOAPath, apiHandler.ListIOAs)
 
 	// JSON-RPC
 	ethereum.Any("", func(c echo.Context) error {

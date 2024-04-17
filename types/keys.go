@@ -3,8 +3,9 @@ package types
 import "math/big"
 
 const (
-	EthereumProxyPath      = "/ethereum"
-	EthereumNotaryCallPath = "/txs"
+	EthereumProxyPath = "/ethereum"
+	EthereumTxPath    = "/txs"
+	EthereumIOAPath   = "/ioas"
 )
 
 var (

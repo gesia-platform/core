@@ -14,6 +14,9 @@ export class Web3Service {
   private readonly offset: Web3;
   private readonly logger = new Logger(Web3Service.name);
 
+  private readonly emissionVoucherAddresses: string[];
+  private readonly offsetVoucherAddresses: string[];
+
   private providers: { provider: Web3; chainID: number }[];
 
   constructor(
@@ -23,6 +26,12 @@ export class Web3Service {
     this.neutrality = new Web3(process.env.CHAIN_NEUTRALITY_WS_URL);
     this.emission = new Web3(process.env.CHAIN_EMISSION_WS_URL);
     this.offset = new Web3(process.env.CHAIN_OFFSET_WS_URL);
+
+    this.emissionVoucherAddresses =
+      process.env.CHAIN_EMISSION_VOUCHER_ADDRESSES.split(' ');
+
+    this.offsetVoucherAddresses =
+      process.env.CHAIN_OFFSET_VOUCHER_ADDRESSES.split(' ');
 
     this.providers = [
       {
