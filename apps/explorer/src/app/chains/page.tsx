@@ -1,10 +1,11 @@
 import { Main } from "@/components/main";
+import { PageLabel } from "@/components/page-label";
 import { ChainList } from "@/containers/chain/chain-list";
 
 export default function Chains() {
   return (
     <Main>
-      <h2 className="text-[22px] font-medium text-[#1C1E20]">Chains</h2>
+      <PageLabel>Chains</PageLabel>
       <ChainList />
     </Main>
   );

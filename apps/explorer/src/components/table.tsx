@@ -53,7 +53,7 @@ export const Table = ({
                   {columns.map((z, y) => {
                     return (
                       <td
-                        className="h-[52px] text-[16px] border-t-[#EAECED] border-t text-center"
+                        className="h-[52px] text-[16px] border-t-[#EAECED] border-t text-center px-2"
                         key={y}
                       >
                         {z.render(x, i)}

@@ -8,7 +8,7 @@ import ChainProvider from "@/providers/chain-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Carbon Explorer | GESIA",
+  title: "GESIA Blockchain Explorer",
   description: "GESIA Carbon Blockchain Explorer",
 };
 

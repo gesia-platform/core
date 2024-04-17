@@ -1,11 +1,12 @@
 import { Main } from "@/components/main";
+import { PageLabel } from "@/components/page-label";
 import { TxList } from "@/containers/tx/list";
 import Link from "next/link";
 
 export default function Txs({ searchParams }: { searchParams: any }) {
   return (
     <Main>
-      <h2 className="text-[22px] font-medium text-[#1C1E20]">Transactions</h2>
+      <PageLabel>Transactions</PageLabel>
       {searchParams?.block && (
         <span className="text-[14px]">
           For Block{" "}

@@ -1,10 +1,11 @@
 import { Main } from "@/components/main";
+import { PageLabel } from "@/components/page-label";
 import { BlockList } from "@/containers/block/list";
 
 export default function Blocks() {
   return (
     <Main>
-      <h2 className="text-[22px] font-medium text-[#1C1E20]">Blocks</h2>
+      <PageLabel>Blocks</PageLabel>
       <BlockList />
     </Main>
   );
