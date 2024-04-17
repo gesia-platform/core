@@ -1,56 +1,94 @@
+"use client";
+
 import { CarbonLabel } from "@/components/carbon-label";
 import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
 import { TxInputData } from "@/components/tx-input-data";
-import { CHAIN_ID_NEUTRALITY, CHAIN_LABEL_NEUTRALITY } from "@/constants/chain";
-import Image from "next/image";
+import { useGetTx } from "@/hooks/use-get-tx";
+import useChainState from "@/stores/use-chain-state";
+import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
+import Link from "next/link";
+import { useMemo } from "react";
+import Web3 from "web3";
 
-export const TxDetails = ({}) => {
+export const TxDetails = ({ txID }: { txID: string }) => {
+  const getTx = useGetTx({ txID });
+  const getChain = useChainState((s) => s.getChain);
+
+  const tx = useMemo(() => {
+    return getTx.data?.tx || null;
+  }, [getTx.data]);
+
+  const chain = useMemo(() => {
+    const chainID = tx?.block?.chainID;
+    return chainID ? getChain(chainID) : null;
+  }, [getChain, tx]);
+
+  if (!tx || !chain) return null;
+
   return (
     <div className="mt-5">
-      <Details
-        grid
-        headerComponent={
-          <CarbonLabel
-            className="bg-[#332822] rounded-t-[8px]"
-            label={`${CHAIN_LABEL_NEUTRALITY}`}
-            icon={
-              <Image
-                src="/neutral-white.png"
-                alt="Neutral"
-                width={25}
-                height={30}
-              />
-            }
-          />
-        }
-      >
+      <Details grid headerComponent={<CarbonLabel chainID={1} />}>
         <DetailsRows>
-          <DetailsRow label="Chain ID">{`#${CHAIN_ID_NEUTRALITY} ${CHAIN_LABEL_NEUTRALITY}`}</DetailsRow>
-          <DetailsRow label="Transaction Hash">3123213123</DetailsRow>
+          <DetailsRow label="Chain ID">{`#${chain.id} ${chain.label}`}</DetailsRow>
+          <DetailsRow label="Transaction Hash">{tx.hash}</DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Result">#1</DetailsRow>
-          <DetailsRow label="Block">#1</DetailsRow>
-          <DetailsRow label="Timestamp">#1</DetailsRow>
+          <DetailsRow label="Status">
+            {tx.status === "0" ? "Failure" : "Success"}
+          </DetailsRow>
+          <DetailsRow label="Block">
+            <Link
+              className="text-[#0091C2]"
+              href={"/blocks/" + tx.block.height}
+            >
+              {tx.block.height}
+            </Link>
+          </DetailsRow>
+
+          <DetailsRow label="Timestamp">
+            {formatTimestampFromNow(tx.block.timestamp)} (
+            {formatTimestamp(tx.block.timestamp)})
+          </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="From">#1</DetailsRow>
-          <DetailsRow label="To">#1</DetailsRow>
+          <DetailsRow label="From">
+            <Link className="text-[#0091C2]" href={"/accounts/" + tx.from}>
+              {tx.from}
+            </Link>
+          </DetailsRow>
+          <DetailsRow label="To">
+            <Link className="text-[#0091C2]" href={"/accounts/" + tx.to}>
+              {tx.to}
+            </Link>
+          </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Value">#1</DetailsRow>
-          <DetailsRow label="Total Tx Fee">#1</DetailsRow>
+          <DetailsRow label="Value">
+            {Web3.utils.fromWei(tx.value, "ether") + " GEC"}
+          </DetailsRow>
+          <DetailsRow label="Transaction Fee">
+            {Web3.utils
+              .fromWei(
+                BigInt(tx.effectiveGasPrice) * BigInt(tx.gasUsed),
+                "ether"
+              )
+              .toString() + " GEC"}
+          </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Gas Price">#1</DetailsRow>
-          <DetailsRow label="Gas Limit">#1</DetailsRow>
-          <DetailsRow label="Gas Fees">#1</DetailsRow>
+          <DetailsRow label="Gas Price">
+            {Web3.utils.fromWei(BigInt(tx.gasPrice), "ether").toString() +
+              " GEC"}
+          </DetailsRow>
+          <DetailsRow label="Gas Limit">
+            {BigInt(tx.gas).toLocaleString()}
+          </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>

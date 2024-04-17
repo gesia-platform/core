@@ -8,10 +8,9 @@ import {
 import useChainState from "@/stores/use-chain-state";
 import Image from "next/image";
 
-export const CarbonLabel = ({}: {}) => {
+export const CarbonLabel = ({ chainID }: { chainID: number }) => {
   const getChain = useChainState((s) => s.getChain);
-  const id = useChainState((s) => s.id);
-  const chain = getChain();
+  const chain = getChain(chainID);
 
   return (
     <div

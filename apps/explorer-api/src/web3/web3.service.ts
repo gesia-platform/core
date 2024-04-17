@@ -5,6 +5,7 @@ import { Block } from 'src/blocks/schemas/block.schema';
 import { Tx } from 'src/txs/schemas/tx.schema';
 import { TxsService } from 'src/txs/txs.service';
 import Web3 from 'web3';
+import { GetAccountRequestQueryDto } from './dtos/get-account.dto';
 
 @Injectable()
 export class Web3Service {
@@ -73,11 +74,11 @@ export class Web3Service {
             blockHeader.withdrawalsRoot,
           );
           this.logger.log(
-            `chain #${chainID} block #${blockHeader.number.toString()} processed!`,
+            `Processed: chain #${chainID} block #${blockHeader.number.toString()}`,
           );
         } catch (error: unknown) {
           this.logger.error(
-            `chain #${chainID} block #${blockHeader.number.toString()} error`,
+            `Error: chain #${chainID} block #${blockHeader.number.toString()}`,
             error,
           );
         }
@@ -89,8 +90,9 @@ export class Web3Service {
     this.providers.forEach(async ({ chainID, provider }) => {
       const chainLatestBlock = await provider.eth.getBlock();
 
-      for (let i = BigInt(1); i < chainLatestBlock.number; i++) {
+      for (let i = BigInt(chainLatestBlock.number); i === BigInt(0); i--) {
         const blockExists = await this.blocksService.exists(chainID, i);
+        this.logger.log(`Exists: chain #${chainID} block #${i.toString()}`);
         if (!blockExists) {
           try {
             await new Promise((re, rj) => {
@@ -102,11 +104,11 @@ export class Web3Service {
 
             await this.processBlock(provider, chainID, i.toString());
             this.logger.log(
-              `chain #${chainID} block #${i.toString()} processed!`,
+              `Processed: chain #${chainID} block #${i.toString()}`,
             );
           } catch (error: unknown) {
             this.logger.error(
-              `chain #${chainID} block #${i.toString()} error`,
+              `Error: chain #${chainID} block #${i.toString()}`,
               error,
             );
           }
@@ -206,6 +208,24 @@ export class Web3Service {
     tx.status = transactionReceipt.status?.toString();
 
     await this.txsService.insertTx(tx);
+  }
+
+  async getAccount(accountID: string, query: GetAccountRequestQueryDto) {
+    const provider =
+      query.chainID === '1'
+        ? this.getNeutrality()
+        : query.chainID === '2'
+        ? this.getEmission()
+        : this.getOffset();
+
+    const balance = await provider.eth.getBalance(accountID, undefined);
+
+    return {
+      account: {
+        address: accountID,
+        balance: balance.toString(),
+      },
+    };
   }
 
   getNeutrality(): Web3 {

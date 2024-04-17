@@ -62,7 +62,7 @@ export const BlockList = ({}) => {
           {
             label: chainID === CHAIN_ID_NEUTRALITY ? "Validator" : "Signer",
             render: (d) => (
-              <Link className="text-[#0091C2]" href={"/addresses/" + d.miner}>
+              <Link className="text-[#0091C2]" href={"/accounts/" + d.miner}>
                 {formatAddress(d.miner)}
               </Link>
             ),
@@ -89,7 +89,7 @@ export const BlockList = ({}) => {
                     ),
                     "ether"
                   )
-                  .toString() + " ETH"
+                  .toString() + " GEC"
               );
             },
           },

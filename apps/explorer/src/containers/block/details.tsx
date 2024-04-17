@@ -23,7 +23,7 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
 
   return (
     <div className="mt-5">
-      <Details grid headerComponent={<CarbonLabel />}>
+      <Details grid headerComponent={<CarbonLabel chainID={chainID} />}>
         <DetailsRows>
           <DetailsRow label="Chain ID">{`#${chainID} ${getChain()
             ?.label}`}</DetailsRow>
@@ -35,22 +35,15 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
             {formatTimestampFromNow(block.timestamp)} (
             {formatTimestamp(block.timestamp)})
           </DetailsRow>
-          {/**
-           * <DetailsRow label="Proposed On">
-            <Link className="text-[#0091C2]" href={"/addresses/" + block.miner}>
-              {block.miner}
-            </Link>
-          </DetailsRow>
-           */}
           <DetailsRow label="Transactions">
-            <Link className="text-[#0091C2]" href={"/txs?block=" + block.height}>
+            <Link
+              className="text-[#0091C2]"
+              href={"/txs?block=" + block.height}
+            >
               {block.txns} transactions{" "}
             </Link>
             in this block
           </DetailsRow>
-          {
-            // <DetailsRow label="Withdrawals">{bloc}</DetailsRow>
-          }
         </DetailsRows>
 
         <DetailsRows>
@@ -59,7 +52,7 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
               getChain()?.consensusAlgorithm === "PoS" ? "Validator" : "Signer"
             }
           >
-            <Link className="text-[#0091C2]" href={"/addresses/" + block.miner}>
+            <Link className="text-[#0091C2]" href={"/accounts/" + block.miner}>
               {block.miner}
             </Link>
           </DetailsRow>
@@ -73,7 +66,7 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
                 ),
                 "ether"
               )
-              .toString() + " ETH"}
+              .toString() + " GEC"}
           </DetailsRow>
           <DetailsRow label="Total Difficulty">
             {BigInt(block.totalDifficulty).toLocaleString()}
@@ -95,10 +88,6 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
               {BigInt(block.baseFeePerGas).toLocaleString()}
             </DetailsRow>
           )}
-          {/** 
-          <DetailsRow label="Burnt Fees">#1</DetailsRow>
-          <DetailsRow label="Extra Data">{block.extraData}</DetailsRow>
-          */}
         </DetailsRows>
 
         <DetailsRows>

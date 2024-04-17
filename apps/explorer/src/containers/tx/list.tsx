@@ -72,7 +72,7 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
           {
             label: "From",
             render: (d) => (
-              <Link className="text-[#0091C2]" href={"/addresses/" + d.from}>
+              <Link className="text-[#0091C2]" href={"/accounts/" + d.from}>
                 {formatAddress(d.from)}
               </Link>
             ),
@@ -80,14 +80,14 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
           {
             label: "To",
             render: (d) => (
-              <Link className="text-[#0091C2]" href={"/addresses/" + d.to}>
+              <Link className="text-[#0091C2]" href={"/accounts/" + d.to}>
                 {formatAddress(d.to)}
               </Link>
             ),
           },
           {
             label: "Value",
-            render: (d) => Web3.utils.fromWei(d.value, "ether") + " Eth",
+            render: (d) => Web3.utils.fromWei(d.value, "ether") + " GEC",
           },
           {
             label: "Txn Fee",

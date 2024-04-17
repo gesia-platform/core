@@ -4,19 +4,16 @@ import Link from "next/link";
 export const Footer = ({}) => {
   return (
     <div className="bg-[#F5F6F7] w-full flex">
-      <footer className="mx-auto w-full max-w-[1440px] px-[90px] py-10">
-        <div className="border-b border-b-[#D8DBDE] flex pb-[100px] items-start">
+      <footer className="mx-auto w-full max-w-[1440px] px-[90px] py-10 max-lg:!px-4 max-md:!py-6 max-md:!pb-10">
+        <div className="border-b border-b-[#D8DBDE] flex pb-[100px] items-start max-md:flex-col max-md:!pb-6">
           <Link href={"/"}>
-            <Image
-              src="/logo-simple.svg"
-              width={110}
-              height={28}
-              alt="Logo Simple"
-            />
+            <div className="relative w-[110px] h-[28px] max-md:!w-[90px] max-md:!h-[20px]">
+              <Image src="/logo-simple.svg" alt="Logo Simple" fill />
+            </div>
           </Link>
 
-          <div className="ml-auto grid grid-flow-col auto-cols-max gap-x-[100px]">
-            <div className="grid grid-flow-row auto-rows-min gap-y-3">
+          <div className="md:ml-auto grid grid-cols-2 md:!grid-flow-col md:!auto-cols-max lg:!gap-x-[100px] gap-x-[55px] max-md:mt-6 max-md:gap-y-4">
+            <div className="grid grid-flow-row auto-rows-min gap-y-3 max-md:!gap-y-2">
               <span className="text-[16px] font-medium">Company</span>
               <Link
                 href={"https://gesia.io"}

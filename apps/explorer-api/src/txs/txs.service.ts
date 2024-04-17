@@ -10,6 +10,7 @@ import {
   ListTxsRequestQueryDto,
   ListTxsResponseDto,
 } from './dtos/list-txs.dto';
+import { GetTxRequestQueryDto } from './dtos/get-tx.dto';
 
 @Injectable()
 export class TxsService {
@@ -19,6 +20,53 @@ export class TxsService {
     const txModel = await this.txModel.create(tx);
 
     return await txModel.save();
+  }
+
+  async getTx(txID: string, query: GetTxRequestQueryDto) {
+    const pipelines: PipelineStage[] = [
+      { $match: { hash: txID } },
+      {
+        $lookup: {
+          from: 'blocks',
+          let: {
+            blockID: '$blockID',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', '$$blockID'],
+                },
+              },
+            },
+            {
+              $project: {
+                timestamp: 1,
+                chainID: 1,
+                height: 1,
+              },
+            },
+          ],
+          as: 'block',
+        },
+      },
+      {
+        $unwind: {
+          path: '$block',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          timestamp: { $toInt: '$block.timestamp' },
+          index: { $toInt: '$transactionIndex' },
+        },
+      },
+    ];
+
+    const results = await this.txModel.aggregate([...pipelines]);
+
+    return { tx: results[0] };
   }
 
   async listTxs(query: ListTxsRequestQueryDto): Promise<ListTxsResponseDto> {

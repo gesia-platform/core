@@ -18,33 +18,35 @@ export const LastBlockItem = ({
   return (
     <div className="flex items-center py-2.5">
       <div className="rounded-[8px] bg-[#f5f6f7] w-[52px] h-[52px] flex">
-        <Image
-          src="/block.png"
-          width={22}
-          height={22}
-          alt="Block"
-          className="m-auto"
-        />
+        <div className="w-[22px] h-[22px] relative m-auto">
+          <Image src="/block.png" alt="Block" fill />
+        </div>
       </div>
 
-      <div className="ml-5 flex flex-col min-w-[100px]">
+      <div className="ml-5 max-lg:!ml-3 max-lg:!min-w-[65px] flex flex-col min-w-[100px]">
         <Link className="text-[14px] text-[#0091C2]" href={"/blocks/" + number}>
           {number}
         </Link>
         <span className="text-[12px] text-[#909396]">{time}</span>
       </div>
 
-      <div className="ml-10 flex flex-col">
+      <div className="ml-10 max-lg:!ml-5 flex flex-col">
         <span className="text-[12px] text-[#1C1E20]">{minedLabel} By</span>
         <Link
           className="text-[14px] text-[#0091C2]"
-          href={"/addresses/" + proposer}
+          href={"/accounts/" + proposer}
         >
           {formatAddress(proposer)}
         </Link>
+        <Link
+          className="text-[14px] text-[#0091C2] hidden max-sm:!block"
+          href={"/txs?block=" + number}
+        >
+          {txns} txns
+        </Link>
       </div>
       <Link
-        className="ml-auto text-[14px] text-[#0091C2]"
+        className="ml-auto text-[14px] text-[#0091C2] max-sm:hidden"
         href={"/txs?block=" + number}
       >
         {txns} txns

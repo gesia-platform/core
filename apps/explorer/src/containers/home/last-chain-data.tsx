@@ -55,7 +55,7 @@ export const LastChainData = ({}) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-x-5">
+      <div className="grid grid-cols-2 gap-x-5 max-lg:grid-cols-1 max-lg:gap-x-0 px-5 py-[30px] max-lg:!py-0">
         <LastList
           label="Last Blocks"
           moreHref="/blocks"
