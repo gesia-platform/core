@@ -10,6 +10,7 @@ import {
   CHAIN_LABEL_OFFSET,
 } from "@/constants/chain";
 import useChainState from "@/stores/use-chain-state";
+import dynamic from "next/dynamic";
 
 export const HomeCarbonStats = ({}) => {
   const getChain = useChainState((s) => s.getChain);

@@ -44,7 +44,7 @@ export const LastChainData = ({}) => {
             onClick={() => {
               chainStore.setID(data.id);
             }}
-            className={`h-[72px]  rounded-tl-[8px] font-medium text-[16px] ${
+            className={`h-[72px] max-md:!h-[60px] px-1  rounded-tl-[8px] font-medium text-[16px] ${
               chainStore.id === data.id
                 ? "text-[#00C1B3] bg-white border-r"
                 : "bg-[#f5f6f7]"

@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export const CarbonCard = ({
   label,
@@ -11,6 +14,10 @@ export const CarbonCard = ({
   label: string;
   tco2: string;
 }) => {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, [isClient]);
   return (
     <div className="relative h-[146px] shadow-md rounded-[8px]">
       <Image
@@ -30,10 +37,12 @@ export const CarbonCard = ({
           objectFit="contain"
         />
         <span className="mt-4 text-[16px/24px] font-medium">{label}</span>
-        <span className="text-[22px/28px] font-medium">
-          {BigInt(tco2).toLocaleString()}
-          <span className="text-[16px/20px] font-normal ml-1">tCO2</span>
-        </span>
+        {isClient && (
+          <span className="text-[22px/28px] font-medium">
+            {BigInt(tco2).toLocaleString()}
+            <span className="text-[16px/20px] font-normal ml-1">tCO2</span>
+          </span>
+        )}
       </div>
     </div>
   );
