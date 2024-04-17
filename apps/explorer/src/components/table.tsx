@@ -18,18 +18,22 @@ export const Table = ({
   footerRightComponent?: ReactNode;
 }) => {
   return (
-    <div className="overflow-auto shadow-md rounded-[8px]">
-      <div
-        className={`bg-white border border-[#EAECED] ${className} rounded-[8px]`}
-      >
-        {(label || headerComponent) && (
-          <div className="flex items-center justify-between p-[15px] border-b-[#EAECED] border-b ">
-            <span className="text-[16px] font-medium">{label}</span>
-            <div className="ml-auto flex items-center">{headerComponent}</div>
+    <div className={`bg-white border border-[#EAECED] shadow-md rounded-[8px]`}>
+      {(label || headerComponent) && (
+        <div className="flex items-center justify-between p-[15px] border-b-[#EAECED] border-b max-md:flex-col max-md:items-start">
+          <span className="text-[16px] font-medium">{label}</span>
+          <div className="max-md:mt-2 max-md:!grid max-md:!grid-flow-row max-md:auto-rows-auto max-md:gap-y-2 flex items-center">
+            {headerComponent}
           </div>
-        )}
+        </div>
+      )}
 
-        <table cellSpacing={0} cellPadding={0} className="w-full">
+      <div className="overflow-auto">
+        <table
+          cellSpacing={0}
+          cellPadding={0}
+          className={`w-full ${className}`}
+        >
           <thead className="">
             <tr>
               {columns.map((col, index) => (
@@ -61,16 +65,16 @@ export const Table = ({
             })}
           </tbody>
         </table>
-
-        {(footerLeftComponent || footerRightComponent) && (
-          <div className="flex items-center justify-between p-[15px] border-t-[#EAECED] border-t">
-            <div>{footerLeftComponent}</div>
-            <div className="ml-auto flex items-center">
-              {footerRightComponent}
-            </div>
-          </div>
-        )}
       </div>
+
+      {(footerLeftComponent || footerRightComponent) && (
+        <div className="flex items-center justify-between p-[15px] border-t-[#EAECED] border-t max-md:flex-col max-md:items-stretch">
+          <div>{footerLeftComponent}</div>
+          <div className="flex items-center">
+            {footerRightComponent}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

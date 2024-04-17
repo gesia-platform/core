@@ -8,9 +8,9 @@ export const ChainSelect = ({}) => {
   const chainState = useChainState();
 
   return (
-    <div className="mr-2 relative flex items-center">
+    <div className="mr-2 relative flex items-center border border-[#EAECED] rounded-[8px]">
       <select
-        className="border border-[#EAECED] rounded-[8px] text-[14px] h-[30px] px-[10px] cursor-pointer appearance-none pr-6"
+        className="w-full text-[14px] h-[30px] px-[10px] cursor-pointer appearance-none pr-6"
         value={chainState.id.toString()}
         onChange={(e) => chainState.setID(Number(e.target.value))}
       >
