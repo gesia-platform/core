@@ -99,13 +99,6 @@ export class Web3Service {
         this.logger.log(`Exists: chain #${chainID} block #${i.toString()}`);
         if (!blockExists) {
           try {
-            await new Promise((re, rj) => {
-              let tm = setTimeout(() => {
-                clearTimeout(tm);
-                re(null);
-              }, 200);
-            });
-
             await this.processBlock(provider, chainID, i.toString());
             this.logger.log(
               `Processed: chain #${chainID} block #${i.toString()}`,
