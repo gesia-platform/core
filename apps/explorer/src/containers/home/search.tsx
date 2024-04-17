@@ -27,7 +27,7 @@ export const HomeSearch = ({}) => {
             }
           },
           placeholder:
-            "Block, Tx, Carbon Contract Address, Wallet Address",
+            "Search by Address / Block / Txn Hash / Voucher / Calculator",
           onKeyDown: (e) => {
             if (e.key === "Enter") {
               router.push(

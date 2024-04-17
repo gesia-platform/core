@@ -18,12 +18,12 @@ export const Table = ({
   footerRightComponent?: ReactNode;
 }) => {
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto shadow-md rounded-[8px]">
       <div
-        className={`bg-white border border-[#EAECED] shadow-md rounded-[8px] ${className}`}
+        className={`bg-white border border-[#EAECED] ${className} rounded-[8px]`}
       >
         {(label || headerComponent) && (
-          <div className="flex items-center justify-between p-[15px] border-b-[#EAECED] border-b">
+          <div className="flex items-center justify-between p-[15px] border-b-[#EAECED] border-b ">
             <span className="text-[16px] font-medium">{label}</span>
             <div className="ml-auto flex items-center">{headerComponent}</div>
           </div>

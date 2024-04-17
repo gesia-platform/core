@@ -7,30 +7,43 @@ export const SearchNotFound = ({ general }: { general?: boolean }) => {
   const router = useRouter();
 
   return (
-    <div className="h-[700px] relative w-full flex items-center">
+    <div className="h-[700px] max-md:!h-[50vh] relative w-full flex items-center">
       <Image
         src="/not-found.jpg"
         alt={"Not Found"}
         layout="fill"
         objectFit="cover"
         objectPosition="center"
-        className="rounded-[8px]"
+        className="max-md:hidden"
       />
-      <div className="absolute left-0 right-0 flex z-10">
-        <div className="mx-auto w-full max-w-[1440px] px-[155px] flex flex-col">
-          <span className="text-[42px] font-medium">
+
+      <Image
+        src="/not-found-m.jpg"
+        alt={"Not Found"}
+        layout="fill"
+        objectFit="cover"
+        objectPosition="center"
+        className="hidden max-md:block"
+      />
+
+      <div className="absolute left-0 right-0 flex z-10 max-md:top-9">
+        <div className="mx-auto w-full max-w-[1440px] px-[155px] max-md:!px-9 flex flex-col max-md:items-center">
+          <span className="text-[42px] font-medium max-md:text-[32px]">
             {general ? "Not found" : "Search not found"}
           </span>
           {!general && (
-            <span className="text-[16px] mt-5">
+            <span className="text-[16px] mt-5 max-md:text-center">
               Oops! The search string you entered was:{" "}
-              <span className="font-medium">Ddwd</span>
+              <span className="font-medium">
+                <br className="hidden max-md:block" />
+                Ddwd
+              </span>
               <br />
               Sorry! This is an invalid search string.
             </span>
           )}
           <button
-            className="py-[15px] px-[50px] text-white rounded-[8px] text-center text-[14px] bg-[#00C1B3] self-start mt-10"
+            className="py-[15px] px-[50px] text-white rounded-[8px] text-center text-[14px] bg-[#00C1B3] self-start mt-10 max-md:!self-center"
             onClick={router.back}
           >
             Back Home

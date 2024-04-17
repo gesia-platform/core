@@ -15,7 +15,7 @@ export const Details = ({
       <div
         className={`py-[30px] max-md:!py-6  px-5 max-md:!px-4 ${
           grid
-            ? "grid grid-flow-row gap-y-[30px] max-md:gap-x-6"
+            ? "grid grid-flow-row gap-y-[30px] max-md:gap-y-6"
             : "flex flex-col"
         }`}
       >

@@ -15,14 +15,14 @@ export const LastTransactionItem = ({
 }) => {
   return (
     <div className="flex items-center py-2.5">
-      <div className="rounded-[8px] bg-[#f5f6f7] w-[52px] h-[52px] flex">
+      <div className="rounded-[8px] bg-[#f5f6f7] min-w-[52px] min-h-[52px] flex">
         <div className="w-[22px] h-[22px] m-auto relative">
           <Image src="/tx.png" fill alt="Block" />
         </div>
       </div>
 
-      <div className="ml-5 grid grid-flow-col auto-cols-auto gap-x-10 max-md:gap-x-0 max-md:!grid-flow-row  max-md:flex-1">
-        <div className="flex flex-col max-lg:!flex-row max-lg:justify-between">
+      <div className="ml-5 grid grid-flow-col auto-cols-auto gap-x-10 max-xl:gap-x-0 max-xl:!grid-flow-row  max-xl:flex-1">
+        <div className="flex flex-col max-xl:!flex-row max-xl:justify-between">
           <div className="flex items-center">
             <span className="text-[12px] text-[#1C1E20] w-[46px]">Tx#</span>
             <Link className="text-[14px] text-[#0091C2]" href={"/txs/" + hash}>
