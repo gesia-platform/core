@@ -91,9 +91,9 @@ func start(configPath string) {
 
 	notary := notary.NewNotary()
 
-	notary.SubscribeNetworkAccessRequested(context)
+	//notary.SubscribeNetworkAccessRequested(context)
 	fmt.Println("root chain network access requested event subscribed")
-	notary.SubscribeNotarizedWithCondition(context)
+	//notary.SubscribeNotarizedWithCondition(context)
 
 	apiHandler := handler.NewAPIHandler(context, notary)
 

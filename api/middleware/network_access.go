@@ -21,7 +21,12 @@ var cahced = map[string](struct {
 
 func MiddlewareNetworkAccess(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+
 		ctx := c.(*context.Context)
+
+		ctx.SetAppID(big.NewInt(6))
+
+		return next(ctx)
 
 		ip := ctx.Context.RealIP()
 
