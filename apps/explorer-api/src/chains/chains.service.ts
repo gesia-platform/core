@@ -56,8 +56,8 @@ export class ChainsService {
           label: ChainsConstants.NEUTRALITY_LABEL,
           consensusAlgorithm: 'PoS',
           latestBlockHeight: latestBlockHeightNeutrality.toString(),
-          nodes: 1, //validatorsRes.data.data?.length ?? 0,
-          carbonTotalAmount: 32000,
+          nodes: validatorsRes.data.data?.length ?? 0,
+          carbonTotalAmount: 0,
         },
         {
           id: ChainsConstants.EMISSION_ID,

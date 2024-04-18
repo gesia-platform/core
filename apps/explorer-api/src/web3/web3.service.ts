@@ -99,13 +99,11 @@ export class Web3Service {
     this.providers.forEach(async ({ chainID, provider }) => {
       const chainLatestBlock = await provider.eth.getBlock();
       let i = BigInt(chainLatestBlock.number);
-      i = chainID ===1 ? BigInt(9093) : chainID ===2 ? BigInt(354804) : BigInt(354809)
       while (i--) {
         if (i === BigInt(0)) {
           continue;
         }
         const blockExists = await this.blocksService.exists(chainID, i);
-        this.logger.log(`Exists: chain #${chainID} block #${i.toString()}`);
         if (!blockExists) {
           try {
             await this.processBlock(provider, chainID, i.toString());
@@ -118,6 +116,8 @@ export class Web3Service {
               error,
             );
           }
+        } else {
+          this.logger.log(`Exists: chain #${chainID} block #${i.toString()}`);
         }
       }
     });

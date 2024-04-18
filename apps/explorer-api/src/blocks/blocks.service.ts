@@ -68,7 +68,7 @@ export class BlocksService {
     const results = await this.blockModel.aggregate(pipelines);
 
     if (!results[0]) throw new NotFoundException();
-    
+
     return {
       block: results[0],
     };
