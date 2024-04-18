@@ -9,7 +9,9 @@ export const CarbonCard = ({
   src,
   srcBg,
   smallIcon,
+  tCOC,
 }: {
+  tCOC?: boolean;
   smallIcon?: boolean;
   srcBg: string;
   src: string;
@@ -44,7 +46,9 @@ export const CarbonCard = ({
         {isClient && (
           <span className="text-[22px] font-medium">
             {BigInt(tco2).toLocaleString()}
-            <span className="text-[16px] font-normal ml-1">tCO2</span>
+            <span className="text-[16px] font-normal ml-1">
+              {tCOC ? "tCOC" : "tCO2"}
+            </span>
           </span>
         )}
       </div>

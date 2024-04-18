@@ -36,6 +36,7 @@ export const HomeCarbonStats = ({}) => {
         tco2={getChain(CHAIN_ID_OFFSET)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_OFFSET}
         smallIcon
+        tCOC
       />
     </div>
   );
