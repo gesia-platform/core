@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
+import Web3 from "web3";
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
@@ -19,4 +20,13 @@ export const formatTimestampFromNow = (timestamp: string) => {
 
 export const formatTimestamp = (timestamp: string) => {
   return dayjs.unix(Number(timestamp)).local().toString();
+};
+
+export const formatGEC = (data: bigint | undefined | null) => {
+  let result = Web3.utils.fromWei(data || BigInt(0), 'ether');
+  if (result === "0.") {
+    result = result.replace(".", "");
+  }
+
+  return result + " GEC";
 };

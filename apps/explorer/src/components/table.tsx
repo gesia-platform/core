@@ -49,7 +49,7 @@ export const Table = ({
           <tbody>
             {data.map((x, i) => {
               return (
-                <tr key={i}>
+                <tr key={i + x._id}>
                   {columns.map((z, y) => {
                     return (
                       <td
@@ -70,9 +70,7 @@ export const Table = ({
       {(footerLeftComponent || footerRightComponent) && (
         <div className="flex items-center justify-between p-[15px] border-t-[#EAECED] border-t max-md:flex-col max-md:items-stretch">
           <div>{footerLeftComponent}</div>
-          <div className="flex items-center">
-            {footerRightComponent}
-          </div>
+          <div className="flex items-center">{footerRightComponent}</div>
         </div>
       )}
     </div>

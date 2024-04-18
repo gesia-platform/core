@@ -1,11 +1,13 @@
 "use client";
 
+import { AddressTag } from "@/components/address-tag";
 import { CarbonLabel } from "@/components/carbon-label";
 import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
 import { useGetWeb3Account } from "@/hooks/use-get-web3-account";
 import useChainState from "@/stores/use-chain-state";
+import { formatGEC } from "@/utils/formatter";
 import { redirect } from "next/navigation";
 import { useMemo } from "react";
 import Web3 from "web3";
@@ -28,10 +30,13 @@ export const AccountDetails = ({ accountID }: { accountID: string }) => {
           <DetailsRow label="Chain ID">
             {`#${chainID} ${getChain()?.label}`}
           </DetailsRow>
-          <DetailsRow label="Address">{account.address}</DetailsRow>
+          <DetailsRow label="Address">
+            {account.address}
+            <AddressTag address={account.address} />
+          </DetailsRow>
 
           <DetailsRow label="Balance">
-            {Web3.utils.fromWei(BigInt(account.balance), "ether") + " GEC"}
+            {formatGEC(BigInt(account.balance))}
           </DetailsRow>
         </DetailsRows>
       </Details>

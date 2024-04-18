@@ -1,11 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { BlocksService } from 'src/blocks/blocks.service';
 import { Block } from 'src/blocks/schemas/block.schema';
 import { Tx } from 'src/txs/schemas/tx.schema';
 import { TxsService } from 'src/txs/txs.service';
 import Web3 from 'web3';
 import { GetAccountRequestQueryDto } from './dtos/get-account.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class Web3Service {
@@ -20,8 +22,9 @@ export class Web3Service {
   private providers: { provider: Web3; chainID: number }[];
 
   constructor(
-    private blocksService: BlocksService,
-    private txsService: TxsService,
+    @InjectModel(Tx.name) private txModel: Model<Tx>,
+    @InjectModel(Block.name) private blockModel: Model<Block>,
+    private httpService: HttpService,
   ) {
     this.neutrality = new Web3(process.env.CHAIN_NEUTRALITY_WS_URL);
     this.emission = new Web3(process.env.CHAIN_EMISSION_WS_URL);
@@ -103,7 +106,12 @@ export class Web3Service {
         if (i === BigInt(0)) {
           continue;
         }
-        const blockExists = await this.blocksService.exists(chainID, i);
+
+        const blockExists = await this.blockModel.exists({
+          chainID,
+          height: i.toString(),
+        });
+
         if (!blockExists) {
           try {
             await this.processBlock(provider, chainID, i.toString());
@@ -163,27 +171,29 @@ export class Web3Service {
 
     block.size = blockData.size?.toString();
     block.totalDifficulty = blockData.totalDifficulty?.toString();
+    block.txns = blockData.transactions?.length ?? 0;
 
-    const savedBlock = await this.blocksService.insertBlock(block);
+    await this.blockModel.create(block);
 
     await Promise.all(
       blockData.transactions?.map(async (hash) => {
-        return await this.processTransaction(provider, hash, savedBlock._id);
+        return await this.processTransaction(provider, hash, chainID);
       }) ?? [],
     );
   }
 
-  async processTransaction(
-    provider: Web3,
-    hash: string,
-    blockID: mongoose.Types.ObjectId,
-  ) {
+  async processTransaction(provider: Web3, hash: string, chainID: number) {
     const transaction = await provider.eth.getTransaction(hash);
     const transactionReceipt = await provider.eth.getTransactionReceipt(hash);
 
     const tx = new Tx();
 
-    tx.blockID = blockID;
+    tx.blockID = (
+      await this.blockModel.findOne({
+        height: transaction.blockNumber,
+        chainID,
+      })
+    )._id;
 
     tx.hash = transaction.hash;
     tx.nonce = transaction.nonce;
@@ -213,7 +223,9 @@ export class Web3Service {
 
     tx.status = transactionReceipt.status?.toString();
 
-    await this.txsService.insertTx(tx);
+    const txModel = await this.txModel.create(tx);
+
+    await txModel.save();
   }
 
   async getAccount(accountID: string, query: GetAccountRequestQueryDto) {
@@ -226,10 +238,41 @@ export class Web3Service {
 
     const balance = await provider.eth.getBalance(accountID, undefined);
 
+    const externalOwned = (await provider.eth.getCode(accountID)) == '0x';
+
+    let isIOA: boolean;
+    if (externalOwned) {
+      let ioas = [];
+      try {
+        if (query.chainID === '2') {
+          const res = await this.httpService.axiosRef.get(
+            process.env.CHAIN_EMISSION_GESIAD_URL + '/ioas',
+          );
+          ioas = res.data;
+        } else if (query.chainID === '3') {
+          const res = await this.httpService.axiosRef.get(
+            process.env.CHAIN_OFFSET_GESIAD_URL + '/ioas',
+          );
+          ioas = res.data;
+        }
+
+        if (ioas.includes(accountID)) {
+          isIOA = true;
+        }
+      } catch (error: unknown) {
+        console.error(error);
+      }
+    }
+
+    // CHAIN_EMISSION_GESIAD_URL = http://3.39.139.167:80
+    // CHAIN_OFFSET_GESIAD_URL = http://43.200.218.66:80
+
     return {
       account: {
         address: accountID,
         balance: balance.toString(),
+        isContract: !externalOwned,
+        isIOA: isIOA,
       },
     };
   }
@@ -244,5 +287,16 @@ export class Web3Service {
 
   getOffset(): Web3 {
     return this.offset;
+  }
+
+  getProvider(chainId: number): Web3 {
+    switch (chainId) {
+      case 1:
+        return this.getNeutrality();
+      case 2:
+        return this.getEmission();
+      case 3:
+        return this.getOffset();
+    }
   }
 }

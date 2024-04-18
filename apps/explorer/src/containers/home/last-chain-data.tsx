@@ -61,7 +61,7 @@ export const LastChainData = ({}) => {
           moreHref="/blocks"
           moreLabel="VIEW ALL BLOCKS"
         >
-          {listBlocks.data?.blocks?.map((block: any) => {
+          {listBlocks.data?.blocks?.map((block: any, index: number) => {
             return (
               <LastBlockItem
                 minedLabel={
@@ -69,7 +69,8 @@ export const LastChainData = ({}) => {
                     ? "Validated"
                     : "Signed"
                 }
-                key={block.height}
+                //key={block.height + chainStore.id}
+                key={chainStore.id + "" + index}
                 number={block.height}
                 txns={block.txns}
                 time={formatTimestampFromNow(block.timestamp)}
@@ -84,9 +85,9 @@ export const LastChainData = ({}) => {
           moreHref="/txs"
           moreLabel="VIEW ALL TRANSACTIONS"
         >
-          {listTxs.data?.txs?.map((tx: any) => (
+          {listTxs.data?.txs?.map((tx: any, i: number) => (
             <LastTransactionItem
-              key={tx.hash}
+              key={chainStore.id + "" + i}
               hash={tx.hash}
               time={formatTimestampFromNow(tx.block?.timestamp)}
               from={tx.from}

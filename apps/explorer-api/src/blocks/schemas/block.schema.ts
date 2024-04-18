@@ -5,7 +5,7 @@ export type BlockDocument = HydratedDocument<Block>;
 
 @Schema({ collection: 'blocks' })
 export class Block {
-  @Prop()
+  @Prop({ index: true })
   chainID: number;
 
   @Prop()
@@ -40,6 +40,9 @@ export class Block {
 
   @Prop()
   extraData: string;
+
+  @Prop()
+  txns: number;
 
   @Prop()
   stateRoot: string;

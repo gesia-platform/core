@@ -7,6 +7,7 @@ import { useListTxs } from "@/hooks/use-list-txs";
 import useChainState from "@/stores/use-chain-state";
 import {
   formatAddress,
+  formatGEC,
   formatHash,
   formatTimestampFromNow,
 } from "@/utils/formatter";
@@ -88,17 +89,12 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
           },
           {
             label: "Value",
-            render: (d) => Web3.utils.fromWei(d.value, "ether") + " GEC",
+            render: (d) => formatGEC(BigInt(d.value)),
           },
           {
             label: "Txn Fee",
             render: (d) =>
-              Web3.utils
-                .fromWei(
-                  BigInt(d.effectiveGasPrice) * BigInt(d.gasUsed),
-                  "ether"
-                )
-                .toString(),
+              formatGEC(BigInt(d.effectiveGasPrice) * BigInt(d.gasUsed)),
           },
         ]}
         footerRightComponent={

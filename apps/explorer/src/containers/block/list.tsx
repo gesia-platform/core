@@ -6,7 +6,11 @@ import { Table } from "@/components/table";
 import { CHAIN_ID_NEUTRALITY } from "@/constants/chain";
 import { useListBlocks } from "@/hooks/use-list-blocks";
 import useChainState from "@/stores/use-chain-state";
-import { formatAddress, formatTimestampFromNow } from "@/utils/formatter";
+import {
+  formatAddress,
+  formatGEC,
+  formatTimestampFromNow,
+} from "@/utils/formatter";
 import Link from "next/link";
 import { useState } from "react";
 import Web3 from "web3";
@@ -80,17 +84,12 @@ export const BlockList = ({}) => {
           {
             label: "Reward",
             render: (d) => {
-              return (
-                Web3.utils
-                  .fromWei(
-                    d.txs?.reduce(
-                      (p: any, c: any) =>
-                        p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
-                      BigInt(0)
-                    ),
-                    "ether"
-                  )
-                  .toString() + " GEC"
+              return formatGEC(
+                d.txs?.reduce(
+                  (p: any, c: any) =>
+                    p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
+                  BigInt(0)
+                )
               );
             },
           },

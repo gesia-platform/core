@@ -11,10 +11,15 @@ import {
   ListBlocksResponseDto,
 } from './dtos/list-blocks.dto';
 import { GetBlockRequestQueryDto } from './dtos/get-block.dto';
+import Web3 from 'web3';
+import { Web3Service } from 'src/web3/web3.service';
 
 @Injectable()
 export class BlocksService {
-  constructor(@InjectModel(Block.name) private blockModel: Model<Block>) {}
+  constructor(
+    @InjectModel(Block.name) private blockModel: Model<Block>,
+    private web3Service: Web3Service,
+  ) {}
 
   async insertBlock(block: Block) {
     const blockModel = await this.blockModel.create(block);
@@ -38,9 +43,18 @@ export class BlocksService {
     return block;
   }
 
-  async getBlock(blockID: string, query: GetBlockRequestQueryDto) {
+  async getBlock(
+    blockID: string,
+    query: GetBlockRequestQueryDto,
+    recursive?: boolean,
+  ) {
     const pipelines: PipelineStage[] = [
       { $match: { chainID: Number(query.chainID) } },
+      {
+        $match: isObjectIdOrHexString(blockID)
+          ? { _id: new mongoose.Types.ObjectId(blockID) }
+          : { height: blockID },
+      },
       {
         $lookup: {
           from: 'txs',
@@ -57,17 +71,19 @@ export class BlocksService {
       },
     ];
 
-    if (blockID) {
-      pipelines.push({
-        $match: isObjectIdOrHexString(blockID)
-          ? { _id: new mongoose.Types.ObjectId(blockID) }
-          : { height: blockID },
-      });
-    }
-
     const results = await this.blockModel.aggregate(pipelines);
 
-    if (!results[0]) throw new NotFoundException();
+    if (!results[0]) {
+      if (!recursive) {
+        await this.web3Service.processBlock(
+          this.web3Service.getProvider(Number(query.chainID)),
+          Number(query.chainID),
+          blockID,
+        );
+        return await this.getBlock(blockID, query, true);
+      }
+      throw new NotFoundException();
+    }
 
     return {
       block: results[0],
@@ -77,38 +93,53 @@ export class BlocksService {
   async listBlocks(
     query: ListBlocksRequestQueryDto,
   ): Promise<ListBlocksResponseDto> {
+    const provider = this.web3Service.getProvider(Number(query.chainID));
+
+    const latestBlockNumber = Number(await provider.eth.getBlockNumber());
+
+    const skip = Number(query.pageOffset);
+    const limit = Number(query.pageSize);
+
     const results = await this.blockModel.aggregate([
       { $match: { chainID: Number(query.chainID) } },
       {
-        $lookup: {
-          from: 'txs',
-          localField: '_id',
-          foreignField: 'blockID',
-          as: 'txs',
-        },
-      },
-      {
         $addFields: {
-          txns: { $size: '$txs' },
           heightLong: { $toLong: '$height' },
         },
       },
-
       { $sort: { heightLong: -1 } },
-      {
-        $facet: {
-          data: [
-            { $skip: Number(query.pageOffset) },
-            { $limit: Number(query.pageSize) },
-          ],
-          totalSize: [{ $count: 'count' }],
-        },
-      },
+      { $skip: skip },
+      { $limit: limit },
     ]);
 
+    const blocks = [];
+
+    const heights = [];
+
+    for (
+      let i = latestBlockNumber - skip;
+      i > latestBlockNumber - skip - limit;
+      i--
+    ) {
+      heights.push(i);
+    }
+
+    for await (let height of heights) {
+      try {
+        const block = (
+          await this.getBlock(BigInt(height).toString(), {
+            chainID: query.chainID,
+          })
+        ).block;
+        blocks.push(block);
+      } catch (error: unknown) {
+        console.error(error);
+      }
+    }
+
     return {
-      blocks: results[0]?.data ?? [],
-      totalSize: results[0]?.totalSize[0]?.count ?? 0,
+      blocks: blocks,
+      totalSize: latestBlockNumber,
     };
   }
 }

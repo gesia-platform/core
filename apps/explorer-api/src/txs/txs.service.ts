@@ -11,10 +11,14 @@ import {
   ListTxsResponseDto,
 } from './dtos/list-txs.dto';
 import { GetTxRequestQueryDto } from './dtos/get-tx.dto';
+import { Web3Service } from 'src/web3/web3.service';
 
 @Injectable()
 export class TxsService {
-  constructor(@InjectModel(Tx.name) private txModel: Model<Tx>) {}
+  constructor(
+    @InjectModel(Tx.name) private txModel: Model<Tx>,
+    private web3Service: Web3Service,
+  ) {}
 
   async insertTx(tx: Tx) {
     const txModel = await this.txModel.create(tx);
@@ -22,7 +26,7 @@ export class TxsService {
     return await txModel.save();
   }
 
-  async getTx(txID: string, query: GetTxRequestQueryDto) {
+  async getTx(txID: string, query: GetTxRequestQueryDto, recursive?: boolean) {
     const pipelines: PipelineStage[] = [
       { $match: { hash: txID } },
       {
@@ -65,8 +69,18 @@ export class TxsService {
     ];
 
     const results = await this.txModel.aggregate([...pipelines]);
-    
-    if (!results[0]) throw new NotFoundException();
+
+    if (!results[0]) {
+      if (!recursive) {
+        await this.web3Service.processTransaction(
+          this.web3Service.getProvider(Number(query.chainID)),
+          txID,
+          Number(query.chainID),
+        );
+        return await this.getTx(txID, query, true);
+      }
+      throw new NotFoundException();
+    }
 
     return { tx: results[0] };
   }

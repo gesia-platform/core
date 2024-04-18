@@ -1,7 +1,7 @@
 import { apiClient } from "@/utils/api-client";
 import useSWR from "swr";
 
-export function useGetTx(params: { txID: string }) {
+export function useGetTx(params: { txID: string; chainID: number }) {
   const { data, error, mutate } = useSWR(
     ["/txs/" + params.txID, params],
     async (args) =>

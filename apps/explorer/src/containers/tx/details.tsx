@@ -1,5 +1,6 @@
 "use client";
 
+import { AddressTag } from "@/components/address-tag";
 import { CarbonLabel } from "@/components/carbon-label";
 import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
@@ -7,15 +8,18 @@ import { DetailsRows } from "@/components/details-rows";
 import { TxInputData } from "@/components/tx-input-data";
 import { useGetTx } from "@/hooks/use-get-tx";
 import useChainState from "@/stores/use-chain-state";
-import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
+import {
+  formatGEC,
+  formatTimestamp,
+  formatTimestampFromNow,
+} from "@/utils/formatter";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useMemo } from "react";
-import Web3 from "web3";
 
 export const TxDetails = ({ txID }: { txID: string }) => {
   const chainID = useChainState((s) => s.id);
-  const getTx = useGetTx({ txID });
+  const getTx = useGetTx({ txID, chainID });
   const getChain = useChainState((s) => s.getChain);
 
   const tx = useMemo(() => {
@@ -28,7 +32,7 @@ export const TxDetails = ({ txID }: { txID: string }) => {
   }, [getChain, tx]);
 
   if (getTx.error) return redirect("/error");
-  
+
   if (!tx || !chain) return null;
 
   return (
@@ -63,32 +67,26 @@ export const TxDetails = ({ txID }: { txID: string }) => {
             <Link className="text-[#0091C2]" href={"/accounts/" + tx.from}>
               {tx.from}
             </Link>
+            <AddressTag address={tx.from} />
           </DetailsRow>
           <DetailsRow label="To">
             <Link className="text-[#0091C2]" href={"/accounts/" + tx.to}>
               {tx.to}
             </Link>
+            <AddressTag address={tx.to} />
           </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
-          <DetailsRow label="Value">
-            {Web3.utils.fromWei(tx.value, "ether") + " GEC"}
-          </DetailsRow>
+          <DetailsRow label="Value">{formatGEC(tx.value)}</DetailsRow>
           <DetailsRow label="Transaction Fee">
-            {Web3.utils
-              .fromWei(
-                BigInt(tx.effectiveGasPrice) * BigInt(tx.gasUsed),
-                "ether"
-              )
-              .toString() + " GEC"}
+            {formatGEC(BigInt(tx.effectiveGasPrice) * BigInt(tx.gasUsed))}
           </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
           <DetailsRow label="Gas Price">
-            {Web3.utils.fromWei(BigInt(tx.gasPrice), "ether").toString() +
-              " GEC"}
+            {formatGEC(BigInt(tx.gasPrice))}
           </DetailsRow>
           <DetailsRow label="Gas Limit">
             {BigInt(tx.gas).toLocaleString()}

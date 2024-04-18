@@ -6,7 +6,11 @@ import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
 import { useGetBlock } from "@/hooks/use-get-block";
 import useChainState from "@/stores/use-chain-state";
-import { formatTimestamp, formatTimestampFromNow } from "@/utils/formatter";
+import {
+  formatGEC,
+  formatTimestamp,
+  formatTimestampFromNow,
+} from "@/utils/formatter";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useMemo } from "react";
@@ -60,16 +64,13 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
             </Link>
           </DetailsRow>
           <DetailsRow label="Block Reward">
-            {Web3.utils
-              .fromWei(
-                block.txs?.reduce(
-                  (p: any, c: any) =>
-                    p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
-                  BigInt(0)
-                ),
-                "ether"
+            {formatGEC(
+              block.txs?.reduce(
+                (p: any, c: any) =>
+                  p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
+                BigInt(0)
               )
-              .toString() + " GEC"}
+            )}
           </DetailsRow>
           <DetailsRow label="Total Difficulty">
             {BigInt(block.totalDifficulty).toLocaleString()}
@@ -106,7 +107,9 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
               {block.withdrawalsRoot}
             </DetailsRow>
           )}
-          <DetailsRow label="Nonce">{block.nonce}</DetailsRow>
+          <DetailsRow label="Nonce">
+            {block.nonce === "0" ? "0x0000000000000000" : block.nonce}
+          </DetailsRow>
         </DetailsRows>
       </Details>
     </div>
