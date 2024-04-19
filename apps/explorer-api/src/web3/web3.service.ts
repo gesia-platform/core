@@ -128,7 +128,7 @@ export class Web3Service {
   ) {
     const blockData = await provider.eth.getBlock(blockHeight);
 
-    const block = new Block();
+    let block = new Block();
 
     block.chainID = chainID;
 
@@ -162,7 +162,7 @@ export class Web3Service {
     block.totalDifficulty = blockData.totalDifficulty?.toString();
     block.txns = blockData.transactions?.length ?? 0;
 
-    await this.blockModel.create(block);
+    block = await this.blockModel.create(block);
 
     return [block, blockData.transactions];
   }
