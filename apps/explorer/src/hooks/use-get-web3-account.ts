@@ -15,9 +15,6 @@ export function useGetWeb3Account(params?: {
             balance: string;
             isContract: boolean;
             isIOA: boolean;
-            isEmissionVoucher: boolean;
-            isOffsetVoucher: boolean;
-            isEmissionCalculator: boolean;
           };
         }>(args[0], {
           params: args[1],
