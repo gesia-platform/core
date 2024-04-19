@@ -120,7 +120,7 @@ export class Web3Service {
     });
   }
 
-  async processBlock(
+  async saveBlock(
     provider: Web3,
     chainID: number,
     blockHeight: string,
@@ -164,8 +164,24 @@ export class Web3Service {
 
     await this.blockModel.create(block);
 
+    return [block, blockData.transactions];
+  }
+
+  async processBlock(
+    provider: Web3,
+    chainID: number,
+    blockHeight: string,
+    withdrawalsRoot?: string,
+  ) {
+    const [block, transactions] = await this.saveBlock(
+      provider,
+      chainID,
+      blockHeight,
+      withdrawalsRoot,
+    );
+
     await Promise.all(
-      blockData.transactions?.map(async (hash) => {
+      (transactions as any)?.map(async (hash) => {
         return await this.processTransaction(provider, hash, chainID);
       }) ?? [],
     );
@@ -177,12 +193,17 @@ export class Web3Service {
 
     const tx = new Tx();
 
-    tx.blockID = (
-      await this.blockModel.findOne({
-        height: transaction.blockNumber,
-        chainID,
-      })
-    )._id;
+    let curBlock = await this.blockModel.findOne({
+      height: transaction.blockNumber,
+      chainID,
+    });
+
+    if (!curBlock) {
+      curBlock = (
+        await this.saveBlock(provider, chainID, transaction.blockNumber)
+      )[0] as any;
+    }
+    tx.blockID = curBlock._id;
 
     tx.hash = transaction.hash;
     tx.nonce = transaction.nonce;
