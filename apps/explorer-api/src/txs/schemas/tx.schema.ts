@@ -45,9 +45,6 @@ export class Tx {
   value: string;
 
   @Prop()
-  data: string;
-
-  @Prop()
   nonce: string;
 
   @Prop()

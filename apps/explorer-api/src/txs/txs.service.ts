@@ -12,6 +12,7 @@ import {
 } from './dtos/list-txs.dto';
 import { GetTxRequestQueryDto } from './dtos/get-tx.dto';
 import { Web3Service } from 'src/web3/web3.service';
+import Web3 from 'web3';
 
 @Injectable()
 export class TxsService {
@@ -82,7 +83,9 @@ export class TxsService {
       throw new NotFoundException();
     }
 
-    return { tx: results[0] };
+    const tx = results[0];
+
+    return { tx };
   }
 
   async listTxs(query: ListTxsRequestQueryDto): Promise<ListTxsResponseDto> {

@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import mongoose, { Model } from 'mongoose';
-import { BlocksService } from 'src/blocks/blocks.service';
+import { Model } from 'mongoose';
 import { Block } from 'src/blocks/schemas/block.schema';
 import { Tx } from 'src/txs/schemas/tx.schema';
-import { TxsService } from 'src/txs/txs.service';
 import Web3 from 'web3';
 import { GetAccountRequestQueryDto } from './dtos/get-account.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +16,7 @@ export class Web3Service {
 
   private readonly emissionVoucherAddresses: string[];
   private readonly offsetVoucherAddresses: string[];
+  private readonly emissionsCalculators: string[];
 
   private providers: { provider: Web3; chainID: number }[];
 
@@ -35,6 +34,9 @@ export class Web3Service {
 
     this.offsetVoucherAddresses =
       process.env.CHAIN_OFFSET_VOUCHER_ADDRESSES.match(/.{1,42}/g);
+
+    this.emissionsCalculators =
+      process.env.CHAIN_EMISSION_CALCULATOR_ADDRESSES.match(/.{1,42}/g);
 
     this.providers = [
       {
@@ -203,7 +205,6 @@ export class Web3Service {
     tx.value = transaction.value;
     tx.from = transaction.from;
     tx.to = transaction.to;
-    tx.data = transaction.data;
     tx.input = transaction.input;
 
     tx.gas = transaction.gas;
@@ -238,7 +239,8 @@ export class Web3Service {
 
     const balance = await provider.eth.getBalance(accountID, undefined);
 
-    const externalOwned = (await provider.eth.getCode(accountID)) == '0x';
+    const code = await provider.eth.getCode(accountID);
+    const externalOwned = code == '0x';
 
     let isIOA: boolean;
     if (externalOwned) {
@@ -264,8 +266,22 @@ export class Web3Service {
       }
     }
 
-    // CHAIN_EMISSION_GESIAD_URL = http://3.39.139.167:80
-    // CHAIN_OFFSET_GESIAD_URL = http://43.200.218.66:80
+    let isEmissionVoucher = false;
+    let isEmissionCalculator = false;
+    let isOffsetVoucher = false;
+
+    if (query.chainID === '2') {
+      if (this.emissionVoucherAddresses.includes(accountID)) {
+        isEmissionVoucher = true;
+      }
+      if (this.emissionsCalculators.includes(accountID)) {
+        isEmissionCalculator = true;
+      }
+    } else if (query.chainID === '3') {
+      if (this.offsetVoucherAddresses.includes(accountID)) {
+        isOffsetVoucher = true;
+      }
+    }
 
     return {
       account: {
@@ -273,6 +289,9 @@ export class Web3Service {
         balance: balance.toString(),
         isContract: !externalOwned,
         isIOA: isIOA,
+        isEmissionVoucher,
+        isOffsetVoucher,
+        isEmissionCalculator,
       },
     };
   }

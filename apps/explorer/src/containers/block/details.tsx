@@ -47,9 +47,9 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
               className="text-[#0091C2]"
               href={"/txs?block=" + block.height}
             >
-              {block.txns} transactions{" "}
+              {block.txns} transactions
             </Link>
-            in this block
+            {" "}in this block
           </DetailsRow>
         </DetailsRows>
 

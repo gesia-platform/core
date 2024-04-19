@@ -6,7 +6,9 @@ import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
 import { TxInputData } from "@/components/tx-input-data";
+import { CHAIN_VOUCHER_LOG_TOPIC_0_HASH } from "@/constants/chain";
 import { useGetTx } from "@/hooks/use-get-tx";
+import { useGetWeb3Account } from "@/hooks/use-get-web3-account";
 import useChainState from "@/stores/use-chain-state";
 import {
   formatGEC,
@@ -15,7 +17,8 @@ import {
 } from "@/utils/formatter";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import Web3 from "web3";
 
 export const TxDetails = ({ txID }: { txID: string }) => {
   const chainID = useChainState((s) => s.id);
@@ -26,11 +29,49 @@ export const TxDetails = ({ txID }: { txID: string }) => {
     return getTx.data?.tx || null;
   }, [getTx.data]);
 
+  const abi = useRef(new Web3().eth.abi).current;
+
   const chain = useMemo(() => {
     const chainID = tx?.block?.chainID;
     return chainID ? getChain(chainID) : null;
   }, [getChain, tx]);
 
+  const getWeb3AccountTo = useGetWeb3Account(
+    tx ? { accountID: tx.to, chainID } : undefined
+  );
+
+  const renderVoucher = () => {
+    const log = tx.logs?.find(
+      (x: any) => x.topics?.includes(CHAIN_VOUCHER_LOG_TOPIC_0_HASH)
+    );
+
+    if (!log) return null;
+    //
+    const datas = log.data.replace("0x", "").match(/.{1,64}/g);
+    const tokenID = BigInt(abi.decodeParameter("uint256", datas[0]) as any);
+    const value = BigInt(abi.decodeParameter("uint256", datas[1]) as any);
+
+    return (
+      <DetailsRow label="Carbon Voucher">
+        <div>
+          <div>
+            <Link className="text-[#0091C2]" href={"/accounts/" + log.address}>
+              {log.address}
+            </Link>
+            <span className="ml-2">(Contract)</span>
+          </div>
+          <div className="grid grid-flow-col auto-cols-max gap-x-2 items-center mt-4">
+            <span>Token(App) ID: {tokenID.toString()}</span>
+            <div className="h-4 w-[1px] bg-[#777A7D]" />
+            <span>
+              Amount: {(Number(value) / 1000).toString()}{" "}
+              {chainID === 3 ? "tCOC" : "tCO2"}
+            </span>
+          </div>
+        </div>
+      </DetailsRow>
+    );
+  };
   if (getTx.error) return redirect("/error");
 
   if (!tx || !chain) return null;
@@ -75,8 +116,9 @@ export const TxDetails = ({ txID }: { txID: string }) => {
             </Link>
             <AddressTag address={tx.to} />
           </DetailsRow>
-        </DetailsRows>
 
+          {getWeb3AccountTo.data?.account.isContract && renderVoucher()}
+        </DetailsRows>
         <DetailsRows>
           <DetailsRow label="Value">{formatGEC(tx.value)}</DetailsRow>
           <DetailsRow label="Transaction Fee">
@@ -95,7 +137,7 @@ export const TxDetails = ({ txID }: { txID: string }) => {
 
         <DetailsRows>
           <DetailsRow label="Input Data">
-            <TxInputData />
+            <TxInputData input={tx.input} />
           </DetailsRow>
         </DetailsRows>
       </Details>

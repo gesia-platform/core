@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <Main>
       <h1 className="text-[24px] leading-[32px] font-medium text-[#1C1E20] mt-5">
-        The GESIA Blockchain Explorer
+        GESIA Blockchain Explorer
       </h1>
       <HomeSearch />
       <HomeCarbonStats />
