@@ -5,10 +5,10 @@ module.exports = async (deployer) => {
 	if (process.env.SKIP_MIGRATIONS) return;
 
 	await deployer.deploy(AppStore);
-	const appstore = await AppStore.deployed();
-	await deployer.deploy(AppPermission, appstore.address);
+	const appStore = await AppStore.deployed();
+	await deployer.deploy(AppPermission, appStore.address);
 	const appPermission = await AppPermission.deployed();
 
-	console.log('AppStore : ', appstore.address);
+	console.log('AppStore : ', appStore.address);
 	console.log('AppPermission : ', appPermission.address);
 };

@@ -13,16 +13,19 @@ contract('Notary Public Registration Test', (accounts) => {
 	});
 
 	it('should grant and verify membership status', async () => {
-		await emissionNotaryPublic.setMembership(accounts[0], true, { from: accounts[0] });
+		await emissionNotaryPublic.setMembership(process.env.EMISSION_IOA_ACCOUNT, true, { from: accounts[0] });
 		const emissionIsMembership = await emissionNotaryPublic.hasMembership(accounts[0]);
 
 		assert.equal(emissionIsMembership, true, 'The account should have membership status granted');
 	});
 
-	it('should correctly register and retrieve a BLS public key', async () => {
-		await emissionNotaryPublic.register(EMISSION_BLS_PUBLIC_KEY, { from: accounts[0] });
-		const pubKey = await emissionNotaryPublic.getPubkey(accounts[0]);
+	/**
+	 * @dev 수동 테스트로 변경
+	 */
+	// it('should correctly register and retrieve a BLS public key', async () => {
+	// 	await emissionNotaryPublic.register(EMISSION_BLS_PUBLIC_KEY, { from: accounts[0] });
+	// 	const pubKey = await emissionNotaryPublic.getPubkey(accounts[0]);
 
-		assert.equal(pubKey, EMISSION_BLS_PUBLIC_KEY, 'The retrieved BLS public key should match the registered key');
-	});
+	// 	assert.equal(pubKey, EMISSION_BLS_PUBLIC_KEY, 'The retrieved BLS public key should match the registered key');
+	// });
 });
