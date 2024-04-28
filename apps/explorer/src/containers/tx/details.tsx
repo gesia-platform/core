@@ -55,6 +55,7 @@ export const TxDetails = ({ txID }: { txID: string }) => {
         BigInt(1000000000)
     ).toFixed(2);
 
+
     return (
       <DetailsRow label="Carbon Voucher">
         <div>
