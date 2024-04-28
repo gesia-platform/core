@@ -18,6 +18,9 @@ export class Tx {
   to: string;
 
   @Prop()
+  contract: string;
+
+  @Prop()
   gas: string;
 
   @Prop()

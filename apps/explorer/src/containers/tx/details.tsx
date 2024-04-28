@@ -5,6 +5,7 @@ import { CarbonLabel } from "@/components/carbon-label";
 import { Details } from "@/components/details";
 import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
+import { ToAddress } from "@/components/to-address";
 import { TxInputData } from "@/components/tx-input-data";
 import { CHAIN_VOUCHER_LOG_TOPIC_0_HASH } from "@/constants/chain";
 import { useGetTx } from "@/hooks/use-get-tx";
@@ -46,10 +47,13 @@ export const TxDetails = ({ txID }: { txID: string }) => {
     );
 
     if (!log) return null;
-    //
+
     const datas = log.data.replace("0x", "").match(/.{1,64}/g);
     const tokenID = BigInt(abi.decodeParameter("uint256", datas[0]) as any);
-    const value = BigInt(abi.decodeParameter("uint256", datas[1]) as any);
+    const value = Number(
+      BigInt(abi.decodeParameter("uint256", datas[1]) as any) /
+        BigInt(1000000000)
+    ).toFixed(2);
 
     return (
       <DetailsRow label="Carbon Voucher">
@@ -111,10 +115,7 @@ export const TxDetails = ({ txID }: { txID: string }) => {
             <AddressTag address={tx.from} />
           </DetailsRow>
           <DetailsRow label="To">
-            <Link className="text-[#0091C2]" href={"/accounts/" + tx.to}>
-              {tx.to}
-            </Link>
-            <AddressTag address={tx.to} />
+            <ToAddress tx={tx} tag />
           </DetailsRow>
 
           {getWeb3AccountTo.data?.account.isContract && renderVoucher()}

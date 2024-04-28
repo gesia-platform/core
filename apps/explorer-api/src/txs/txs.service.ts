@@ -12,7 +12,6 @@ import {
 } from './dtos/list-txs.dto';
 import { GetTxRequestQueryDto } from './dtos/get-tx.dto';
 import { Web3Service } from 'src/web3/web3.service';
-import Web3 from 'web3';
 
 @Injectable()
 export class TxsService {
@@ -71,10 +70,11 @@ export class TxsService {
 
     const results = await this.txModel.aggregate([...pipelines]);
 
+    const provider = this.web3Service.getProvider(Number(query.chainID));
     if (!results[0]) {
       if (!recursive) {
         await this.web3Service.processTransaction(
-          this.web3Service.getProvider(Number(query.chainID)),
+          provider,
           txID,
           Number(query.chainID),
         );
@@ -84,6 +84,18 @@ export class TxsService {
     }
 
     const tx = results[0];
+
+    if (!tx.to && !tx.contract) {
+      const receipt = await this.web3Service.getTransactionReceipt(
+        provider,
+        txID,
+      );
+      tx.contract = receipt.contractAddress;
+      await this.txModel.updateOne(
+        { _id: tx._id },
+        { contract: receipt.contractAddress },
+      );
+    }
 
     return { tx };
   }
@@ -164,8 +176,38 @@ export class TxsService {
       },
     ]);
 
+    let txs = results[0]?.data ?? [];
+
+    if (txs.filter((x) => !x.to && !x.contract).length >= 1) {
+      const provider = this.web3Service.getProvider(Number(query.chainID));
+      txs = await Promise.all(
+        txs.map(async (tx) => {
+          try {
+            if (!tx.to && !tx.contract) {
+              const receipt = await this.web3Service.getTransactionReceipt(
+                provider,
+                tx.hash,
+              );
+              tx.contract = receipt.contractAddress;
+              await this.txModel.updateOne(
+                { _id: tx._id },
+                { contract: receipt.contractAddress },
+              );
+            }
+          } catch (error: unknown) {
+            console.error(
+              'failed to update contract address for creation tx in list',
+              error,
+            );
+          }
+
+          return tx;
+        }),
+      );
+    }
+
     return {
-      txs: results[0]?.data ?? [],
+      txs,
       totalSize: results[0]?.totalSize[0]?.count ?? 0,
     };
   }

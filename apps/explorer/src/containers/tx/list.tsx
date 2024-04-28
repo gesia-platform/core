@@ -3,6 +3,7 @@
 import { ChainSelect } from "@/components/chain-select";
 import { Pagination } from "@/components/pagination";
 import { Table } from "@/components/table";
+import { ToAddress } from "@/components/to-address";
 import { useListTxs } from "@/hooks/use-list-txs";
 import useChainState from "@/stores/use-chain-state";
 import {
@@ -13,7 +14,6 @@ import {
 } from "@/utils/formatter";
 import Link from "next/link";
 import { useState } from "react";
-import Web3 from "web3";
 
 export const TxList = ({ blockID }: { blockID?: string }) => {
   const chainID = useChainState((s) => s.id);
@@ -81,11 +81,9 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
           },
           {
             label: "To",
-            render: (d) => (
-              <Link className="text-[#0091C2]" href={"/accounts/" + d.to}>
-                {formatAddress(d.to)}
-              </Link>
-            ),
+            render: (d) => {
+              return <ToAddress tx={d} label />;
+            },
           },
           {
             label: "Value",

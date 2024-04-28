@@ -187,6 +187,10 @@ export class Web3Service {
     );
   }
 
+  async getTransactionReceipt(provider: Web3, hash: string) {
+    return await provider.eth.getTransactionReceipt(hash);
+  }
+  
   async processTransaction(provider: Web3, hash: string, chainID: number) {
     const transaction = await provider.eth.getTransaction(hash);
     const transactionReceipt = await provider.eth.getTransactionReceipt(hash);
@@ -213,6 +217,7 @@ export class Web3Service {
     tx.value = transaction.value;
     tx.from = transaction.from;
     tx.to = transaction.to;
+    tx.contract = transactionReceipt.contractAddress;
     tx.input = transaction.input;
 
     tx.gas = transaction.gas;
