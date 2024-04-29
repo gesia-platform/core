@@ -7,12 +7,13 @@ import { DetailsRow } from "@/components/details-row";
 import { DetailsRows } from "@/components/details-rows";
 import { ToAddress } from "@/components/to-address";
 import { TxInputData } from "@/components/tx-input-data";
-import { CHAIN_VOUCHER_LOG_TOPIC_0_HASH } from "@/constants/chain";
+import { CHAIN_ID_EMISSION, CHAIN_VOUCHER_LOG_TOPIC_0_HASH } from "@/constants/chain";
 import { useGetTx } from "@/hooks/use-get-tx";
 import { useGetWeb3Account } from "@/hooks/use-get-web3-account";
 import useChainState from "@/stores/use-chain-state";
 import {
   formatGEC,
+  formatTCO2,
   formatTimestamp,
   formatTimestampFromNow,
 } from "@/utils/formatter";
@@ -50,11 +51,7 @@ export const TxDetails = ({ txID }: { txID: string }) => {
 
     const datas = log.data.replace("0x", "").match(/.{1,64}/g);
     const tokenID = BigInt(abi.decodeParameter("uint256", datas[0]) as any);
-    const value = Number(
-      BigInt(abi.decodeParameter("uint256", datas[1]) as any) /
-        BigInt(1000000000)
-    ).toFixed(2);
-
+    const value = formatTCO2(abi.decodeParameter("uint256", datas[1]) as any,chainID === CHAIN_ID_EMISSION);
 
     return (
       <DetailsRow label="Carbon Voucher">

@@ -29,6 +29,7 @@ export const HomeCarbonStats = ({}) => {
         tco2={getChain(CHAIN_ID_EMISSION)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_EMISSION}
         smallIcon
+        emission
       />
       <CarbonCard
         srcBg="/offset-bg.jpg"
@@ -36,6 +37,7 @@ export const HomeCarbonStats = ({}) => {
         tco2={getChain(CHAIN_ID_OFFSET)?.carbonTotalAmount ?? "0"}
         label={CHAIN_LABEL_OFFSET}
         smallIcon
+        
         tCOC
       />
     </div>

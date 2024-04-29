@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTCO2 } from "@/utils/formatter";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -8,9 +9,11 @@ export const CarbonCard = ({
   tco2,
   src,
   srcBg,
+  emission,
   smallIcon,
   tCOC,
 }: {
+  emission?: boolean;
   tCOC?: boolean;
   smallIcon?: boolean;
   srcBg: string;
@@ -45,7 +48,7 @@ export const CarbonCard = ({
         <span className="mt-4 text-[16px] font-medium">{label}</span>
         {isClient && (
           <span className="text-[22px] font-medium">
-            {BigInt(tco2).toLocaleString()}
+            {formatTCO2(tco2, emission || false)}
             <span className="text-[16px] font-normal ml-1">
               {tCOC ? "tCOC" : "tCO2"}
             </span>

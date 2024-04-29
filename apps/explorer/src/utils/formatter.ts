@@ -10,6 +10,11 @@ export const formatAddress = (address: string) =>
 
 export const formatHash = (hash: string) => hash.substring(0, 15) + "...";
 
+export const formatTCO2 = (value: string, isEmission: boolean) => {
+  return isEmission
+    ? Number(BigInt(value) / BigInt(1000000000)).toFixed(2)
+    : Number(BigInt(value)).toFixed(2);
+};
 export const formatTimestampFromNow = (timestamp: string) => {
   let result = dayjs.unix(Number(timestamp)).local().fromNow(true) + " ago";
 
@@ -23,7 +28,7 @@ export const formatTimestamp = (timestamp: string) => {
 };
 
 export const formatGEC = (data: bigint | undefined | null) => {
-  let result = Web3.utils.fromWei(data || BigInt(0), 'ether');
+  let result = Web3.utils.fromWei(data || BigInt(0), "ether");
   if (result === "0.") {
     result = result.replace(".", "");
   }

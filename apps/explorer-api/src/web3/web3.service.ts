@@ -14,6 +14,9 @@ export class Web3Service {
   private readonly offset: Web3;
   private readonly logger = new Logger(Web3Service.name);
 
+  private readonly emissionVoucherAddresses: string[];
+  private readonly offsetVoucherAddresses: string[];
+
   private providers: { provider: Web3; chainID: number }[];
 
   constructor(
@@ -24,6 +27,11 @@ export class Web3Service {
     this.neutrality = new Web3(process.env.CHAIN_NEUTRALITY_WS_URL);
     this.emission = new Web3(process.env.CHAIN_EMISSION_WS_URL);
     this.offset = new Web3(process.env.CHAIN_OFFSET_WS_URL);
+
+    this.emissionVoucherAddresses =
+      process.env.CHAIN_EMISSION_VOUCHER_ADDRESSES.match(/.{1,42}/g);
+    this.offsetVoucherAddresses =
+      process.env.CHAIN_OFFSET_VOUCHER_ADDRESSES.match(/.{1,42}/g);
 
     this.providers = [
       {
@@ -49,6 +57,67 @@ export class Web3Service {
     if (process.env.WEB3_SYNCING === '1') {
       this.syncPreviousBlocks();
     }
+  }
+
+  async getVoucher(chainID: number) {
+    const provider = this.getProvider(chainID);
+
+    let addresses: string[];
+    if (chainID === 2) {
+      addresses = this.emissionVoucherAddresses;
+    } else if (chainID === 3) {
+      addresses = this.offsetVoucherAddresses;
+    }
+
+    const results = await Promise.all(
+      addresses.map(async (address): Promise<bigint> => {
+        const logs = await provider.eth.getPastLogs({
+          address: address,
+          topics: [],
+          fromBlock: 0,
+          toBlock: 'latest',
+        });
+
+        const mints = [];
+        const burns = [];
+
+        logs.forEach((log: any) => {
+          if (
+            log.topics[2] ===
+            '0x0000000000000000000000000000000000000000000000000000000000000000'
+          ) {
+            mints.push(log);
+          } else if (
+            log.topics[3] ===
+            '0x0000000000000000000000000000000000000000000000000000000000000000'
+          ) {
+            burns.push(log);
+          }
+        });
+
+        const mint: bigint = mints.reduce((p: bigint, c) => {
+          const datas = c.data.replace('0x', '').match(/.{1,64}/g);
+          const value = BigInt(
+            provider.eth.abi.decodeParameter('uint256', datas[1]) as any,
+          );
+
+          return p + value;
+        }, BigInt(0));
+
+        const burn: bigint = burns.reduce((p: bigint, c) => {
+          const datas = c.data.replace('0x', '').match(/.{1,64}/g);
+          const value = BigInt(
+            provider.eth.abi.decodeParameter('uint256', datas[1]) as any,
+          );
+
+          return p + value;
+        }, BigInt(0));
+
+        return mint - burn;
+      }),
+    );
+
+    return results.reduce((p, c) => p + c, BigInt(0)).toString();
   }
 
   async subscribeNewBlockHeaders() {
@@ -190,7 +259,7 @@ export class Web3Service {
   async getTransactionReceipt(provider: Web3, hash: string) {
     return await provider.eth.getTransactionReceipt(hash);
   }
-  
+
   async processTransaction(provider: Web3, hash: string, chainID: number) {
     const transaction = await provider.eth.getTransaction(hash);
     const transactionReceipt = await provider.eth.getTransactionReceipt(hash);
