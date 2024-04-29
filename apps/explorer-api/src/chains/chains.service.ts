@@ -3,11 +3,13 @@ import { ChainsConstants } from './chains.constant';
 import { Web3Service } from 'src/web3/web3.service';
 import Web3 from 'web3';
 import { HttpService } from '@nestjs/axios';
+import { VouchersService } from 'src/vouchers/vouchers.service';
 
 @Injectable()
 export class ChainsService {
   constructor(
     private web3Service: Web3Service,
+    private vouchersService: VouchersService,
     private httpService: HttpService,
   ) {
     this.listChains();
@@ -66,7 +68,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightEmission.toString(),
           nodes: emissionSigners?.length ?? 0,
-          carbonTotalAmount: await this.web3Service.getVoucherTotalAmount(
+          carbonTotalAmount: await this.vouchersService.getVoucherTotalAmount(
             ChainsConstants.EMISSION_ID,
           ),
         },
@@ -77,7 +79,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightOffset.toString(),
           nodes: offsetSigners?.length ?? 0,
-          carbonTotalAmount: await this.web3Service.getVoucherTotalAmount(
+          carbonTotalAmount: await this.vouchersService.getVoucherTotalAmount(
             ChainsConstants.OFFSET_ID,
           ),
         },

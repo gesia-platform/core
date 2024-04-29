@@ -10,7 +10,11 @@ export const Table = ({
   className,
 }: {
   className: string;
-  columns: { label: string; render: (data: any, index: number) => ReactNode }[];
+  columns: (
+    | { label: string; render: (data: any, index: number) => ReactNode }
+    | null
+    | undefined
+  )[];
   data: any[];
   label?: string;
   headerComponent?: ReactNode;
@@ -36,14 +40,16 @@ export const Table = ({
         >
           <thead className="">
             <tr>
-              {columns.map((col, index) => (
-                <th
-                  key={index}
-                  className="h-[56px] text-[16px] font-medium px-2"
-                >
-                  {col.label}
-                </th>
-              ))}
+              {columns.map((col, index) =>
+                col ? (
+                  <th
+                    key={index}
+                    className="h-[56px] text-[16px] font-medium px-2"
+                  >
+                    {col.label}
+                  </th>
+                ) : null
+              )}
             </tr>
           </thead>
           <tbody>
@@ -51,6 +57,7 @@ export const Table = ({
               return (
                 <tr key={i + x._id}>
                   {columns.map((z, y) => {
+                    if (!z) return null;
                     return (
                       <td
                         className="h-[52px] text-[16px] border-t-[#EAECED] border-t text-center px-2"

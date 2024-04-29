@@ -24,6 +24,15 @@ CHAIN_NEUTRALITY_BEACON_API_URL=
 CHAIN_EMISSION_VOUCHER_ADDRESSES=
 CHAIN_OFFSET_VOUCHER_ADDRESSES=
 
+# eth prefixed hex address (42length)를 붙여서 넣어주세요.
+CHAIN_EMISSION_FT_ADDRESSES=
+CHAIN_OFFSET_FT_ADDRESSES=
+
+# eth prefixed hex address (42length)를 붙여서 넣어주세요.
+CHAIN_EMISSION_NFT_ADDRESSES=
+CHAIN_OFFSET_NFT_ADDRESSES=
+
+
 # 1 > 3개 체인 최신 블록을 구독하여 디비에 입력합니다. (multiprocess 구동 시 1개 노드만 돌리도록 주의하세요.)
 WEB3_SUBSCRIBING=
 

@@ -146,4 +146,64 @@ export class VouchersService {
       voucher: await this.getVoucherData(Number(request.chainID), voucherID),
     };
   }
+
+  async getVoucherTotalAmount(chainID: number) {
+    const provider = this.web3Service.getProvider(chainID);
+
+    const addresses = this.web3Service.getVoucherAddresses(chainID);
+
+    const results = await Promise.all(
+      addresses.map(async (address): Promise<bigint> => {
+        const logs = await provider.eth.getPastLogs({
+          address: address,
+          topics: [
+            Web3.utils.sha3(
+              'TransferSingle(address,address,address,uint256,uint256)',
+            ),
+          ],
+          fromBlock: 0,
+          toBlock: 'latest',
+        });
+
+        const mints = [];
+        const burns = [];
+
+        logs.forEach((log: any) => {
+          if (
+            log.topics[2] ===
+            '0x0000000000000000000000000000000000000000000000000000000000000000'
+          ) {
+            mints.push(log);
+          } else if (
+            log.topics[3] ===
+            '0x0000000000000000000000000000000000000000000000000000000000000000'
+          ) {
+            burns.push(log);
+          }
+        });
+
+        const mint: bigint = mints.reduce((p: bigint, c) => {
+          const datas = c.data.replace('0x', '').match(/.{1,64}/g);
+          const value = BigInt(
+            provider.eth.abi.decodeParameter('uint256', datas[1]) as any,
+          );
+
+          return p + value;
+        }, BigInt(0));
+
+        const burn: bigint = burns.reduce((p: bigint, c) => {
+          const datas = c.data.replace('0x', '').match(/.{1,64}/g);
+          const value = BigInt(
+            provider.eth.abi.decodeParameter('uint256', datas[1]) as any,
+          );
+
+          return p + value;
+        }, BigInt(0));
+
+        return mint - burn;
+      }),
+    );
+
+    return results.reduce((p, c) => p + c, BigInt(0)).toString();
+  }
 }

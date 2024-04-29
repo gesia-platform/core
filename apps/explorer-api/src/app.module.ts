@@ -6,6 +6,7 @@ import { Web3Module } from './web3/web3.module';
 import { ChainsModule } from './chains/chains.module';
 import { TxsModule } from './txs/txs.module';
 import { VouchersModule } from './vouchers/vouchers.module';
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { VouchersModule } from './vouchers/vouchers.module';
     BlocksModule,
     TxsModule,
     Web3Module,
+    TokensModule,
     VouchersModule,
     ChainsModule,
   ],
