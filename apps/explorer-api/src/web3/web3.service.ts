@@ -59,21 +59,33 @@ export class Web3Service {
     }
   }
 
-  async getVoucher(chainID: number) {
+  getVoucherAddresses(chainID: number, pageOffset?: number, pageSize?: number) {
+    const results =
+      chainID === 2
+        ? this.emissionVoucherAddresses
+        : chainID === 3
+        ? this.offsetVoucherAddresses
+        : [];
+
+    return pageOffset !== undefined
+      ? results.slice(pageOffset, pageOffset + pageSize)
+      : results;
+  }
+
+  async getVoucherTotalAmount(chainID: number) {
     const provider = this.getProvider(chainID);
 
-    let addresses: string[];
-    if (chainID === 2) {
-      addresses = this.emissionVoucherAddresses;
-    } else if (chainID === 3) {
-      addresses = this.offsetVoucherAddresses;
-    }
+    const addresses = this.getVoucherAddresses(chainID);
 
     const results = await Promise.all(
       addresses.map(async (address): Promise<bigint> => {
         const logs = await provider.eth.getPastLogs({
           address: address,
-          topics: [],
+          topics: [
+            Web3.utils.sha3(
+              'TransferSingle(address,address,address,uint256,uint256)',
+            ),
+          ],
           fromBlock: 0,
           toBlock: 'latest',
         });

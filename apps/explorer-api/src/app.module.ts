@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Web3Module } from './web3/web3.module';
 import { ChainsModule } from './chains/chains.module';
 import { TxsModule } from './txs/txs.module';
+import { VouchersModule } from './vouchers/vouchers.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TxsModule } from './txs/txs.module';
     BlocksModule,
     TxsModule,
     Web3Module,
+    VouchersModule,
     ChainsModule,
   ],
 })

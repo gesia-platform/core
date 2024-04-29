@@ -66,7 +66,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightEmission.toString(),
           nodes: emissionSigners?.length ?? 0,
-          carbonTotalAmount: await this.web3Service.getVoucher(
+          carbonTotalAmount: await this.web3Service.getVoucherTotalAmount(
             ChainsConstants.EMISSION_ID,
           ),
         },
@@ -77,7 +77,7 @@ export class ChainsService {
           consensusAlgorithm: 'PoA',
           latestBlockHeight: latestBlockHeightOffset.toString(),
           nodes: offsetSigners?.length ?? 0,
-          carbonTotalAmount: await this.web3Service.getVoucher(
+          carbonTotalAmount: await this.web3Service.getVoucherTotalAmount(
             ChainsConstants.OFFSET_ID,
           ),
         },

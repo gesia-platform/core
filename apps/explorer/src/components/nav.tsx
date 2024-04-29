@@ -33,7 +33,7 @@ export const Nav = ({}) => {
       <NavLink href="/chains">Chains</NavLink>
       <NavLink href="/blocks">Blocks</NavLink>
       <NavLink href="/txs">Transactions</NavLink>
-      <NavLink href="/voucher">Voucher</NavLink>
+      <NavLink href="/vouchers">Vouchers</NavLink>
       <NavLink href="/tokens">Tokens</NavLink>
       <NavLink href="/nfts">NFTs</NavLink>
       <NavLink href="https://gesia.gitbook.io/gesia-project-kr">Docs</NavLink>
