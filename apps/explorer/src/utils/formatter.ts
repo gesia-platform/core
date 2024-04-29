@@ -11,9 +11,11 @@ export const formatAddress = (address: string) =>
 export const formatHash = (hash: string) => hash.substring(0, 15) + "...";
 
 export const formatTCO2 = (value: string, isEmission: boolean) => {
-  return isEmission
-    ? Number(BigInt(value) / BigInt(1000000000)).toFixed(2)
-    : Number(BigInt(value)).toFixed(2);
+  return (
+    (isEmission
+      ? Number(BigInt(value) / BigInt(1000000000))
+      : Number(BigInt(value))) / 1000
+  ).toFixed(2);
 };
 export const formatTimestampFromNow = (timestamp: string) => {
   let result = dayjs.unix(Number(timestamp)).local().fromNow(true) + " ago";
