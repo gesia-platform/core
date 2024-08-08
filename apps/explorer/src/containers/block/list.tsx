@@ -8,7 +8,7 @@ import { useListBlocks } from "@/hooks/use-list-blocks";
 import useChainState from "@/stores/use-chain-state";
 import {
   formatAddress,
-  formatGEC,
+  formatNZC,
   formatTimestampFromNow,
 } from "@/utils/formatter";
 import Link from "next/link";
@@ -84,7 +84,7 @@ export const BlockList = ({}) => {
           {
             label: "Reward",
             render: (d) => {
-              return formatGEC(
+              return formatNZC(
                 d.txs?.reduce(
                   (p: any, c: any) =>
                     p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),

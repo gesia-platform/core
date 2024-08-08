@@ -12,7 +12,7 @@ import { useGetTx } from "@/hooks/use-get-tx";
 import { useGetWeb3Account } from "@/hooks/use-get-web3-account";
 import useChainState from "@/stores/use-chain-state";
 import {
-  formatGEC,
+  formatNZC,
   formatTCO2,
   formatTimestamp,
   formatTimestampFromNow,
@@ -119,15 +119,15 @@ export const TxDetails = ({ txID }: { txID: string }) => {
           {getWeb3AccountTo.data?.account.isContract && renderVoucher()}
         </DetailsRows>
         <DetailsRows>
-          <DetailsRow label="Value">{formatGEC(tx.value)}</DetailsRow>
+          <DetailsRow label="Value">{formatNZC(tx.value)}</DetailsRow>
           <DetailsRow label="Transaction Fee">
-            {formatGEC(BigInt(tx.effectiveGasPrice) * BigInt(tx.gasUsed))}
+            {formatNZC(BigInt(tx.effectiveGasPrice) * BigInt(tx.gasUsed))}
           </DetailsRow>
         </DetailsRows>
 
         <DetailsRows>
           <DetailsRow label="Gas Price">
-            {formatGEC(BigInt(tx.gasPrice))}
+            {formatNZC(BigInt(tx.gasPrice))}
           </DetailsRow>
           <DetailsRow label="Gas Limit">
             {BigInt(tx.gas).toLocaleString()}

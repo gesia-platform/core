@@ -8,7 +8,7 @@ import { useListTxs } from "@/hooks/use-list-txs";
 import useChainState from "@/stores/use-chain-state";
 import {
   formatAddress,
-  formatGEC,
+  formatNZC,
   formatHash,
   formatTimestampFromNow,
 } from "@/utils/formatter";
@@ -87,12 +87,12 @@ export const TxList = ({ blockID }: { blockID?: string }) => {
           },
           {
             label: "Value",
-            render: (d) => formatGEC(BigInt(d.value)),
+            render: (d) => formatNZC(BigInt(d.value)),
           },
           {
             label: "Txn Fee",
             render: (d) =>
-              formatGEC(BigInt(d.effectiveGasPrice) * BigInt(d.gasUsed)),
+              formatNZC(BigInt(d.effectiveGasPrice) * BigInt(d.gasUsed)),
           },
         ]}
         footerRightComponent={

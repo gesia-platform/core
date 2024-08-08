@@ -7,7 +7,7 @@ import { DetailsRows } from "@/components/details-rows";
 import { useGetBlock } from "@/hooks/use-get-block";
 import useChainState from "@/stores/use-chain-state";
 import {
-  formatGEC,
+  formatNZC,
   formatTimestamp,
   formatTimestampFromNow,
 } from "@/utils/formatter";
@@ -64,7 +64,7 @@ export const BlockDetails = ({ blockID }: { blockID: string }) => {
             </Link>
           </DetailsRow>
           <DetailsRow label="Block Reward">
-            {formatGEC(
+            {formatNZC(
               block.txs?.reduce(
                 (p: any, c: any) =>
                   p + BigInt(c.effectiveGasPrice) * BigInt(c.gasUsed),
