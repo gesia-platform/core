@@ -5,6 +5,7 @@ package store
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 	"strings"
 
@@ -289,6 +290,8 @@ func (_AppPermissionStore *AppPermissionStoreCaller) GetNetworkAccessResponse(op
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 	out1 := *abi.ConvertType(out[1], new([]byte)).(*[]byte)
 	out2 := *abi.ConvertType(out[2], new(bool)).(*bool)
+
+	fmt.Print("Test : ",out0,out1,out2)
 
 	return out0, out1, out2, err
 
