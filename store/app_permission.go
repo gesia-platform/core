@@ -280,6 +280,8 @@ func (_AppPermissionStore *AppPermissionStoreCallerSession) GetNetworkAccessRequ
 //
 // Solidity: function getNetworkAccessResponse(uint256 appID, address networkAccount) view returns(bool responsed, bytes, bool)
 func (_AppPermissionStore *AppPermissionStoreCaller) GetNetworkAccessResponse(opts *bind.CallOpts, appID *big.Int, networkAccount common.Address) (bool, []byte, bool, error) {
+	fmt.Print("* First : ", _AppPermissionStore)
+
 	var out []interface{}
 	err := _AppPermissionStore.contract.Call(opts, &out, "getNetworkAccessResponse", appID, networkAccount)
 
@@ -291,7 +293,7 @@ func (_AppPermissionStore *AppPermissionStoreCaller) GetNetworkAccessResponse(op
 	out1 := *abi.ConvertType(out[1], new([]byte)).(*[]byte)
 	out2 := *abi.ConvertType(out[2], new(bool)).(*bool)
 
-	fmt.Print("Test : ",out0,out1,out2)
+	fmt.Print("* Second : ",out0,out1,out2)
 
 	return out0, out1, out2, err
 
