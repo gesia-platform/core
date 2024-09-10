@@ -1,6 +1,6 @@
 export class VoucherDto {
-  name: string;
-  type: string;
-  address: string;
-  count: number;
+    name: string;
+    type: string;
+    address: string;
+    count: number;
 }

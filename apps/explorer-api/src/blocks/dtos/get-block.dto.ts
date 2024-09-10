@@ -1,7 +1,7 @@
 export class GetBlockRequestQueryDto {
-  chainID: string;
+    chainID: string;
 }
 
 export class GetBlockResponseDto {
-  block: any;
+    block: any;
 }

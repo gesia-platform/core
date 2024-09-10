@@ -5,68 +5,68 @@ export type BlockDocument = HydratedDocument<Block>;
 
 @Schema({ collection: 'blocks' })
 export class Block {
-  @Prop({ index: true })
-  chainID: number;
+    @Prop({ index: true })
+    chainID: number;
 
-  @Prop()
-  height: string;
+    @Prop()
+    height: string;
 
-  @Prop()
-  hash: string;
+    @Prop()
+    hash: string;
 
-  @Prop()
-  parentHash: string;
+    @Prop()
+    parentHash: string;
 
-  @Prop()
-  nonce: string;
+    @Prop()
+    nonce: string;
 
-  @Prop()
-  timestamp: string;
+    @Prop()
+    timestamp: string;
 
-  @Prop()
-  miner: string;
+    @Prop()
+    miner: string;
 
-  @Prop()
-  difficulty: string;
+    @Prop()
+    difficulty: string;
 
-  @Prop()
-  gasUsed: string;
+    @Prop()
+    gasUsed: string;
 
-  @Prop()
-  gasLimit: string;
+    @Prop()
+    gasLimit: string;
 
-  @Prop()
-  baseFeePerGas: string;
+    @Prop()
+    baseFeePerGas: string;
 
-  @Prop()
-  extraData: string;
+    @Prop()
+    extraData: string;
 
-  @Prop()
-  txns: number;
+    @Prop()
+    txns: number;
 
-  @Prop()
-  stateRoot: string;
+    @Prop()
+    stateRoot: string;
 
-  @Prop()
-  transactionsRoot: string;
+    @Prop()
+    transactionsRoot: string;
 
-  @Prop()
-  receiptsRoot: string;
+    @Prop()
+    receiptsRoot: string;
 
-  @Prop()
-  logsBloom: string;
+    @Prop()
+    logsBloom: string;
 
-  @Prop()
-  mixHash: string;
+    @Prop()
+    mixHash: string;
 
-  @Prop()
-  withdrawalsRoot: string;
+    @Prop()
+    withdrawalsRoot: string;
 
-  @Prop()
-  size: string;
+    @Prop()
+    size: string;
 
-  @Prop()
-  totalDifficulty: string;
+    @Prop()
+    totalDifficulty: string;
 }
 
 export const BlockSchema = SchemaFactory.createForClass(Block);

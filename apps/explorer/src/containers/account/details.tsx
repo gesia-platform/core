@@ -5,12 +5,13 @@ import { CarbonLabel } from '@/components/carbon-label';
 import { Details } from '@/components/details';
 import { DetailsRow } from '@/components/details-row';
 import { DetailsRows } from '@/components/details-rows';
+import { NFTList } from '@/components/nft-select';
+import { CHAIN_ID_OFFSET } from '@/constants/chain';
 import { useGetWeb3Account } from '@/hooks/use-get-web3-account';
 import useChainState from '@/stores/use-chain-state';
 import { formatNZC } from '@/utils/formatter';
 import { redirect } from 'next/navigation';
 import { useMemo } from 'react';
-import Web3 from 'web3';
 
 export const AccountDetails = ({ accountID }: { accountID: string }) => {
 	const { id: chainID, getChain } = useChainState();
@@ -35,6 +36,7 @@ export const AccountDetails = ({ accountID }: { accountID: string }) => {
 
 					<DetailsRow label='Balance'>{formatNZC(BigInt(account.balance))}</DetailsRow>
 				</DetailsRows>
+				{chainID === CHAIN_ID_OFFSET ? <NFTList borderHidden={false} userAddress={account.address} /> : null}
 			</Details>
 		</div>
 	);

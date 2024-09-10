@@ -4,15 +4,15 @@ import { ListTxsRequestQueryDto } from './dtos/list-txs.dto';
 
 @Controller('/txs')
 export class TxsController {
-  constructor(private txsService: TxsService) {}
+    constructor(private txsService: TxsService) {}
 
-  @Get('/:txID')
-  getTx(@Query() query: ListTxsRequestQueryDto, @Param('txID') txID: string) {
-    return this.txsService.getTx(txID, query);
-  }
+    @Get('/:txID')
+    getTx(@Query() query: ListTxsRequestQueryDto, @Param('txID') txID: string) {
+        return this.txsService.getTx(txID, query);
+    }
 
-  @Get('')
-  listTxs(@Query() query: ListTxsRequestQueryDto) {
-    return this.txsService.listTxs(query);
-  }
+    @Get('')
+    listTxs(@Query() query: ListTxsRequestQueryDto) {
+        return this.txsService.listTxs(query);
+    }
 }

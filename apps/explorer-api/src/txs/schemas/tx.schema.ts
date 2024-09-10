@@ -5,72 +5,72 @@ export type TxDocument = HydratedDocument<Tx>;
 
 @Schema({ collection: 'txs' })
 export class Tx {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Block' })
-  blockID: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Block' })
+    blockID: mongoose.Types.ObjectId;
 
-  @Prop()
-  hash: string;
+    @Prop()
+    hash: string;
 
-  @Prop()
-  from: string;
+    @Prop()
+    from: string;
 
-  @Prop()
-  to: string;
+    @Prop()
+    to: string;
 
-  @Prop()
-  contract: string;
+    @Prop()
+    contract: string;
 
-  @Prop()
-  gas: string;
+    @Prop()
+    gas: string;
 
-  @Prop()
-  gasPrice: string;
+    @Prop()
+    gasPrice: string;
 
-  @Prop()
-  gasUsed: string;
+    @Prop()
+    gasUsed: string;
 
-  @Prop()
-  maxFePerGas: string;
+    @Prop()
+    maxFePerGas: string;
 
-  @Prop()
-  maxPriorityFeePerGas: string;
+    @Prop()
+    maxPriorityFeePerGas: string;
 
-  @Prop()
-  effectiveGasPrice: string;
+    @Prop()
+    effectiveGasPrice: string;
 
-  @Prop()
-  cumulativeGasUsed: string;
+    @Prop()
+    cumulativeGasUsed: string;
 
-  @Prop()
-  input: string;
+    @Prop()
+    input: string;
 
-  @Prop()
-  value: string;
+    @Prop()
+    value: string;
 
-  @Prop()
-  nonce: string;
+    @Prop()
+    nonce: string;
 
-  @Prop()
-  type: string;
+    @Prop()
+    type: string;
 
-  @Prop()
-  v: string;
-  @Prop()
-  r: string;
-  @Prop()
-  s: string;
+    @Prop()
+    v: string;
+    @Prop()
+    r: string;
+    @Prop()
+    s: string;
 
-  @Prop()
-  logs: any[];
+    @Prop()
+    logs: any[];
 
-  @Prop()
-  logsBloom: string;
+    @Prop()
+    logsBloom: string;
 
-  @Prop()
-  status: string;
+    @Prop()
+    status: string;
 
-  @Prop()
-  transactionIndex: string;
+    @Prop()
+    transactionIndex: string;
 }
 
 export const TxSchema = SchemaFactory.createForClass(Tx);

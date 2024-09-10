@@ -1,10 +1,10 @@
 export class ListVouchersRequestQueryDto {
-  pageOffset: string;
-  pageSize: string;
-  chainID: string;
+    pageOffset: string;
+    pageSize: string;
+    chainID: string;
 }
 
 export class ListVouchersResponseDto {
-  totalSize: number;
-  vouchers: any[];
+    totalSize: number;
+    vouchers: any[];
 }

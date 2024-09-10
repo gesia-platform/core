@@ -1,7 +1,7 @@
 export class GetVoucherRequestQueryDto {
-  chainID: string;
+    chainID: string;
 }
 
 export class GetVoucherResponseDto {
-  voucher: any;
+    voucher: any;
 }

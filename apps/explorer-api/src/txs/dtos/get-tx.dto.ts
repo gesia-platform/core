@@ -1,7 +1,7 @@
 export class GetTxRequestQueryDto {
-  chainID: string;
+    chainID: string;
 }
 
 export class GetTxResponseDto {
-  tx: any;
+    tx: any;
 }

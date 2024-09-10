@@ -5,18 +5,15 @@ import { GetBlockRequestQueryDto } from './dtos/get-block.dto';
 
 @Controller('/blocks')
 export class BlocksController {
-  constructor(private blocksService: BlocksService) {}
+    constructor(private blocksService: BlocksService) {}
 
-  @Get('/:blockID')
-  getBlockByNumber(
-    @Query() query: GetBlockRequestQueryDto,
-    @Param('blockID') blockID: string,
-  ) {
-    return this.blocksService.getBlock(blockID, query);
-  }
+    @Get('/:blockID')
+    getBlockByNumber(@Query() query: GetBlockRequestQueryDto, @Param('blockID') blockID: string) {
+        return this.blocksService.getBlock(blockID, query);
+    }
 
-  @Get('')
-  listBlocks(@Query() query: ListBlocksRequestQueryDto) {
-    return this.blocksService.listBlocks(query);
-  }
+    @Get('')
+    listBlocks(@Query() query: ListBlocksRequestQueryDto) {
+        return this.blocksService.listBlocks(query);
+    }
 }

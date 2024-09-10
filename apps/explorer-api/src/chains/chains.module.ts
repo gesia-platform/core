@@ -6,9 +6,9 @@ import { HttpModule } from '@nestjs/axios';
 import { VouchersModule } from 'src/vouchers/vouchers.module';
 
 @Module({
-  imports: [Web3Module, HttpModule, VouchersModule],
-  controllers: [ChainsController],
-  providers: [ChainsService],
-  exports: [ChainsService],
+    imports: [Web3Module, HttpModule, VouchersModule],
+    controllers: [ChainsController],
+    providers: [ChainsService],
+    exports: [ChainsService],
 })
 export class ChainsModule {}

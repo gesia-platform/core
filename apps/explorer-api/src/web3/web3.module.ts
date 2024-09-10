@@ -7,15 +7,15 @@ import { Tx, TxSchema } from 'src/txs/schemas/tx.schema';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    HttpModule,
-    MongooseModule.forFeature([
-      { name: Block.name, schema: BlockSchema },
-      { name: Tx.name, schema: TxSchema },
-    ]),
-  ],
-  controllers: [Web3Controller],
-  providers: [Web3Service],
-  exports: [Web3Service],
+    imports: [
+        HttpModule,
+        MongooseModule.forFeature([
+            { name: Block.name, schema: BlockSchema },
+            { name: Tx.name, schema: TxSchema },
+        ]),
+    ],
+    controllers: [Web3Controller],
+    providers: [Web3Service],
+    exports: [Web3Service],
 })
 export class Web3Module {}

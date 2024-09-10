@@ -1,3 +1,3 @@
 export class GetAccountRequestQueryDto {
-  chainID: string;
+    chainID: string;
 }

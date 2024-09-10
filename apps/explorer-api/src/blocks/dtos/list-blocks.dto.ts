@@ -1,10 +1,10 @@
 export class ListBlocksRequestQueryDto {
-  pageOffset: string;
-  pageSize: string;
-  chainID: string;
+    pageOffset: string;
+    pageSize: string;
+    chainID: string;
 }
 
 export class ListBlocksResponseDto {
-  blocks: any[];
-  totalSize: number;
+    blocks: any[];
+    totalSize: number;
 }

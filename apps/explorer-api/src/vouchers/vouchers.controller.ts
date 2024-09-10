@@ -6,26 +6,20 @@ import { ListVoucherTokensRequestQueryDto } from './dtos/list-voucher-tokens.dto
 
 @Controller('/vouchers')
 export class VouchersController {
-  constructor(private vouchersService: VouchersService) {}
+    constructor(private vouchersService: VouchersService) {}
 
-  @Get('')
-  listVouchers(@Query() query: ListVouchersRequestQueryDto) {
-    return this.vouchersService.listVouchers(query);
-  }
+    @Get('')
+    listVouchers(@Query() query: ListVouchersRequestQueryDto) {
+        return this.vouchersService.listVouchers(query);
+    }
 
-  @Get('/:voucherID')
-  getVoucher(
-    @Query() query: GetVoucherRequestQueryDto,
-    @Param('voucherID') voucherID: string,
-  ) {
-    return this.vouchersService.getVoucher(voucherID, query);
-  }
+    @Get('/:voucherID')
+    getVoucher(@Query() query: GetVoucherRequestQueryDto, @Param('voucherID') voucherID: string) {
+        return this.vouchersService.getVoucher(voucherID, query);
+    }
 
-  @Get('/:voucherID/tokens')
-  listVoucherTokens(
-    @Query() query: ListVoucherTokensRequestQueryDto,
-    @Param('voucherID') voucherID: string,
-  ) {
-    return this.vouchersService.listVoucherTokens(voucherID, query);
-  }
+    @Get('/:voucherID/tokens')
+    listVoucherTokens(@Query() query: ListVoucherTokensRequestQueryDto, @Param('voucherID') voucherID: string) {
+        return this.vouchersService.listVoucherTokens(voucherID, query);
+    }
 }

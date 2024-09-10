@@ -6,12 +6,9 @@ import { TxsController } from './txs.controller';
 import { Web3Module } from 'src/web3/web3.module';
 
 @Module({
-  imports: [
-    Web3Module,
-    MongooseModule.forFeature([{ name: Tx.name, schema: TxSchema }]),
-  ],
-  controllers: [TxsController],
-  providers: [TxsService],
-  exports: [TxsService],
+    imports: [Web3Module, MongooseModule.forFeature([{ name: Tx.name, schema: TxSchema }])],
+    controllers: [TxsController],
+    providers: [TxsService],
+    exports: [TxsService],
 })
 export class TxsModule {}

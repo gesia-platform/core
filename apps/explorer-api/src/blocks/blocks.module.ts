@@ -6,12 +6,9 @@ import { BlocksController } from './blocks.controller';
 import { Web3Module } from 'src/web3/web3.module';
 
 @Module({
-  imports: [
-    Web3Module,
-    MongooseModule.forFeature([{ name: Block.name, schema: BlockSchema }]),
-  ],
-  controllers: [BlocksController],
-  providers: [BlocksService],
-  exports: [BlocksService],
+    imports: [Web3Module, MongooseModule.forFeature([{ name: Block.name, schema: BlockSchema }])],
+    controllers: [BlocksController],
+    providers: [BlocksService],
+    exports: [BlocksService],
 })
 export class BlocksModule {}

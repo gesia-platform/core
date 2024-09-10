@@ -9,15 +9,15 @@ import { VouchersModule } from './vouchers/vouchers.module';
 import { TokensModule } from './tokens/tokens.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
-    BlocksModule,
-    TxsModule,
-    Web3Module,
-    TokensModule,
-    VouchersModule,
-    ChainsModule,
-  ],
+    imports: [
+        ConfigModule.forRoot(),
+        MongooseModule.forRoot(process.env.MONGODB_URI),
+        BlocksModule,
+        TxsModule,
+        // Web3Module,
+        TokensModule,
+        VouchersModule,
+        ChainsModule,
+    ],
 })
 export class AppModule {}

@@ -4,9 +4,9 @@ import { VouchersController } from './vouchers.controller';
 import { VouchersService } from './vouchers.service';
 
 @Module({
-  imports: [Web3Module],
-  controllers: [VouchersController],
-  exports: [VouchersService],
-  providers: [VouchersService],
+    imports: [Web3Module],
+    controllers: [VouchersController],
+    exports: [VouchersService],
+    providers: [VouchersService],
 })
 export class VouchersModule {}

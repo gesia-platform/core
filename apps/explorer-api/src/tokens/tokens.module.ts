@@ -4,8 +4,8 @@ import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
 
 @Module({
-  imports: [Web3Module],
-  controllers: [TokensController],
-  providers: [TokensService],
+    imports: [Web3Module],
+    controllers: [TokensController],
+    providers: [TokensService],
 })
 export class TokensModule {}
