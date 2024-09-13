@@ -13,7 +13,7 @@ export class ChainsService {
 
     async listChains() {
         try {
-            // const latestBlockHeightNeutrality = await this.web3Service.getNeutrality().eth.getBlockNumber();
+            const latestBlockHeightNeutrality = await this.web3Service.getNeutrality().eth.getBlockNumber();
 
             const latestBlockHeightEmission = await this.web3Service.getEmission().eth.getBlockNumber();
 
@@ -29,9 +29,9 @@ export class ChainsService {
                 params: [Web3.utils.toHex(latestBlockHeightOffset)],
             });
 
-            // // this.httpService.axiosRef.defaults.baseURL = process.env.CHAIN_NEUTRALITY_BEACON_API_URL as string;
+            this.httpService.axiosRef.defaults.baseURL = process.env.CHAIN_NEUTRALITY_BEACON_API_URL as string;
 
-            // // const validatorsRes = await this.httpService.axiosRef.get(`/eth/v1/beacon/states/head/validators`);
+            const validatorsRes = await this.httpService.axiosRef.get(`/eth/v1/beacon/states/head/validators`);
 
             const result = {
                 totalSize: 3,
@@ -41,10 +41,10 @@ export class ChainsService {
                         name: ChainsConstants.NEUTRALITY_NAME,
                         label: ChainsConstants.NEUTRALITY_LABEL,
                         consensusAlgorithm: 'PoS',
-                        latestBlockHeight: '0',
-                        // latestBlockHeight: latestBlockHeightNeutrality.toString(),
-                        nodes: 0,
-                        // nodes: validatorsRes.data.data?.length ?? 0,
+                        // latestBlockHeight: '0',
+                        latestBlockHeight: latestBlockHeightNeutrality.toString(),
+                        // nodes: 0,
+                        nodes: validatorsRes.data.data?.length ?? 0,
                         carbonTotalAmount: 0,
                     },
                     {
