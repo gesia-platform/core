@@ -12,7 +12,7 @@ import "../openzeppelin//security/ReentrancyGuard.sol";
 import "../operator/IOperator.sol";
 import "../fee/IFeeManager.sol";
 import "../price/IPrice.sol";
-import "../aaWallet/interfaces/ISignAuthorizer.sol";
+import "../../../aaWallet/interfaces/ISignAuthorizer.sol";
 
 contract Carbon1155Nft is ERC1155, ReentrancyGuard, IPrice {
     using Strings for string;

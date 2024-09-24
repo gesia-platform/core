@@ -25,7 +25,6 @@ contract CarbonEmissions is ERC1155, ERC1155Holder {
     /**
      * @param _name The emissions categroy name.
      */
-
     constructor(string memory _name, address _notaryPublic) ERC1155("") {
         name = _name;
         notaryPublic = _notaryPublic;

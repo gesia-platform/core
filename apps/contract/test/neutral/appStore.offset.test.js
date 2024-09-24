@@ -8,7 +8,7 @@ contract('AppStore and AppPermission Test', (accounts) => {
 	let appStore;
 	let appPermission;
 	let networkAccount;
-	let appId;
+	let appId = 1;
 
 	const APP_STORE_ADDRESS = process.env.APP_STORE_ADDRESS;
 	const APP_PERMISSION_ADDRESS = process.env.APP_PERMISSION_ADDRESS;
@@ -38,6 +38,11 @@ contract('AppStore and AppPermission Test', (accounts) => {
 		const networkAccessPermissionRequestedEvent = tx.logs.find((e) => e.event === 'NetworkAccessPermissionRequested');
 
 		const { appID, networkAccount: eventNetworkAccount, ip: eventIp } = networkAccessPermissionRequestedEvent.args;
+
+		const res = await appPermission.getNetworkAccessResponse(appId, networkAccount.address); // false
+
+		console.log(appID, eventNetworkAccount, eventIp);
+		console.log(res);
 
 		assert.equal(appID.toNumber(), appId, 'App ID should match');
 		assert.equal(eventNetworkAccount, networkAccount.address, 'Network account should match');

@@ -3,12 +3,12 @@ require('dotenv').config();
 
 module.exports = {
 	networks: {
-		development: {
-			host: '52.78.12.174',
-			port: 8545,
-			network_id: '8888',
-			provider: new HDWalletProvider(process.env.PRIVATE_KEY, 'http://52.78.12.174:8545/'),
-		},
+		// development: {
+		// 	host: '52.78.12.174',
+		// 	port: 8545,
+		// 	network_id: '8888',
+		// 	provider: new HDWalletProvider(process.env.PRIVATE_KEY, 'http://52.78.12.174:8545/'),
+		// },
 		emission: {
 			host: '3.39.139.167',
 			port: 8645,

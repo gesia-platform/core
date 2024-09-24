@@ -14,8 +14,6 @@ contract AppStore is Ownable {
 
     mapping(uint256 => App) internal apps;
 
-    constructor() {}
-
     event AppCreated(uint256 appID, string domain, address owner);
 
     event AppOwnershipTransferred(
