@@ -11,11 +11,29 @@ export class VouchersService {
     constructor(private web3Service: Web3Service) {}
 
     async getVoucherData(chainID: number, address: string) {
+        if (chainID === 1) return;
         const provider = this.web3Service.getProvider(chainID);
 
         const voucher = new VoucherDto();
         voucher.address = address;
         voucher.type = 'ERC1155';
+
+        // contract setup for owner
+        if (chainID === 3) {
+            const contract = new provider.eth.Contract(
+                [
+                    {
+                        inputs: [],
+                        name: 'owner',
+                        outputs: [{ internalType: 'address', name: '', type: 'address' }],
+                        stateMutability: 'view',
+                        type: 'function',
+                    },
+                ],
+                address,
+            );
+            voucher.owner = await contract.methods.owner().call();
+        }
 
         // count
         const mintLogs = await provider.eth.getPastLogs({
@@ -32,6 +50,7 @@ export class VouchersService {
             }),
         );
 
+        // fetching the name
         const nameABI = await provider.eth.call({
             to: address,
             data: provider.eth.abi.encodeFunctionCall(

@@ -99,7 +99,6 @@ export const TokenList = ({ type }: { type: 'ft' | 'nft' }) => {
 							</Link>
 						),
 					},
-
 					type === 'nft'
 						? {
 								label: 'Voucher Deposit',
@@ -111,7 +110,6 @@ export const TokenList = ({ type }: { type: 'ft' | 'nft' }) => {
 									) : null,
 							}
 						: null,
-
 					{
 						label: 'Total Balance',
 						render: (d) => BigInt(d.totalSupply).toLocaleString(),

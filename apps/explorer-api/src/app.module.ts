@@ -7,6 +7,7 @@ import { ChainsModule } from './chains/chains.module';
 import { TxsModule } from './txs/txs.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { TokensModule } from './tokens/tokens.module';
+import { CreditsModule } from './credits/credits.module';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { TokensModule } from './tokens/tokens.module';
         TokensModule,
         VouchersModule,
         ChainsModule,
+        CreditsModule,
     ],
 })
 export class AppModule {}

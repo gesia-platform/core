@@ -3,4 +3,5 @@ export class VoucherDto {
     type: string;
     address: string;
     count: number;
+    owner?: string;
 }
