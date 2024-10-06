@@ -8,8 +8,6 @@ export const ChainList = ({}) => {
 	const setChainID = useChainState((s) => s.setID);
 	const chains = useChainState((s) => s.chains);
 
-	console.log(chains);
-
 	return (
 		<div className='mt-5'>
 			<Table

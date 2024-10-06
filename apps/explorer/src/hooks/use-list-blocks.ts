@@ -12,7 +12,5 @@ export function useListBlocks(params: { chainID: number; pageOffset: number; pag
 			).data,
 	);
 
-	console.log(JSON.stringify(data));
-
 	return { data, error, mutate };
 }

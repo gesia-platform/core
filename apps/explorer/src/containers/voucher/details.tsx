@@ -6,7 +6,7 @@ import { DetailsRow } from '@/components/details-row';
 import { DetailsRows } from '@/components/details-rows';
 import { Pagination } from '@/components/pagination';
 import { Table } from '@/components/table';
-import { useGetCalculator } from '@/hooks/use-get-calculator';
+import { useGetCalculators } from '@/hooks/use-get-calculators';
 import { useGetVoucher } from '@/hooks/use-get-voucher';
 import { useInfoTokens } from '@/hooks/use-info-tokens';
 import { useListTokens } from '@/hooks/use-list-tokens';
@@ -20,7 +20,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 	const getChain = useChainState((s) => s.getChain);
 	const chain = getChain();
 	const getVoucher = useGetVoucher({ voucherID, chainID });
-	const [page, setPage] = useState({ offset: 0, size: 10 });
+	const [page, setPage] = useState({ offset: 0, size: 25 });
 	const [mergedTokens, setMergedTokens] = useState<any[]>([]);
 
 	const voucher = useMemo(() => {
@@ -35,7 +35,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 	});
 	const infoTokens = useInfoTokens({ type: 'nft', chainID });
 
-	const calculator = useGetCalculator({
+	const calculator = useGetCalculators({
 		chainID,
 		emissionContract: voucherID,
 		pageOffset: page.offset,
@@ -132,7 +132,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 						columns={[
 							{
 								label: 'Token ID',
-								render: (d) => d.token_id,
+								render: (d) => '# ' + d.token_id,
 							},
 							{
 								label: 'Calculator Name',
@@ -147,11 +147,20 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 								render: (d) => d.calculator_balance.toLocaleString() + ' coc',
 							},
 							{
-								label: 'Calculator Amount',
+								label: 'Calculator Holders',
 								render: (d) => d.calculator_holder.toLocaleString(),
 							},
 						]}
-						footerRightComponent={<Pagination onOffsetChange={(offset) => setPage((prev) => ({ ...prev, offset }))} offset={page.offset} size={page.size} totalSize={calculator.data?.totalElements || 0} />}
+						footerRightComponent={
+							<Pagination
+								onOffsetChange={(offset) => {
+									setPage((prev) => ({ ...prev, offset }));
+								}}
+								offset={page.offset}
+								size={page.size}
+								totalSize={calculator.data?.content.length}
+							/>
+						}
 					/>
 				) : (
 					<div>No data available for the selected chain</div>
