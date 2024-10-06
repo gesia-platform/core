@@ -54,13 +54,13 @@ export class Web3Service {
             },
         ];
 
-        // if (process.env.WEB3_SUBSCRIBING === '1') {
-        //     this.subscribeNewBlockHeaders().catch((err) => this.logger.error('failed to subscribeNewBlockHeaders', err));
-        // }
+        if (process.env.WEB3_SUBSCRIBING === '1') {
+            this.subscribeNewBlockHeaders().catch((err) => this.logger.error('failed to subscribeNewBlockHeaders', err));
+        }
 
-        // if (process.env.WEB3_SYNCING === '1') {
-        //     this.syncPreviousBlocks();
-        // }
+        if (process.env.WEB3_SYNCING === '1') {
+            this.syncPreviousBlocks();
+        }
     }
 
     getVoucherAddresses = (chainID: number, pageOffset?: number, pageSize?: number) => {

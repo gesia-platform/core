@@ -5,6 +5,7 @@ import { CarbonLabel } from '@/components/carbon-label';
 import { Details } from '@/components/details';
 import { DetailsRow } from '@/components/details-row';
 import { DetailsRows } from '@/components/details-rows';
+import { Spinner } from '@/components/spinner';
 import { ToAddress } from '@/components/to-address';
 import { TxInputData } from '@/components/tx-input-data';
 import { CHAIN_ID_EMISSION, CHAIN_VOUCHER_LOG_TOPIC_0_HASH } from '@/constants/chain';
@@ -131,7 +132,12 @@ export const TxDetails = ({ txID }: { txID: string }) => {
 
 	if (getTx.error) return redirect('/error');
 
-	if (!tx || !chain) return null;
+	if (!tx || !chain)
+		return (
+			<div className='flex justify-center items-center h-48'>
+				<Spinner color='#0091C2' />
+			</div>
+		);
 
 	return (
 		<div className='mt-5'>

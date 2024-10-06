@@ -8,18 +8,9 @@ import { TxsModule } from './txs/txs.module';
 import { VouchersModule } from './vouchers/vouchers.module';
 import { TokensModule } from './tokens/tokens.module';
 import { CreditsModule } from './credits/credits.module';
+import { CalculatorsModule } from './calculators/credits.module';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forRoot(process.env.MONGODB_URI),
-        BlocksModule,
-        TxsModule,
-        // Web3Module,
-        TokensModule,
-        VouchersModule,
-        ChainsModule,
-        CreditsModule,
-    ],
+    imports: [ConfigModule.forRoot(), MongooseModule.forRoot(process.env.MONGODB_URI), BlocksModule, TxsModule, Web3Module, TokensModule, VouchersModule, ChainsModule, CreditsModule, CalculatorsModule],
 })
 export class AppModule {}

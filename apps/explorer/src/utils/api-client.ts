@@ -7,3 +7,7 @@ export const apiClient = axios.create({
 export const carbonMonsterClient = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_CARBON_MONSTER_API_URL,
 });
+
+export const carbonMonsterTestClient = axios.create({
+	baseURL: process.env.NEXT_PUBLIC_TEST_CARBON_MONSTER_API_URL,
+});
