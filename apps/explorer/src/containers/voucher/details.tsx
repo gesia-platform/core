@@ -144,7 +144,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 							},
 							{
 								label: 'Calculator Balance',
-								render: (d) => d.calculator_balance.toLocaleString() + ' coc',
+								render: (d) => d.calculator_balance.toLocaleString() + ' co2',
 							},
 							{
 								label: 'Calculator Holders',
