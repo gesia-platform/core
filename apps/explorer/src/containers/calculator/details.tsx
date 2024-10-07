@@ -117,7 +117,7 @@ export const CalculatorDetails = ({ voucherID, tokenNo }: { voucherID: string; t
 							},
 							{
 								label: 'Amount',
-								render: (d) => <div>{(d.amount / 1000000000).toLocaleString() + ' coc'}</div>,
+								render: (d) => <div>{(d.amount / 1000000000).toLocaleString() + ' co2'}</div>,
 							},
 						]}
 						footerRightComponent={<Pagination onOffsetChange={(offset) => setPage((prev) => ({ ...prev, offset }))} offset={page.offset} size={page.size} totalSize={calculations.length} />}
