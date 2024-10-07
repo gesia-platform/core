@@ -8,9 +8,9 @@ export const CHAIN_NAME_NEUTRALITY = 'neutrality';
 export const CHAIN_NAME_EMISSION = 'emission';
 export const CHAIN_NAME_OFFSET = 'offset';
 
-export const CHAIN_LABEL_NEUTRALITY = 'Neutrality';
-export const CHAIN_LABEL_EMISSION = 'Emission';
-export const CHAIN_LABEL_OFFSET = 'Offset';
+export const CHAIN_LABEL_NEUTRALITY = 'Net zero sequence chain';
+export const CHAIN_LABEL_EMISSION = 'Carbon emissions tracking chain';
+export const CHAIN_LABEL_OFFSET = 'Carbon credit chain';
 
 export const CHAINS = [
 	{
