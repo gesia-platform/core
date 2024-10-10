@@ -60,6 +60,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 	useEffect(() => {
 		if (listTokens.data?.tokens.length > 0) {
 			const tokens = mergeTokens(listTokens.data.tokens, infoTokens.data.list || []);
+			console.log(tokens);
 			setMergedTokens(tokens);
 		} else {
 			setMergedTokens([]);
@@ -103,7 +104,7 @@ export const VoucherDetails = ({ voucherID }: { voucherID: string }) => {
 						columns={[
 							{
 								label: 'Token No',
-								render: (d) => '# ' + d.nft_token_id,
+								render: (d) => '# ' + d.voucher_token_id,
 							},
 							{
 								label: 'Credit name',
