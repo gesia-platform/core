@@ -9,7 +9,5 @@ export function useGetCalculators(params: { chainID: number; emissionContract: s
 
 	const resultData = data ? data.data : data;
 
-	console.log(resultData);
-
 	return { data: resultData, error, mutate };
 }
