@@ -138,6 +138,7 @@ export class Web3Service {
         block.chainID = chainID;
 
         block.height = blockData.number.toString();
+        block.height_int = Number(blockData.number);
 
         block.hash = blockData.hash;
         block.parentHash = blockData.parentHash;

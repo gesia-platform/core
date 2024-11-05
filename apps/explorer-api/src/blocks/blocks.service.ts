@@ -101,8 +101,6 @@ export class BlocksService {
         //     console.log(blocks[i].height, results[i].height);
         // }
 
-        console.log(results);
-
         return {
             blocks: results,
             totalSize: latestBlockNumber,
