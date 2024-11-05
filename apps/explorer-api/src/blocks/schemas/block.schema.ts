@@ -12,6 +12,9 @@ export class Block {
     height: string;
 
     @Prop()
+    height_int: number;
+
+    @Prop()
     hash: string;
 
     @Prop()

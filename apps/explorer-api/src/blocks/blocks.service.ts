@@ -75,17 +75,7 @@ export class BlocksService {
         const skip = Number(query.pageOffset);
         const limit = Number(query.pageSize);
 
-        const results = await this.blockModel.aggregate([
-            { $match: { chainID: Number(query.chainID) } },
-            {
-                $addFields: {
-                    heightLong: { $toLong: '$height' },
-                },
-            },
-            { $sort: { heightLong: -1 } },
-            { $skip: skip },
-            { $limit: limit },
-        ]);
+        const results = await this.blockModel.aggregate([{ $match: { chainID: Number(query.chainID) } }, { $sort: { height_int: -1 } }, { $skip: skip }, { $limit: limit }]);
 
         // const blocks = [];
         // const heights = [];
@@ -110,6 +100,8 @@ export class BlocksService {
         // for (let i = 0; i < blocks.length; i++) {
         //     console.log(blocks[i].height, results[i].height);
         // }
+
+        console.log(results);
 
         return {
             blocks: results,

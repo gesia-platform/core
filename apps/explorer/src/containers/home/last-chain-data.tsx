@@ -27,15 +27,9 @@ export const LastChainData = ({}) => {
 	});
 
 	useEffect(() => {
-		let t = setInterval(() => {
-			listBlocks.mutate();
-			listTxs.mutate();
-		}, 5000);
-
-		return () => {
-			clearTimeout(t);
-		};
-	}, [chainStore.id]);
+		listBlocks.mutate();
+		listTxs.mutate();
+	}, []);
 
 	return (
 		<div className='bg-white border border-[#eaeced] shadow-md rounded-[8px] mt-5'>
